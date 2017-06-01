@@ -1,7 +1,8 @@
 Package: rNodal
 Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
 Version: 0.0.0.9001
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Author: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
+Maintainer: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Description: What the package does (one paragraph).
 Depends: R (>= 3.2), methods,
 Imports: rootSolve,
