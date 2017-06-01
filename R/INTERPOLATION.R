@@ -1,5 +1,3 @@
-# library(dplyr)
-
 #' Interpolation for Fancher and Brown correlation
 #'
 #' It will calculate the friction Factor by interpolating in the digitized plot

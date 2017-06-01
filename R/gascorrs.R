@@ -1,4 +1,3 @@
-# source("zfactor.R")
 
 #' @include zfactor.R
 NULL
