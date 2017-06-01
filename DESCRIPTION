@@ -1,9 +1,9 @@
 Package: rNodal
-Title: What the Package Does (one line, title case)
+Title: Nodal Analysis for Petroleum Production Engineering
 Version: 0.0.0.9000
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Calculations. Bottomhole pressure for oil and gas wells.
 Depends: R (>= 3.4.0)
-License: What license is it under?
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
