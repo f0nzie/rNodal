@@ -75,7 +75,6 @@ GOR = (oil.rt + wat.rt) / oil.rt * GLR
 GOR
 ```
 
-![](./images/fig71_schematic_reservoir_surface_whitson.jpg)
 
 
 ## Gas Formation Volume Factor
