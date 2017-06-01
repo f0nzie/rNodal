@@ -1,0 +1,21 @@
+---
+title: "Dummy Vignette"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Dummy Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(rNodal)
+saveToProjectEnv("PRES.ATM", 14.69)
+```
+
+
+```{r}
+ReadFromProjectEnv("PRES.ATM")
+```
+

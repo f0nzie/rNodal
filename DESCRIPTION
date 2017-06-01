@@ -1,9 +1,35 @@
 Package: rNodal
-Title: Nodal Analysis for Petroleum Production Engineering
-Version: 0.0.0.9000
+Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
+Version: 0.0.0.9001
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: Calculations. Bottomhole pressure for oil and gas wells.
-Depends: R (>= 3.4.0)
+Description: What the package does (one paragraph).
+Depends: R (>= 3.2), methods,
+Imports: rootSolve,
+    dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown, testthat
+Collate: 
+    'FANBR.R'
+    'FLUIDPROPS.R'
+    'moody.R'
+    'zfactor.R'
+    'gascorrs.R'
+    'HAGBR.R'
+    'INTERPOLATION.R'
+    'settings.R'
+    'hdf5.R'
+    'Rutils.R'
+    'VLP.tools.R'
+    'VLP.R'
+    'data.R'
+    'dunsros.R'
+    'gas.R'
+    'gas_viscosity.R'
+    'poettmann.R'
+    'rPetroleum-package.r'
+    'zzz.R'
+VignetteBuilder: knitr
