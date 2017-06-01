@@ -1,12 +1,23 @@
 # library(dplyr)
 
-#' Interpolation of curve to
-#' @param drhov    duns ros
+#' Interpolation for Fancher and Brown correlation
+#'
+#' It will calculate the friction Factor by interpolating in the digitized plot
+#' produced by Fancher and Brown. The values provided for the interpolation are
+#' the \eqn{D\rhoV} product on the x-axis, the GLR and the degree of the poliynomial.
+#'
+#' @details
+#' \if{html}{\figure{fig241_brown_friction_factor.jpg}{options: width="60\%" alt="Figure: fig241_brown_friction_factor.jpg"}}
+#' \if{latex}{\figure{fig241_brown_friction_factor.jpg}{options: width=7cm}}
+#' @param drhov    Duns and Ros parameters. See equation on x-axis
 #' @param GLR      gas liquid ratio
 #' @param degree   degree of polynomial
 #' @importFrom dplyr filter
 #' @importFrom stats lm predict
 #' @export
+#' @examples
+#' # 7. call the interpolation function with degree = 4 from Fig 2.41
+#' interp.fanbr(drhov = 10, GLR = 3200, degree = 4)$ff
 interp.fanbr <- function(drhov, GLR, degree) {
     # curves.0241 <- NULL
     # load("./data/curves.0241.rda")
