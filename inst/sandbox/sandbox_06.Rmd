@@ -1,0 +1,24 @@
+---
+title: "sandbox_06: flatten holdup.out list into out list"
+output: html_notebook
+---
+
+```{r}
+# loading two lists: holdup.out and out
+load("./data/holdup_guo_issue.rda")
+```
+
+
+```{r}
+names(holdup.out)
+```
+
+```{r}
+names(out)
+```
+
+```{r}
+# show contatenation of two lists and ungrouped objects
+names(c(holdup.out, out, a=10, b="hello"))
+```
+

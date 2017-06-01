@@ -1,0 +1,16 @@
+---
+title: "test oil.dvisc.beggs"
+output: html_notebook
+---
+
+```{r}
+source("FLUIDPROPS.R")
+
+oil.dead_visc.BeggsRobinson(200, 30)
+```
+
+```{r}
+source("FLUIDPROPS.R")
+oil.sat_visc.BeggsRobinson(200, 30, 300)
+```
+

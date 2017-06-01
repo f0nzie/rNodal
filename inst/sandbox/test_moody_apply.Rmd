@@ -1,0 +1,216 @@
+---
+title: "friction factor"
+output: html_notebook
+---
+
+```{r}
+source("moody.R")
+
+# calculate `f` for various Reynolds numbers
+re <- c(5000, 10000, 50000, 100000, 500000)
+sapply(re, friction.factor, ED = 0.005, f1 = blasius.0)
+```
+
+```{r}
+# THis chunk giving error. REVISE!
+# calculate `f` for various Reynolds numbers
+re <- c(5000, 10000, 50000, 100000, 500000)
+sapply(re, function(x) friction.factor(re, ED = 0.002))
+```
+
+
+```{r}
+# calculate `f` for various relative roughness values
+ed <- c(0.05, 0.03, 0.01, 0.005, 0.002)
+sapply(ed, friction.factor, REY = 1E5, f1 = blasius.0)
+
+```
+
+```{r}
+# calculate `f` for various Blasius equations
+blasius <- list(bla0 = blasius.0, bla1 = blasius.1, bla2 = blasius.2)
+sapply(blasius, friction.factor, REY = 1E5, ED = 0.005)
+
+```
+
+
+
+```{r}
+# using apply
+
+# http://stackoverflow.com/questions/17685866/apply-function-using-multiple-changing-arguments-in-r
+
+myfunc <- function(var1, var2, var3){
+  result <- var1*var2*var3
+  return(result)
+}
+
+data <-data.frame(a=c(1,2,3), b=c(4,5,6),c= c(7,8,9))
+apply(data, 1, function(x, y, z) myfunc(data$a, data$b, data$c))
+
+```
+
+```{r}
+# using a list and sapply
+myfunc <- function(var1, var2, var3){
+  result <- var1*var2*var3
+  return(result)
+}
+
+data <- list(a=c(1,2,3), b=c(4,5,6),c= c(7,8,9))
+sapply(data, function(x, y, z) myfunc(data$a, data$b, data$c))
+
+```
+
+```{r}
+a<- 1:5
+b<-sapply(a, function(x) sapply(a, function(y) x+y))
+b
+```
+
+```{r}
+sapply(a, identity)
+
+sapply(a, function(x) a)
+sapply(a, function(x) c(a, a*a))
+sapply(a, function(x) a*a)
+```
+
+
+```{r}
+foo <- function(bar) { return( 2 + bar ) }
+foo2 <- function(bar) { return( 2 * bar ) }
+df <- data.frame(c('foo', 'foo2'), stringsAsFactors = FALSE)
+
+do.call(df[1, 1], list(4))
+do.call(df[2, 1], list(4))
+```
+
+
+```{r}
+####################### giving error
+source("moody.R")
+
+ed <- c(0.05, 0.03, 0.01, 0.005, 0.002)
+re <- c(5000, 10000, 50000, 100000, 500000)
+
+# calculate `f` for various Blasius equations
+blasius <- list(bla0 = blasius.0, bla1 = blasius.1, bla2 = blasius.2)
+#blasius <- c(blasius.0, blasius.1, blasius.2, blasius.0, blasius.1)
+blasius <- list(blasius.0, blasius.1, blasius.2, blasius.0, blasius.1)
+
+# data <- list(re = re, ed = ed, fun = blasius)
+data <- data.frame(re = re, ed = ed)
+sapply(data, function(x) friction.factor(data$re, ED=0.005, f1=blasius.0))
+```
+
+```{r}
+blasius <- list(blasius.0, blasius.1, blasius.2, blasius.0, blasius.1)
+
+mapply(friction.factor, re, ed, blasius)
+```
+
+```{r}
+# nested sapply
+cols <- 1:4
+rows <- 1:10
+sapply(cols, function(x) sapply(rows, function(y) y))
+```
+
+```{r}
+sapply(re, function(x) friction.factor(x, ED = 0.005))
+```
+
+```{r}
+################################### this gives ERROR
+# the condition has length > 1 and only the first element will be used
+sapply(re, function(x, y) friction.factor(x, y), y = c(0.005, 0.002))
+```
+
+
+```{r}
+####################################### giving error
+# nested `sapply`. find FRiction Factors for different combinations
+# of Reynolds and Relative Roughness
+source("moody.R")
+
+re <- c(5000, 10000, 50000, 100000, 500000)
+ed <- c(0.01, 0.005, 0.002)
+
+# Reynolds as columns
+# Relative Roughness as rows
+res <- sapply(re, function(x) 
+  sapply(ed, function(y) friction.factor(x,y)))
+
+rownames(res) <- as.character(ed)
+colnames(res) <- as.character(re)
+res
+```
+
+```{r}
+############################# giving error
+# Friction factors for different Blasius equations and Reynolds
+source("moody.R")
+
+blasius <- list(bla0 = blasius.0, bla1 = blasius.1, bla2 = blasius.2)
+re <- c(5000, 10000, 50000, 100000, 500000)
+
+# Reynolds as columns
+# Relative Roughness as rows
+res <- sapply(blasius, function(x) 
+  sapply(re, function(y) friction.factor(y, ED = 0.005, x)))
+
+rownames(res) <- as.character(re)
+res
+```
+
+```{r}
+# Sets of Friction Factors for different values of:
+  # Blasius equation
+  # Reynolds number
+  # Relative Roughness
+
+source("moody.R")
+
+blasius <- list(bla0 = blasius.0, bla1 = blasius.1, bla2 = blasius.2)
+re <- c(5000, 10000, 50000, 100000, 500000)
+ed <- c(0.01, 0.005, 0.002)
+
+# Reynolds as columns
+# Relative Roughness as rows
+lapply(blasius, function(x) 
+  sapply(re, function(y) 
+    sapply(ed, function(z) friction.factor(y, z, x))))
+
+```
+
+The third Blasius equation takes less iterations.
+
+
+```{r}
+source("moody.R")
+moody.ff(5000, 0.005)
+```
+
+```{r}
+source("moody.R")
+re <- c(5000, 10000, 50000, 100000, 500000)
+
+sapply(re, function(x) moody.ff(x, ed = 0.005))
+# [1] 0.04261593 0.03761856 0.03214568 0.03127366 0.03052475
+```
+
+```{r}
+source("moody.R")
+
+re <- c(2001, 7000, 10000, 50000, 100000, 500000)
+ed <- c(0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.005, 0.002, 0.001)
+
+res <- sapply(re, function(x) 
+  sapply(ed, function(y) moody.ff(x, y)))
+
+rownames(res) <- as.character(ed)
+colnames(res) <- as.character(re)
+res
+```
+

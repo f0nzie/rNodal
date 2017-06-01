@@ -1,0 +1,298 @@
+---
+title: "gascorrs"
+output: html_notebook
+---
+
+> still something wrong with mu.r (gas visc reduced Dempsey).
+Ppr, Tpr, base viscosity are OK but mu.r agas gas.visc still giving trouble.
+
+Gas viscosity OFF from worksheet
+```{r fig.asp=1, rows.print=30}
+# check function mu.gas()
+# calculate gas viscosity using data from Guo example
+# 
+library(ggplot2)
+library(dplyr)
+
+load("./data/dpt.rda")    # load Guo base data
+source("gascorrs.R")
+
+sgg <- 0.7
+nRows <- nrow(dpt)
+
+v = vector("list", nRows)
+
+for (i in seq_len(nRows)) {
+  depth <- dpt[i, "depth"]
+  pres <- dpt[i, "pres"]
+  temp <- dpt[i, "temp"]
+  gas.visc <- mu.gas(pres = pres,      # output is a list
+                     temp = temp, 
+                     gas.sg = sgg)
+  
+  v[[i]] <- c(depth = depth,           # concatenate depth, pres with list
+              pres = pres, 
+              temp = temp,
+              gas.visc)
+}
+
+gasViscosity <- data.table::rbindlist(v)     # add row to table
+
+# round decimals in table
+gasViscosity %>% 
+  mutate_each(funs(round(., 0)), depth, pres, temp) %>%
+  mutate_each(funs(round(., 2)), pres.pr, temp.pr) %>%
+  mutate_each(funs(round(., 3)), gas.visc.r, gas.visc.base, gas.visc)
+  
+
+qplot(gasViscosity$pres, gasViscosity$gas.visc.base, 
+      geom = c("point", "line"),
+      xlim = c(0, 4000),
+      main = "pres vs gas.visc.base") + 
+      scale_y_continuous(limits = c(0.01, 0.0125), 
+                         breaks = scales::pretty_breaks(n = 5))
+
+qplot(pres, gas.visc.r, data = gasViscosity, 
+      geom = c("point", "line"),
+      xlim = c(0, 4000) ) +
+      scale_y_continuous(limits = c(0, 1.4), 
+                         breaks = scales::pretty_breaks(n = 10))
+
+qplot(gasViscosity$pres, gasViscosity$gas.visc, 
+      xlim = c(0, 4000),
+      ylim = c(0, 0.03),
+      main = "Gas Viscosity")
+```
+
+## plot.gminor function
+Use this function if more detail is required in the y minor axis.
+```{r}
+#' Plots with more details on the minor y-axis
+plot.gminor <- function(data, x, y, ...) {
+  vr <- ggplot(data=data, aes_string(x = x, y = y))
+  vr + 
+  geom_point() +
+  geom_line() +
+        scale_y_continuous(limits = c(y.min, y.max), 
+                         minor_breaks = seq(y.min, y.max, by = y.min.by),
+                         breaks = seq(y.min, y.max, by = y.maj.by) ) +
+  labs(title = title) + 
+  theme(plot.title = element_text(hjust = 0.5))
+}
+```
+
+
+### gas.visc
+
+```{r fig.asp=1}
+# plot gas viscosity. ggplot
+# add plot with major and minor grids
+
+title = "gas.visc vs pres"
+x.min = 0; x.max = 4000; 
+y.min = 0.0; y.max = 0.030; y.maj.by = 0.005; y.min.by = 0.001
+
+plot.gminor(gasViscosity, x = "pres", y = "gas.visc")
+```
+
+
+### gas.visc.base
+```{r fig.asp=1}
+# plot gas viscosity base. ggplot
+# add plot with major and minor grids
+
+title = "gas.visc.base vs pres"
+x.min = 0; x.max = 4000; 
+y.min = 0.010; y.max = 0.0125; y.maj.by = 0.0005; y.min.by = 0.0001
+
+plot.gminor(gasViscosity, x = "pres", y = "gas.visc.base")
+
+# vr <- ggplot(gasViscosity, aes(pres, gas.visc.base))
+# vr + 
+#   geom_point() +
+#   geom_line() +
+#         scale_y_continuous(limits = c(y.min, y.max), 
+#                          minor_breaks = seq(y.min, y.max, by = y.min.by),
+#                          breaks = seq(y.min, y.max, by = y.maj.by)) +
+#   labs(title = title) +
+#   theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+### gas.visc.r
+```{r fig.asp=1}
+# plot gas viscosity r. ggplot
+# add plot with major and minor grids
+
+mtitle = "gas.visc.r vs pres"
+x.min = 0; x.max = 4000; 
+y.min = 0.0; y.max = 1.25; y.maj.by = 0.2; y.min.by = 0.1
+
+plot.gminor(gasViscosity, x = "pres", y = "gas.visc.r", title = mtitle)
+```
+
+
+
+
+```{r fig.asp=1}
+# plot gas viscosity r
+# add plot with major and minor grids
+x.min = 0; x.max = 4000; 
+y.min = 0.0; y.max = 1.4; y.maj.by = 0.2; y.min.by = 0.05
+
+q <- qplot(gasViscosity$pres, gasViscosity$gas.visc.r, 
+      geom = c("point", "line"),
+      xlim = c(x.min, x.max),
+      main = "pres vs gas.visc.base") + 
+      theme(panel.grid.minor = element_line(colour="white", size=0.25)) +
+      theme(panel.grid.major = element_line(colour="white", size=0.75)) +
+      scale_y_continuous(limits = c(y.min, y.max), 
+                         minor_breaks = seq(y.min, y.max, by = y.min.by),
+                         breaks = seq(y.min, y.max, by = y.maj.by)
+                         )
+```
+
+```{r fig.asp=1}
+# plot gas viscosity base
+# add plot with major and minor grids
+x.min = 0; x.max = 4000; 
+y.min = 0.01; y.max = 0.0125; y.maj.by = 0.0005; y.min.by = 0.0001 
+qplot(gasViscosity$pres, gasViscosity$gas.visc.base, 
+      geom = c("point", "line"),
+      xlim = c(x.min, x.max),
+      main = "pres vs gas.visc.base") + 
+      theme(panel.grid.minor = element_line(colour="white", size=0.25)) +
+      theme(panel.grid.major = element_line(colour="white", size=0.75)) +
+      scale_y_continuous(limits = c(y.min, y.max), 
+                         minor_breaks = seq(y.min, y.max, by = y.min.by),
+                         breaks = seq(y.min, y.max, by = y.maj.by)
+                         )
+```
+
+
+```{r fig.asp=1}
+library(ggplot2)
+
+qplot(
+  pres, gas.visc.r, data = gasVisc, 
+  geom = c("point", "line"),
+  xlim = c(0, 4000) ) +
+  scale_y_continuous(limits = c(0, 1.4),
+    breaks = scales::pretty_breaks(n = 10))
+#)
+#+ scale_size_area()
+```
+
+
+```{r fig.asp=1, rows.print=30}
+library(ggplot2)
+library(dplyr)
+
+# check gas criticals Ppr, Tpr, Ppc, Tpc and Tr
+# calcCriticals <- function(pres.a, temp.f, gas.sg, 
+                          # co2.frac = 0, h2s.frac = 0, n2.frac = 0)
+source("zfactor.R")
+
+print(calcCriticals(200, 80, 0.7))     # quick test. Returns a list
+
+
+sgg <- 0.7
+nRows <- nrow(dpt)
+
+v = vector("list", nRows)
+
+for (i in seq_len(nRows)) {
+  depth <- dpt[i, "depth"]
+  pres  <- dpt[i, "pres"]
+  temp  <- dpt[i, "temp"]
+  gas.crit <- calcCriticals(pres, temp, sgg)   # output is a list
+  v[[i]] <- c(depth = depth, pres = pres, temp = temp, gas.crit)
+}
+
+gasCriticals <- data.table::rbindlist(v)     # add row to table
+
+# round the columns
+gasCriticals %>%
+  mutate_each(funs(round(., 0)), depth, pres, temp) %>%
+  mutate_each(funs(round(., 2)), pres.pr, temp.pr, temp.r) %>%
+  mutate_each(funs(round(., 1)), pres.pc, temp.pc)
+
+
+# plot Tr vs temp
+qplot(gasCriticals$temp, gasCriticals$temp.r, 
+     ylim = c(0.60, 0.75), xlim = c(60,200), 
+     xlab = "temp", ylab = "temp.r",
+     main = "temp vs temp.r")
+```
+
+## gas viscosity base
+
+```{r fig.asp=1, rows.print=30}
+# check function mu.1() for calculation of base viscosity
+# calculate gas viscosity using data from Guo example
+
+load("./data/dpt.rda")
+source("gascorrs.R")
+
+sgg <- 0.7
+nRows <- nrow(dpt)
+
+v = vector("list", nRows)
+
+for (i in seq_len(nRows)) {
+  depth <- dpt[i, "depth"]
+  pres <- dpt[i, "pres"]
+  temp <- dpt[i, "temp"]
+  gas.visc.base <- gas.viscBase(sgg = sgg, temp = temp)    # scalar
+  
+  v[[i]] <- list(depth = depth,                   # make row with list of scalars
+                 pres = pres, 
+                 temp = temp,
+                 gas.visc.base = gas.visc.base)
+}
+
+gasViscBase <- data.table::rbindlist(v)     # add row to table
+
+# round decimals in table
+gasViscBase %>%
+  mutate_each(funs(round(., 0)), depth, pres, temp) %>%
+  mutate_each(funs(round(., 3)), gas.visc.base)
+
+# plot 
+qplot(gasViscBase$pres, gasViscBase$gas.visc.base, 
+     xlab = "pres", ylab = "gas.vis.base",
+     main = "pres vs gas.visc.base")
+```
+
+
+
+## calculate gas viscosity and z. scalars.
+
+```{r}
+source("gascorrs.R")
+
+gasSG <- 0.7
+thTemp <- 80
+
+thp.abs <- 200
+thp.gau <- thp.abs - 14.7
+
+# temp.pc <- 169.0 + 314.0 * sgg
+# pres.pc <- 708.75 -57.5 * sgg
+# temp.pr <- (tempF + 460) / temp.pc
+# pres.pr <- thp / pres.pc
+
+# muGas <- mu.gas(pres.pr, temp.pr, sgg, tempF)
+muGas <- mu.gas(pres = thp.abs, temp = thTemp, gas.sg = gasSG)
+
+source("zfactor.R")
+
+z.all <- z.hallyarborough(pres.a = thp.gau+14.7, temp.f =  thTemp, gas.sg = sgg)
+print(z.all)
+
+z <- z.all$z
+cat("z=", z)
+```
+

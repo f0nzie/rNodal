@@ -1,0 +1,85 @@
+---
+title: "concepts"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
+
+
+
+**Solution GOR**
+    The solution GOR of the oil as it resides in the reservoir. Used in the PVT definition for an oil. This value should be entered on the PVT Input Screen only. It is also called $R{so}$
+ 
+```{r}
+# Example: 800 SCF/STB
+Rs = 800    # scf/stb
+```
+
+
+**Initial GOR**
+This is the initial solution gas-oil ratio.
+$$R{si}$$
+
+**Solution GOR at bubble point**
+This is the GOR at the original bubble pressure.
+
+$$R{sob}$$
+
+**Total GOR**
+ GOR that includes gas breaking ot from Solution and Free Gas from the reservoir (Gas Cap).
+ 
+ $$ R{so}$$
+ 
+```{r}
+# if GOR.free = 0, then GOR.total = Rs
+GOR.free = 0
+GOR.total = Rs + GOR.free
+GOR.total
+```
+
+**Gas Oil Ratio**
+ Same as Total GOR unless specified other.
+ 
+ 
+**Dissolved and Free GLR**
+ Same idea as Total GOR but using liquid instead of oil rates in the denominator
+ 
+> If we know the GLR and the watercut, we can calculate the GOR:
+
+$$GOR = GLR \frac {oil.rt + water.rate} {oil.rate} $$
+When we talk about GOR and GLR, we are referring to GOR total and GLR total, unless specified.
+
+**GOR Free**
+ Includes only the free gas from the reservoir (Gas Cap)
+ 
+**GLR Free**
+ Similar to GOR Free but using liquid instead of oil rates in the denominator
+ 
+**Free Gas Rate**
+ This is free gas in the wellbore (irrespective of its origin).
+ 
+**GLR Injected**
+ Amount of gas injected divided by the liquid produced
+
+```{r}
+# Example:
+GLR    = 120
+oil.rt = 500
+wat.rt = 200
+
+GOR = (oil.rt + wat.rt) / oil.rt * GLR
+GOR
+```
+
+![](./images/fig71_schematic_reservoir_surface_whitson.jpg)
+
+
+## Gas Formation Volume Factor
+
+$$B_{g}$$
+
+
