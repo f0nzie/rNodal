@@ -1,0 +1,98 @@
+---
+title: "Call the HAGBR sub from R"
+output: html_notebook
+---
+
+
+* The write() statements inside the subroutines print with no problem. Have to be careful to put them in the right place.
+
+```{r}
+# dir()
+# system("R CMD SHLIB HAGBR.f Flagr.f Frfact.f")
+if(is.loaded("HAGBR")) dyn.unload(paste("HAGBR", .Platform$dynlib.ext, sep = ""))
+file.remove("HAGBR.o")
+file.remove("HAGBR.so")
+system("R CMD SHLIB HAGBR.f")
+```
+
+
+## Load library
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("HAGBR", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# build HAGBR function in R.
+# it will call the Fortran subroutine
+hagbr <- function(ANG, DIA, ED, P, VM, HLNS, DENG, DENL, GVIS,
+                      VISL, XNL, XNLV, XNGV, XND) {
+  
+  HL = length(HLNS)
+  REYN = length(P)
+  FRGR = length(ED)
+  ELGR = length(ED)
+  ACCGR = length(ED)
+  DPDL = length(ED)
+  IREG = 0
+  ICRIT = 0
+  KREG = 0
+  
+  retdata <- .Fortran("HAGBR",
+                      ANG  = as.double(ANG),
+                      DIA  = as.double(DIA),
+                      ED   = as.double(ED),
+                      P    = as.double(P),
+                      VM   = as.double(VM),
+                      HLNS = as.double(HLNS),
+                      DENG = as.double(DENG),
+                      DENL = as.double(DENL),
+                      GVIS = as.double(GVIS),
+                      VISL = as.double(VISL),
+                      XNL  = as.double(XNL),
+                      XNLV = as.double(XNLV),
+                      XNGV = as.double(XNGV),
+                      XND  = as.double(XND),
+                      HL   = as.double(HL),
+                      REYN = as.double(REYN),
+                      FRGR = as.double(FRGR),
+                      ELGR = as.double(ELGR),
+                      ACCGR = as.double(ACCGR),
+                      DPDL  = as.double(DPDL),
+                      IREG  = as.integer(IREG),
+                      ICRIT = as.integer(ICRIT),
+                      KREG  = as.integer(KREG)
+                      )
+  return(retdata)
+}
+
+```
+
+```{r}
+hagbr(ANG = 90.0, DIA = 2/12, ED = 0.005, P = 200.0, VM = 14.5, HLNS = 0.999, 
+      DENG = 0.042, DENL = 45.8, GVIS = 0.017, VISL = 5.0, 
+      XNL = 1.1, XNLV = 3, XNGV = 4, XND = 5)
+```
+
+
+
+```{r}
+# calling HAGBR corre in R. It will return a list with variables 
+hagbr(ANG = 90.0, DIA = 2/12, ED = 0.005, P = 200.0, VM = 14.5, HLNS = 0.999, 
+      DENG = 0.042, DENL = 45.8, GVIS = 0.017, VISL = 5.0, 
+      XNL = 11, XNLV = 3, XNGV = 4, XND = 5)
+```
+
+
+
+```{r}
+# another call
+hagbr(75, 3/12, 0.05, 200, 0.5, 0.1, 0.24, 3.5, 0.4, 5, 0.01, 0.02, 0.003, 0.04)
+```
+
+
+```{r}
+# this unloads the library in any system, Windows or Linux
+dyn.unload(paste("HAGBR", .Platform$dynlib.ext, sep = ""))
+```
