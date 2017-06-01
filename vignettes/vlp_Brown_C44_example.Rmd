@@ -37,8 +37,6 @@ library(rNodal)
 
 
 
-# source("VLP.R")
-
 # rhdf5::H5close()
 input_example <- setWellInput(field.name = "HAGBR.MOD",
                                  well.name = "Brown_C44", 
