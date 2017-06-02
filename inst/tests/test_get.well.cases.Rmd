@@ -6,6 +6,6 @@ output: html_notebook
 ```{r}
 # source("Rutils.R")
 library(rNodal)
-get.well.cases("./data/default.hdf5", "HAGBR", "ExampleGuo")
+# get.well.cases("./data/default.hdf5", "HAGBR", "ExampleGuo")
 ```
 
