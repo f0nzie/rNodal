@@ -1,5 +1,6 @@
 
-#' @include settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R moody.R FLUIDPROPS.R INTERPOLATION.R
+#' @include utils.R settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R
+#' @include moody.R FLUIDPROPS.R INTERPOLATION.R
 NULL
 
 # library(rhdf5)

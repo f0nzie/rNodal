@@ -25,6 +25,7 @@ Collate:
     'hdf5.R'
     'Rutils.R'
     'VLP.tools.R'
+    'utils.R'
     'VLP.R'
     'data.R'
     'dunsros.R'
