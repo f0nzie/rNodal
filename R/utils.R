@@ -1,10 +1,19 @@
+
+
+#' Logical response to presence of HDF5 files anywhere under user root folder
+#' @export
+isHdf5Files <- function() {
+    ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
+}
+
 #' List all HDF5 files
 #'
 #' @export
 listAllHdf5 <- function() {
-    list.files(path = ".", pattern = "*.h5$|*.hdf5$", all.files = FALSE,
-               full.names = FALSE, recursive = TRUE, ignore.case = FALSE,
-               include.dirs = TRUE, no.. = FALSE)
+    user_root_folder <- rprojroot::find_rstudio_root_file()
+    list.files(path = user_root_folder, pattern = "*.h5$|*.hdf5$",
+               all.files = FALSE, full.names = FALSE, recursive = TRUE,
+               ignore.case = FALSE, include.dirs = TRUE, no.. = FALSE)
 }
 
 
@@ -20,8 +29,4 @@ named.list <- function(...) {
     nl
 }
 
-#' Logical response to presence of HDF5 files
-#' @export
-isHdf5Files <- function() {
-    ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
-}
+
