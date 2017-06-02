@@ -20,6 +20,8 @@ listAllHdf5 <- function() {
 
 #' Take objects and create a list using their names
 #'
+#' This avoids retyping the name of the object as in a list
+#'
 #' @param ... any additional parameter
 #' @importFrom stats setNames
 #' @export
