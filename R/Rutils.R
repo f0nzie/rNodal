@@ -51,8 +51,10 @@ get.well.slot <- function(hFile, fieldName, wellName) {
     if (!dir.exists(dirname(hFile))) {
         setHDF5DumpFile()
         hFile <- getHDF5DumpFile()
+        warning("\n ./data folder does not exist. Creating a temporary file\n")
+        warning("Creating a local ./data folder is advised\n")
     }
-    stopifnot(file.exists(hFile))
+    # stopifnot(file.exists(hFile))
     saveToProjectEnv("data.file.hdf5", hFile)       # save hdf5 to prj-env
 
     # check if hFile exists otherwise create a new hdf5 file
