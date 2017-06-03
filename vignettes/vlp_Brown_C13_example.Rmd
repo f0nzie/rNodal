@@ -9,6 +9,21 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r}
+root_folder <- system.file(package = "rNodal")
+root_folder
+```
+
+
+
+```{r}
+library(rNodal)
+# listAllHdf5()
+biggerHdf5()
+
+```
+
+
 ```{r rows.print=30}
 library(rNodal)
 
