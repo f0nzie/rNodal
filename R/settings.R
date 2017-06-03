@@ -4,7 +4,6 @@ project.env <- new.env(parent = emptyenv()) # create new environment for project
 setProjectEnvironment <- function() {
     data.file = "default"
 
-    # project.env[["project.root"]] <- proj_root <- rprojroot::find_rstudio_root_file()
     project.env[["project.root"]] <- proj_root <- system.file("..", package = "rNodal")
     project.env[["project.extdata"]] <- proj_extdata <- paste(proj_root, "inst","extdata", sep = "/")
     project.env[["project.data"]] <- proj_data <- paste(proj_root, "data", sep = "/")
