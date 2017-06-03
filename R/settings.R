@@ -8,7 +8,6 @@ setProjectEnvironment <- function() {
     project.env[["project.extdata"]] <- proj_extdata <- paste(proj_root, "inst","extdata", sep = "/")
     project.env[["project.data"]]    <- proj_data <- paste(proj_root, "data", sep = "/")
 
-    data.folder <- ReadFromProjectEnv("project.data")
     data.folder <- proj_extdata
 
     # file extensions for data file
