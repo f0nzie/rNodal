@@ -324,7 +324,7 @@ writeHdf5 <- function(dataTable, dataset.name) {
     if (file.exists(biggerHdf5()))
         hFile <- biggerHdf5()
     else
-        hFile      <- ReadFromProjectEnv("data.file.hdf5")
+        hFile <- ReadFromProjectEnv("data.file.hdf5")
     # get the well slot in HDF5
     slot <- get.well.slot(hFile, field.name, well.name)                  # io error 3
     if (is.null(slot)) stop("Slot not available. Check Field name or Well name.")
