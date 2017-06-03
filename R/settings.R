@@ -33,7 +33,7 @@ saveToProjectEnv <- function(var, value) {
 #' Read variable from environment
 #' @param var variable to read
 #' @export
-ReadFromProjectEnv <- function(var) {
+readFromProjectEnv <- function(var) {
     project.env[[var]]
 }
 
