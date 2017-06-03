@@ -1,3 +1,9 @@
+getProjectDir <- function() {
+    # get the project folder
+    rprojroot::find_rstudio_root_file()  # points to project dir
+}
+
+
 #' What is the status of the package
 #'
 #' @export
@@ -16,11 +22,11 @@ nodal_status <- function() {
 #' @export
 copyDataContainer <- function(overwrite = FALSE) {
     hdf5_filename <- "default.hdf5"
-    source_dir <- system.file("extdata", package = "rNodal")
+    source_dir  <- system.file("extdata", package = "rNodal")
     source_file <- paste(source_dir, hdf5_filename, sep = "/")
     stopifnot(file.exists(source_file))
 
-    target_dir  <- rprojroot::find_rstudio_root_file()
+    target_dir  <- getProjectDir()
     target_file <- paste(target_dir, hdf5_filename, sep = "/")
     if (file.exists(target_file))
         warning("HDF5 data container already exists.\n Use overwrite=TRUE")
