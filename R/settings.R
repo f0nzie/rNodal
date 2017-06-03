@@ -17,7 +17,7 @@ setProjectEnvironment <- function() {
 
     project.env[["data.folder"]]     <- data.folder
     project.env[["data.file"]]       <- data.file
-    project.env[["data.file.hdf5"]]  <- datafile.hdf5   # HDF5 file
+    project.env[["data.file.hdf5"]]  <- datafile.hdf5    # HDF5 file
     project.env[["data.file.rda"]]   <- datafile.rda     # RDA file
 }
 

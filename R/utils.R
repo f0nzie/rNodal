@@ -1,3 +1,35 @@
+#' What is the status of the package
+#'
+#' @export
+nodal_status <- function() {
+    readFromProjectEnv("data.file.hdf5")
+}
+
+
+#' Copy a HDF5 data container to user's folder
+#'
+#' It will check if a HDF5 file already exist at the destination.
+#' If the file exist it will throw a warning.
+#' To overwrite it with a fresh copy use overwrite=TRUE
+#'
+#' @param overwrite it is FALSE to prevent overwriting an existing data file
+#' @export
+copyDataContainer <- function(overwrite = FALSE) {
+    hdf5_filename <- "default.hdf5"
+    source_dir <- system.file("extdata", package = "rNodal")
+    source_file <- paste(source_dir, hdf5_filename, sep = "/")
+    stopifnot(file.exists(source_file))
+
+    target_dir  <- rprojroot::find_rstudio_root_file()
+    target_file <- paste(target_dir, hdf5_filename, sep = "/")
+    if (file.exists(target_file))
+        warning("HDF5 data container already exists.\n Use overwrite=TRUE")
+
+    if (file.copy(from = source_file, to = target_dir, overwrite = overwrite))
+        saveToProjectEnv("data.file.hdf5", target_file)
+    else
+        warning("File copy operation failed")
+}
 
 
 #' Logical response to presence of HDF5 files anywhere under user root folder
