@@ -12,27 +12,7 @@ vignette: >
 ```{r}
 library(rNodal)
 saveToProjectEnv("PRES.ATM", 14.69)
+readFromProjectEnv("PRES.ATM")
 ```
 
-
-```{r}
-ReadFromProjectEnv("PRES.ATM")
-# ![](fig241_brown_friction_factor.jpg)
-
-#' \if{html}{\figure{fig241_brown_friction_factor.jpg}{options: width="60\%" alt="Figure: workspace_id.png"}}
-# #' \if{latex}{\figure{workspaceId.pdf}{options: width=7cm}}
-# ![](fig241_brown_friction_factor.jpg)
-```
-
-
-\figure{fig241_brown_friction_factor.jpg}{options: width="60\%" alt="Figure: fig241_brown_friction_factor.jpg"}
-
-\if{html}{\figure{fig241_brown_friction_factor.jpg}{options: width="60\%" alt="Figure: fig241_brown_friction_factor.jpg"}}
-
-\if{html}{\figure{fig241_brown_friction_factor.jpg}{options: width=100 alt="R logo"}}
-
-```{r}
-#' \if{html}{\figure{fig241_brown_friction_factor.jpg}{options: width="60\%" alt="Figure: workspace_id.png"}}
-#' \if{latex}{\figure{fig241_brown_friction_factor.jpg}{options: width=7cm}}
-```
 
