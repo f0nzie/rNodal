@@ -1,14 +1,5 @@
 
 
-
-useLatestHdf5 <- function() {
-    if (isHdf5Files())
-        hdf5_files <- listAllHdf5()
-    else
-        stop("No HDF5 files found")
-
-}
-
 #' Logical response to presence of HDF5 files anywhere under user root folder
 #' @export
 isHdf5Files <- function() {
