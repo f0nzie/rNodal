@@ -1,14 +1,5 @@
 
 
-#' Take objects and create a list using their names
-#' @param ... any additional parameter
-#' @importFrom stats setNames
-#' @export
-named.list <- function(...) {
-  nl <- setNames( list(...) , as.character( match.call()[-1]) )
-  # nl <- setNames( list(...) , as.character( match.call()[-1]) )
-  nl
-}
 
 
 
@@ -42,7 +33,8 @@ hGroup.exists <- function(hFile, hGroup) {
 #' @param    wellName   the well name
 #' @return   a string with /field/well/datetime if creation successful
 #'           otherwise, NULL
-#' @importFrom rhdf5 h5ls h5createGroup H5close H5Fcreate
+# #' @importFrom rhdf5 h5ls h5createGroup H5close H5Fcreate
+#' @import rhdf5
 #' @include hdf5.R settings.R
 #' @export
 get.well.slot <- function(hFile, fieldName, wellName) {
@@ -51,8 +43,10 @@ get.well.slot <- function(hFile, fieldName, wellName) {
     if (!dir.exists(dirname(hFile))) {
         setHDF5DumpFile()
         hFile <- getHDF5DumpFile()
+        warning("\n ./data folder does not exist. Creating a temporary file\n")
+        warning("Creating a local ./data folder is advised\n")
     }
-    stopifnot(file.exists(hFile))
+    # stopifnot(file.exists(hFile))
     saveToProjectEnv("data.file.hdf5", hFile)       # save hdf5 to prj-env
 
     # check if hFile exists otherwise create a new hdf5 file

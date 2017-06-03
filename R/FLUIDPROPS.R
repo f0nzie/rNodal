@@ -1,5 +1,4 @@
 
-
 #' Glaso
 #'
 #' @param pres pressure

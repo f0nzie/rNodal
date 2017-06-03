@@ -1,0 +1,157 @@
+---
+title: "utils"
+output: html_notebook
+---
+
+
+```{r fig.asp=1}
+library(ggplot2)
+
+# using gas visosity data for plotting with minor gridlines
+load("./data/gasViscosity.rda")
+
+my.scale <- function(y.min, y.max) {
+  mm10 <- log10(y.max - y.min) 
+  pow <- round(( mm10 + sign(mm10)*0.5), 0) + sign(mm10)
+  return(10^pow)
+}
+
+plot.xy <- function(x, y, x.min = min(x), x.max = max(x), 
+                    y.min = min(y), y.max = max(y), 
+                    y.maj.by = 5*my.scale(y.min, y.max), 
+                    y.min.by = 1*my.scale(y.min, y.max), 
+                    ...) {
+  qplot(x, y, 
+        geom = c("point", "line"),
+        xlim = c(x.min, x.max), ... ) +
+        theme(panel.grid.minor = element_line(colour="white", size=0.25)) +
+        theme(panel.grid.major = element_line(colour="white", size=0.75)) +
+        scale_y_continuous(limits = c(y.min, y.max), 
+                           minor_breaks = seq(y.min, y.max, by = y.min.by),
+                           breaks = seq(y.min, y.max, by = y.maj.by)
+                           )  
+  
+}
+
+# add plot with major and minor grids
+x.min = 0; x.max = 4000; 
+y.min = 0.01; y.max = 0.0125; y.maj.by = 0.0005; y.min.by = 0.0001 
+
+plot.xy(gasViscosity$pres, gasViscosity$gas.visc.base, 
+        y.min = 0.01, y.max = 0.0125,
+        main = "pres vs gas.visc.base", xlab = "pres", ylab = "gas.visc.base")
+
+# plot.xy(gasViscosity$pres, gasViscosity$gas.visc.base, 
+#         x.min = 0, x.max = 4000, 
+#         y.min = 0.01, y.max = 0.0125, y.maj.by = 0.0005, y.min.by = 0.0001,
+#         main = "pres vs gas.visc.base", xlab = "pres", ylab = "gas.visc.base")
+
+```
+
+
+```{r}
+plot.xy(gasViscosity$pres, gasViscosity$gas.visc.r, 
+        y.min = 0.0, y.max = 1.4,
+        main = "pres vs gas.visc.r", xlab = "pres", ylab = "gas.visc.r")
+```
+
+
+```{r, fig.asp=1}
+library(ggplot2)
+
+# using gas visosity data for plotting with minor gridlines
+load("./data/gasViscosity.rda")
+
+# add plot with major and minor grids
+x.min = 0; x.max = 4000; 
+y.min = 0.01; y.max = 0.0125; y.maj.by = 0.0005; y.min.by = 0.0001 
+
+qplot(gasViscosity$pres, gasViscosity$gas.visc.base, 
+      geom = c("point", "line"),
+      xlim = c(x.min, x.max),
+      main = "pres vs gas.visc.base") + 
+      theme(panel.grid.minor = element_line(colour="white", size=0.25)) +
+      theme(panel.grid.major = element_line(colour="white", size=0.75)) +
+      scale_y_continuous(limits = c(y.min, y.max), 
+                         minor_breaks = seq(y.min, y.max, by = y.min.by),
+                         breaks = seq(y.min, y.max, by = y.maj.by)
+                         )
+
+```
+
+
+
+```{r}
+library(ggplot2)
+
+set.seed(10)
+data = rnorm(100)
+
+ggplot(data.frame(data=data), aes(x=data))+
+  geom_histogram(fill="#4F81BD", binwidth=.5)+
+  theme(panel.background = element_rect(fill = "transparent",colour = NA),
+       panel.grid.minor = element_blank(), 
+       panel.grid.major = element_line(colour="#CDCDCD", size=0.25) )
+       #panel.background = element_rect(fill = "transparent",colour = "black"))
+```
+
+
+```{r}
+library(ggplot2)
+
+x <- c(1:100)
+y <- c(1:100)
+
+ch1 <- qplot(x, y)
+
+ch1 + theme(panel.grid.minor = element_line(colour="white", size=0.5)) +
+    scale_y_continuous(minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10))
+```
+
+
+```{r}
+# plot vectors x, y
+library(ggplot2)
+
+x <- c(1:100)
+y <- c(1:100)
+
+ch1 <- ggplot(mapping = aes(x, y)) + 
+  geom_point() +
+  geom_line()
+
+ch1 + theme(panel.grid.minor = element_line(colour="white", size=0.5)) +
+    scale_y_continuous(minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10))
+```
+
+```{r}
+plot.xy.excel <- function(x, y, y.axis = c(minimum = min(y), 
+                                           maximum = max(y), 
+                                           major = 10, minor = 5)) {
+  # ch1 <- ggplot(mapping = aes(x, y)) + 
+  # geom_point() +
+  # geom_line()
+  yx <- as.list(y.axis)
+  print(yx)
+  ch1 <- qplot(x, y)
+  
+  ch2 <- ch1 + theme(panel.grid.minor = element_line(colour="white", size=0.5)) +
+    scale_y_continuous(minor_breaks = seq(yx$minimum, yx$maximum, yx$minor), 
+      breaks = seq(yx$minimum, yx$maximum, yx$major))
+  print(ch2)
+}
+```
+
+```{r}
+x <- c(1:100)
+y <- c(1:100)
+plot.xy.excel(x, y)
+```
+
+```{r}
+x <- c(1:100)
+y <- c(1:100)
+plot.xy.excel(x, y, y.axis = c(minimum = 0, maximum = 100, ))
+```
+
+

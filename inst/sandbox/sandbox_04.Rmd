@@ -1,0 +1,382 @@
+---
+title: "sandbox 04: fix add.wellRecord() when no file exist "
+output: html_notebook
+---
+
+
+
+```{r}
+# create the group paths removing the datetime at the end using the delimiter "/"
+# it should not remove folders with less than 3 digits. See regex {4}
+# because 4 digits could mean the year
+
+# Regex: http://stackoverflow.com/a/6508020/5270873
+
+# form the paths of only the groups
+hFile <- file.path("./", "WOODLIB.03.hdf5")
+df <- h5ls(hFile, recursive = 3)
+
+
+df2 <- df %>%
+    filter(otype == "H5I_GROUP") %>%
+    select(-c(dclass, dim)) %>%
+    mutate(paths = ifelse(nchar(group) == 1,  
+                          paste0(group, name), 
+                          paste(group, name, sep = "/"))) %>%
+    mutate(casePaths = gsub("(.*)/[0-9]{4}.*","\\1", paths)) %>%
+    select(-c(otype, name)) %>%
+    distinct(casePaths, .keep_all = TRUE)
+
+df2
+```
+
+
+
+
+
+```{r}
+source("Rutils.R")
+
+# new function working with grepl and %in%
+hGroup.exists <- function(hFile, hGroup) {
+    hGroup <- ifelse(!grepl("^/", hGroup), paste0("/", hGroup), hGroup)
+    groups <- get.group.paths(hFile)
+
+    if (hGroup %in% groups)
+        return(TRUE)
+    else
+        return(FALSE)
+}    
+
+
+hGroup.exists("WOODLIB.03.hdf5", "11")
+hGroup.exists("WOODLIB.03.hdf5", "BROWN")
+
+hGroup.exists("WOODLIB.01.hdf5", "ExampleGuo")
+hGroup.exists("WOODLIB.01.hdf5", "/11")
+hGroup.exists("WOODLIB.011.hdf5", "HAGBR")
+hGroup.exists("WOODLIB.011.hdf5", "BROWN")
+
+hGroup.exists("WOODLIB.03.hdf5", "1/2")
+hGroup.exists("WOODLIB.03.hdf5", "/1/22")
+hGroup.exists("WOODLIB.03.hdf5", "11/12")
+
+# [1] TRUE
+# [1] FALSE
+# [1] TRUE
+# [1] TRUE
+# [1] TRUE
+# [1] FALSE
+# [1] TRUE
+# [1] TRUE
+# [1] FALSE
+```
+
+
+
+```{r}
+# get.group.paths <- function(hFile) {
+# 
+#     hFile <- file.path(wells.dir, hFile)
+#     df <- h5ls(hFile, recursive = 3)
+# 
+#     df2 <- df %>%
+#         filter(otype == "H5I_GROUP") %>%
+#         select(-c(dclass, dim)) %>%
+#         mutate(paths = ifelse(nchar(group) == 1,  
+#                               paste0(group, name), 
+#                               paste(group, name, sep = "/"))) %>%
+#         mutate(casePaths = gsub("(.*)/[0-9]{4}.*","\\1", paths)) %>%
+#         select(-c(otype, name)) %>%
+#         distinct(casePaths, .keep_all = TRUE)
+#     return(df2$casePaths)
+# } 
+
+
+
+# call the function above
+get.group.paths("WOODLIB.03.hdf5") 
+cat("\n")
+get.group.paths("WOODLIB.01.hdf5")
+cat("\n")
+get.group.paths("WOODLIB.011.hdf5")
+```
+
+
+```{r}
+# testing if hGroup.exists works. 
+# this chunk will create a field/well if they do not exist
+
+source("Rutils.R")
+
+hFile <- "WOODLIB.01.hdf5"
+wells.dir <- "./"
+group.paths <- get.group.paths(hFile)  
+group.paths
+
+fieldName <- "111" 
+wellName <- "Example_04"
+.fieldName <- paste0("/", fieldName)
+field.well <- paste(.fieldName, wellName, sep = "/")
+# field.well
+
+
+if (!field.well %in% group.paths) {
+    cat("\nGroup: ", field.well, " DOES NOT exist \n")
+    if (!hGroup.exists(hFile, fieldName)) {
+        h5createGroup(hFile, fieldName)
+        cat("Group: ", fieldName, "just created\n")
+    } else {
+       cat("\t but group ", fieldName, " already exists\n")
+    }
+    h5createGroup(hFile, field.well)
+    cat("\t", wellName, "well just added")
+} else  {
+    cat("\n Group", field.well," already exists")
+}
+
+H5close()
+# 
+# field.well %in% group.paths
+# hGroup.exists(hFile, fieldName)
+```
+
+
+## new function to save to HDF5
+```{r}
+source("VLP.R")
+
+#' Save the well parameters in an HDF5 file
+#' 
+save.well.data <- function() {
+    
+    # well.data <- as.data.frame(well.params())
+    params <- well.params()         # get the core well parameters
+    well.data <- params$out.data    # get only the input data
+    well.calc <- params$out.calc    # get the core calculations. no iterations here
+    
+    well.name <- well.data$well.name  # extract the well name
+    
+    # build the full filename
+    wells.dir <- "./"
+    wellFile <- file.path(wells.dir, "WOODLIB.01.hdf5")
+    
+    # add FIELD group and WELL group
+    field <- "HAGBR"            # field name
+    
+    # add a well record
+    hg <- add.wellRecord(wellFile, field, well.name)
+    
+    ds.well.data <- paste(hg, "well.data", sep = "/")
+    ds.well.calc <- paste(hg, "well.calc", sep = "/")
+    
+    h5write(well.data, wellFile, ds.well.data)
+    h5write(well.calc, wellFile, ds.well.calc)
+    H5close()
+    return(hg)
+}   
+
+save.well.data()
+```
+
+
+## Code that works
+```{r warning=FALSE}
+source("VLP.R")
+
+# get well parameters: input and calculated
+params <- well.params()
+
+# extract only the list with data
+well.data <- params$out.data
+well.calc <- params$out.calc
+
+# get the well name from the parameters
+well.name <- well.data$well.name
+
+# wellFile <- paste(paste("./data", well.name, sep = "/"), "hdf5", sep = ".")
+# save(well.data, file = well.file)
+    
+# build the full filename
+# wells.dir <- "./"
+# wellFile <- file.path(wells.dir, "WOODLIB.001.hdf5")
+wellFile <- model.parameters$wellFile
+
+
+# add FIELD group and WELL group
+field <- "HAGBR"            # field name
+
+# add a well record
+hg <- add.wellRecord(wellFile, field, well.name)
+cat("\n", hg)
+
+# add well data
+ds.well.data <- paste(hg, "well.data", sep = "/")
+ds.well.calc <- paste(hg, "well.calc", sep = "/")
+
+# write well data to HDF5
+h5write(well.data, wellFile, ds.well.data)
+h5write(well.calc, wellFile, ds.well.calc)
+H5close()
+
+```
+
+
+
+```{r warning=FALSE}
+source("Rutils.R")
+
+fieldName <- "HAGBR"    
+wellName <- "Example01"
+
+# build the full filename
+wells.dir <- "./"
+hFile <- file.path(wells.dir, "WOODLIB.03.hdf5")
+
+if (!file.exists(hFile)) 
+    fid <- H5Fcreate(hFile) #else fid <- H5Fopen(hFile)
+
+hGroup.exists(hFile, fieldName)
+hGroup.exists(hFile, wellName)
+```
+
+
+```{r}
+wellName <- "Example01"
+hFile <- file.path(wells.dir, "WOODLIB.03.hdf5")
+h5createGroup(hFile, wellName)
+```
+
+
+
+```{r}
+hFile <- file.path(wells.dir, "WOODLIB.03.hdf5")
+df <- h5ls(hFile, recursive = 3)
+
+if (!field.well %in% unique(df$group)) {
+    cat(field.well, " not in df.group\n")
+    if (!field %in% unique(df$group)) {
+        cat("\t", field, " not in df.group\n")
+    } else {
+        cat(field, " field exists")
+        # H5I_GROUP
+        if (!well %in% unique(df$name)) 
+    }
+}
+H5close()
+```
+
+
+```{r}
+file = H5Fopen (hFile, flags = h5default("H5F_ACC_RD"))
+status = H5Gget_info (file)
+```
+
+
+```{r}
+# form the paths of only the groups
+hFile <- file.path(wells.dir, "WOODLIB.011.hdf5")
+df <- h5ls(hFile, recursive = 3)
+
+df2 <- df %>%
+    filter(otype == "H5I_GROUP") %>%
+    select(-c(dclass, dim)) %>%
+    mutate(paths = ifelse(nchar(group) == 1,  
+                          paste0(group, name), 
+                          paste(group, name, sep = "/")))
+df2
+
+```
+
+
+
+```{r}
+# show how many characters the group column has
+df2 <- df %>%
+    filter(otype == "H5I_GROUP") %>%
+    mutate(paths = ifelse(nchar(group) == 1, 1, nchar(group)))
+df2
+```
+
+
+```{r}
+# Regex: http://stackoverflow.com/a/6508020/5270873
+
+# form the paths of only the groups
+hFile <- file.path(wells.dir, "WOODLIB.011.hdf5")
+df <- h5ls(hFile, recursive = 3)
+
+
+df2 <- df %>%
+    filter(otype == "H5I_GROUP") %>%
+    select(-c(dclass, dim)) %>%
+    mutate(paths = ifelse(nchar(group) == 1,  
+                          paste0(group, name), 
+                          paste(group, name, sep = "/"))) %>%
+    mutate(casePaths = gsub("(.*)/[0-9][0-9][0-9].*","\\1", paths)) %>%
+    select(-c(otype, name)) %>%
+    distinct(casePaths, .keep_all = TRUE)
+df2
+```
+
+
+
+
+
+
+
+## regex
+
+```{r}
+rs<-c("copyright @ The Society of mo located @ my house","I want you to meet me @ the coffeshop")
+s<-gsub("(.*)@.*","\\1", rs)
+s
+```
+
+```{r}
+rs <- "/HAGBR/ExampleGuo/20170403.122239"
+s <- gsub("(.*)/[0-9].*","\\1", rs)
+s
+```
+
+```{r}
+# will work only if there are numbers to the right of the slash
+rs <- "/HAGBR/ExampleGuo"
+s <- gsub("(.*)/[0-9].*","\\1", rs)
+s
+```
+
+```{r}
+# But what about a folder `222` which is not a datetime?
+# will work only if there are numbers to the right of the slash
+rs <- "/HAGBR/ExampleGuo/222"
+s <- gsub("(.*)/[0-9].*","\\1", rs)
+s
+# this won't work
+# [1] "/HAGBR/ExampleGuo"
+```
+
+
+```{r}
+# if we add {4} after [0-9], the group `222` will be allowed
+# a folder `222` which is not a datetime
+# will work only if there are numbers to the right of the slash
+rs <- "/HAGBR/ExampleGuo/222"
+s <- gsub("(.*)/[0-9]{4}.*","\\1", rs)
+s
+# [1] "/HAGBR/ExampleGuo/222"
+```
+
+
+
+```{r}
+# if we have the year as the end group, it will be removed
+# if we add {4} after [0-9], the group `222` will be allowed
+# a folder `222` which is not a datetime
+# will work only if there are numbers to the right of the slash
+rs <- "/HAGBR/ExampleGuo/2017"
+s <- gsub("(.*)/[0-9]{4}.*","\\1", rs)
+s
+# [1] "/HAGBR/ExampleGuo"
+# what we are looking for
+```

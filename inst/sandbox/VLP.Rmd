@@ -1,0 +1,50 @@
+---
+title: "VLP"
+output: html_notebook
+---
+
+
+```{r rows.print=30}
+# call Fancher and Brown  correlation
+source("VLP.R")
+
+run.vlp(model = "fanbr.fanbr", segments = 29)
+```
+
+
+
+```{r rows.print=30}
+# call Hagedorn and Brown modified correlation
+source("VLP.R")
+
+run.vlp(model = "hagbr.mod", segments = 29)
+```
+
+
+
+```{r rows.print=31}
+# $$$ FIXED: by excluding the list `holdup.out` from the named list fixed the crash
+source("VLP.R")
+
+run.vlp(model = "hagbr.guo", segments = 29)
+
+```
+
+
+
+```{r rows.print=30}
+# call Duns and Ros
+source("VLP.R")
+
+run.vlp(model = "dunsros.0", segments = 29)
+```
+
+```{r rows.print=30}
+source("VLP.R")
+
+run.vlp(model = "hagbr.dummy", segments = 29)
+```
+
+
+
+
