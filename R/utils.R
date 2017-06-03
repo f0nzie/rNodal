@@ -19,11 +19,7 @@ isHdf5Files <- function() {
 #'
 #' @export
 listAllHdf5 <- function() {
-    root_folder <- ""
-    if (grepl("NAMESPACE", rprojroot::is_r_package$find_file("NAMESPACE")))
-        root_folder <- system.file("extdata", package = "rNodal")
-    else
-        root_folder <- rprojroot::find_rstudio_root_file()
+    root_folder <- system.file("extdata", package = "rNodal")
     stopif(nchar(root_folder) == 0)
     # stopifnot(length(user_root_folder))
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
