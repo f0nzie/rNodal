@@ -15,13 +15,13 @@ isHdf5Files <- function() {
     ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
 }
 
+
 #' List all HDF5 files
 #'
 #' @export
 listAllHdf5 <- function() {
     root_folder <- system.file("extdata", package = "rNodal")
     stopif(nchar(root_folder) == 0)
-    # stopifnot(length(user_root_folder))
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
                all.files = FALSE, full.names = TRUE, recursive = FALSE,
                ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE)
@@ -37,6 +37,7 @@ fileInfoHdf5 <- function() {
 #' Bigger HDF5
 #' @export
 biggerHdf5 <- function() {
+    # find which is the bigger hdf5 file to use that one
     df <- fileInfoHdf5()
     row.names(df[which(max(df$size) == df$size),])
 }
