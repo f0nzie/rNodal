@@ -1,6 +1,58 @@
+is_checking_package <- function() {
+    # works in check() and test_rNodal
+
+    # go back two directories up if running a devtools::check()
+    prj_dir <- R.utils::getParent(R.utils::getParent(getwd()))
+    # from check:
+    #      "C:/Users/msfz751/Documents/rNodal.Rcheck"
+    # from test:
+    #      "C:/Users/msfz751/Documents/rNodal"
+
+    # if it find keyword ".Rcheck", then it means we are in check mode
+    ifelse(grepl(".Rcheck", prj_dir), TRUE, FALSE)
+    # expect_equal(prj_dir, "C:/Users/msfz751/Documents/rNodal")
+}
+
+
+get_extdataDir <- function(variables) {
+    system.file("extdata", package = "rNodal")
+}
+
+
+isRpackage <- function() {
+    # not working in project mode: test_rNodal
+    # crit_r_pkg    <- rprojroot::is_r_package
+    crit_r_pkg <- rprojroot::as.root_criterion("NAMESPACE")
+    # expected <-  "contains a file `DESCRIPTION` with contents matching `^Package: `"
+    expected <- "contains a file `NAMESPACE`"
+    ifelse(crit_r_pkg$desc == expected, TRUE, FALSE)
+}
+
+
+# this causing error during build
+is_saved_session <- function(session_file = "session.rda") {
+    session_dir <- getProjectDir()
+    .session_file <- paste(session_dir, session_file, sep = "/")
+    ifelse(file.exists(.session_file), TRUE, FALSE)
+}
+
+getSessionFilename <- function(session_file = "session.rda") {
+    stopifnot(is_saved_session(session_file))
+    paste(getProjectDir(), session_file, sep = "/")
+}
+
+#' Save the user HDF5 file to a persistant file
+#' @keywords internal
+saveSession <- function() {
+    hdf5_file <- readFromProjectEnv("data.file.hdf5")
+    save(hdf5_file, file = "session.rda")
+
+}
+
+# this was causing an error during the build
 getProjectDir <- function() {
     # get the project folder
-    rprojroot::find_rstudio_root_file()  # points to project dir
+    getwd()
 }
 
 
@@ -19,7 +71,6 @@ nodal_status <- function() {
 #' To overwrite it with a fresh copy use overwrite=TRUE
 #'
 #' @param overwrite it is FALSE to prevent overwriting an existing data file
-#' @export
 copyDataContainer <- function(overwrite = FALSE) {
     hdf5_filename <- "default.hdf5"
     source_dir  <- system.file("extdata", package = "rNodal")
@@ -28,28 +79,33 @@ copyDataContainer <- function(overwrite = FALSE) {
 
     target_dir  <- getProjectDir()
     target_file <- paste(target_dir, hdf5_filename, sep = "/")
-    if (file.exists(target_file))
+    if (file.exists(target_file) && overwrite == FALSE)
         warning("HDF5 data container already exists.\n Use overwrite=TRUE")
 
-    if (file.copy(from = source_file, to = target_dir, overwrite = overwrite))
+    if (file.copy(from = source_file, to = target_dir, overwrite = overwrite)) {
         saveToProjectEnv("data.file.hdf5", target_file)
+        saveSession()
+    }
     else
         warning("File copy operation failed")
 }
 
 
 #' Logical response to presence of HDF5 files anywhere under user root folder
-#' @export
-isHdf5Files <- function() {
-    ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
+#' @keywords internal
+is_hdf5_files <- function(where = "local") {
+    stopifnot(where == "local" || where == "package")
+    ifelse(length(listAllHdf5(where)) > 0, TRUE, FALSE)
 }
 
 
 #' List all HDF5 files
-#'
-#' @export
-listAllHdf5 <- function() {
-    root_folder <- system.file("extdata", package = "rNodal")
+#' @keywords internal
+listAllHdf5 <- function(where = "local") {
+    if (where == "local")
+        root_folder <- getProjectDir()
+    else if (where == "package")
+        root_folder <- get_extdataDir()
     stopif(nchar(root_folder) == 0)
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
                all.files = FALSE, full.names = TRUE, recursive = FALSE,
@@ -58,33 +114,39 @@ listAllHdf5 <- function() {
 
 
 #' File info for all HDF5 files
-#' @export
-fileInfoHdf5 <- function() {
-    file.info(listAllHdf5())
+#' @param where "local" for project. The other option is "package"
+#' @keywords internal
+fileInfoHdf5 <- function(where = "local") {
+    stopifnot(where == "local" || where == "package")
+    file.info(listAllHdf5(where))
 }
 
-#' Bigger HDF5
-#' @export
-biggerHdf5 <- function() {
+
+#' Find the bigger HDF5 file
+#'
+#' @param where "local" for project. The other option is "package"
+#' @keywords internal
+biggerHdf5 <- function(where = "local") {
     # find which is the bigger hdf5 file to use that one
-    df <- fileInfoHdf5()
+    stopifnot(where == "local" || where == "package")
+    df <- fileInfoHdf5(where)
     row.names(df[which(max(df$size) == df$size),])
 }
 
 
 
 
-#' Ensure that R expressions are false
+#' Ensure that R expressions are false in unit tests
 #'
 #' @param ...
 #' Any number of (logical) R expressions,
 #' which should evaluate to \code{TRUE}.
-#' @export
 #' @examples
 #' \dontrun{
 #' stopif(is.empty(c(2,1)), 4 < 3) # all FALSE
 #' stopif(is.empty(numeric(0)))
 #' }
+#' @keywords internal
 stopif <- function(...)
     {
         n <- length(ll <- list(...))
@@ -108,9 +170,9 @@ stopif <- function(...)
 #'
 #' This avoids retyping the name of the object as in a list
 #'
-#' @param ... any additional parameter
+#' @param ... any additional parameters
 #' @importFrom stats setNames
-#' @export
+#' @keywords internal
 named.list <- function(...) {
     nl <- setNames( list(...) , as.character( match.call()[-1]) )
     # nl <- setNames( list(...) , as.character( match.call()[-1]) )

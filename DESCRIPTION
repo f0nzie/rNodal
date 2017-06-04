@@ -7,7 +7,8 @@ Description: What the package does (one paragraph).
 Depends: R (>= 3.2), methods,
 Imports: rootSolve,
     dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13),
-    rprojroot
+    rprojroot,
+    R.utils
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
@@ -33,6 +34,6 @@ Collate:
     'gas.R'
     'gas_viscosity.R'
     'poettmann.R'
-    'rPetroleum-package.r'
+    'rNodal-package.r'
     'zzz.R'
 VignetteBuilder: knitr

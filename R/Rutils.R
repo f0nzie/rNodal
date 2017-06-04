@@ -1,15 +1,11 @@
 
-
-
-
-
 #' Check if a HDF5 specific group exists already in the file
 #'
 #' @param    hFile    a full path to a HDF5 file
 #' @param    hGroup   any group
 #' @return   TRUE if group already exists
 #'           FALSE if group has not been created yet
-#' @export
+#' @keywords internal
 hGroup.exists <- function(hFile, hGroup) {
     # we have to add the `/` to the group, otherwise the search of the group is ignored
     hGroup <- ifelse(!grepl("^/", hGroup),    # if hGroup does not start with `/`
@@ -92,7 +88,7 @@ get.well.slot <- function(hFile, fieldName, wellName) {
 #' @return  a vector with unique full path groups
 #' @importFrom rhdf5 h5ls H5close
 #' @importFrom dplyr select filter %>% mutate distinct
-#' @export
+#' @keywords internal
 get.group.paths <- function(hFile) {
     # declare variable names of HDF5 dataset before being read
     dclass <- otype <- group <- name <- paths <- casePaths <- NULL
