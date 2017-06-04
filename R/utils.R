@@ -1,17 +1,43 @@
+is_checking_package <- function() {
+    # works in check() and test_rNodal
+
+    # go back two directories up if running a devtools::check()
+    prj_dir <- R.utils::getParent(R.utils::getParent(getwd()))
+    # from check:
+    #      "C:/Users/msfz751/Documents/rNodal.Rcheck"
+    # from test:
+    #      "C:/Users/msfz751/Documents/rNodal"
+
+    # if it find keyword ".Rcheck", then it means we are in check mode
+    ifelse(grepl(".Rcheck", prj_dir), TRUE, FALSE)
+    # expect_equal(prj_dir, "C:/Users/msfz751/Documents/rNodal")
+}
+
+
 get_extdataDir <- function(variables) {
     system.file("extdata", package = "rNodal")
 }
 
 
+isRpackage <- function() {
+    # not working in project mode: test_rNodal
+    # crit_r_pkg    <- rprojroot::is_r_package
+    crit_r_pkg <- rprojroot::as.root_criterion("NAMESPACE")
+    # expected <-  "contains a file `DESCRIPTION` with contents matching `^Package: `"
+    expected <- "contains a file `NAMESPACE`"
+    ifelse(crit_r_pkg$desc == expected, TRUE, FALSE)
+}
+
+
 # this causing error during build
-isSavedSession <- function(session_file = "session.rda") {
+is_saved_session <- function(session_file = "session.rda") {
     session_dir <- getProjectDir()
     .session_file <- paste(session_dir, session_file, sep = "/")
     ifelse(file.exists(.session_file), TRUE, FALSE)
 }
 
 getSessionFilename <- function(session_file = "session.rda") {
-    stopifnot(isSavedSession(session_file))
+    stopifnot(is_saved_session(session_file))
     paste(getProjectDir(), session_file, sep = "/")
 }
 
@@ -26,27 +52,7 @@ saveSession <- function() {
 # this was causing an error during the build
 getProjectDir <- function() {
     # get the project folder
-    out <- tryCatch(
-        {
-            message("this is the try part")
-            rprojroot::find_rstudio_root_file()  # points to project dir
-        },
-        error = function(cond) {
-            message("No root dir found by rprojroot")
-            message(cond)
-            return(get_extdataDir())
-        },
-        warning = function(cond) {
-            message("rprojroot caused a warning")
-            message("here is the original warning msg")
-            message(cond)
-            return(get_extdataDir())
-        },
-        finally = {
-            message("final message")
-        }
-    )
-    return(out)
+    getwd()
 }
 
 
@@ -87,7 +93,7 @@ copyDataContainer <- function(overwrite = FALSE) {
 
 #' Logical response to presence of HDF5 files anywhere under user root folder
 #' @keywords internal
-isHdf5Files <- function(where = "local") {
+is_hdf5_files <- function(where = "local") {
     stopifnot(where == "local" || where == "package")
     ifelse(length(listAllHdf5(where)) > 0, TRUE, FALSE)
 }
