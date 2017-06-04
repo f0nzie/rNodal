@@ -21,50 +21,43 @@ setProjectEnvironment <- function() {
     project.env[["data.file.rda"]]   <- datafile.rda     # RDA file
 
     current_dir <- getwd()
-    print(current_dir)
+    # print(current_dir)
 
-    # rstudio <- rstudioapi::getActiveDocumentContext()
-
-    # crit_r_pkg    <- rprojroot::is_r_package
-    # cat(isRpackage(), "\n")
-    # crit_r_studio <- rprojroot::is_rstudio_project
 
     # this causing error during build
-    # if (isSavedSession()) {
-    #     cat("saved session")
-    #     load(getSessionFilename())
-    #     project.env[["data.file.hdf5"]] <- hdf5_file
-    # }
+    if (is_saved_session()) {
+        # stop("there is a saved session")
+        name_of_the_file <- load(getSessionFilename())
+        project.env[["data.file.hdf5"]] <- get(name_of_the_file)
+    }
+    # else stop("on purpose")
 
-    # out <- tryCatch(
-    #     {
-    #         message("this is the try part")
-    #         rprojroot::find_rstudio_root_file(path = "..")
-    #     },
-    #     error = function(e) {
-    #         message(e)
-    #         return(NA)
-    #     },
-    #     warning = function(w) {
-    #         message(w)
-    #         return(NULL)
-    #     },
-    #     finally = {
-    #         message("finally")
-    #     }
-    # )
+    if (is_checking_package()) {
+        # stop("it is a package")
+        system("touch a_file.txt")
+        listAllHdf5(where = "local")
+        listAllHdf5(where = "package")
+    } else {
+        # stop("not a package")
+        if (is_saved_session()) {
+            name_of_the_file <- load(getSessionFilename())
+            project.env[["data.file.hdf5"]] <- get(name_of_the_file)
+        } else {
+            warning("Save session not found")
+        }
+        if (is_hdf5_files()) {
+            listAllHdf5(where = "local")
+            # pick the bigger
+        } else {
+            warning("No HDF5 file found")
+        }
+
+    }
+
 
 
 }
 
-
-isRpackage <- function() {
-    # crit_r_pkg    <- rprojroot::is_r_package
-    crit_r_pkg <- rprojroot::as.root_criterion("NAMESPACE")
-    # expected <-  "contains a file `DESCRIPTION` with contents matching `^Package: `"
-    expected <- "contains a file `NAMESPACE`"
-    ifelse(crit_r_pkg$desc == expected, TRUE, FALSE)
-}
 
 
 #' Save a variable to the project environment
