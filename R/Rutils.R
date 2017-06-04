@@ -1,24 +1,11 @@
 
-
-#' Take objects and create a list using their names
-#' @param ... any additional parameter
-#' @importFrom stats setNames
-#' @export
-named.list <- function(...) {
-  nl <- setNames( list(...) , as.character( match.call()[-1]) )
-  # nl <- setNames( list(...) , as.character( match.call()[-1]) )
-  nl
-}
-
-
-
 #' Check if a HDF5 specific group exists already in the file
 #'
 #' @param    hFile    a full path to a HDF5 file
 #' @param    hGroup   any group
 #' @return   TRUE if group already exists
 #'           FALSE if group has not been created yet
-#' @export
+#' @keywords internal
 hGroup.exists <- function(hFile, hGroup) {
     # we have to add the `/` to the group, otherwise the search of the group is ignored
     hGroup <- ifelse(!grepl("^/", hGroup),    # if hGroup does not start with `/`
@@ -42,7 +29,8 @@ hGroup.exists <- function(hFile, hGroup) {
 #' @param    wellName   the well name
 #' @return   a string with /field/well/datetime if creation successful
 #'           otherwise, NULL
-#' @importFrom rhdf5 h5ls h5createGroup H5close H5Fcreate
+# #' @importFrom rhdf5 h5ls h5createGroup H5close H5Fcreate
+#' @import rhdf5
 #' @include hdf5.R settings.R
 #' @export
 get.well.slot <- function(hFile, fieldName, wellName) {
@@ -51,8 +39,10 @@ get.well.slot <- function(hFile, fieldName, wellName) {
     if (!dir.exists(dirname(hFile))) {
         setHDF5DumpFile()
         hFile <- getHDF5DumpFile()
+        warning("\n ./data folder does not exist. Creating a temporary file\n")
+        warning("Creating a local ./data folder is advised\n")
     }
-    stopifnot(file.exists(hFile))
+    # stopifnot(file.exists(hFile))
     saveToProjectEnv("data.file.hdf5", hFile)       # save hdf5 to prj-env
 
     # check if hFile exists otherwise create a new hdf5 file
@@ -98,7 +88,7 @@ get.well.slot <- function(hFile, fieldName, wellName) {
 #' @return  a vector with unique full path groups
 #' @importFrom rhdf5 h5ls H5close
 #' @importFrom dplyr select filter %>% mutate distinct
-#' @export
+#' @keywords internal
 get.group.paths <- function(hFile) {
     # declare variable names of HDF5 dataset before being read
     dclass <- otype <- group <- name <- paths <- casePaths <- NULL

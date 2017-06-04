@@ -3,13 +3,13 @@ library(testthat)
 context("read save to environment")
 
 test_that("save value to environment", {
-    expect_equal(ReadFromProjectEnv("PRES.ATM"), 14.7)
+    expect_equal(readFromProjectEnv("PRES.ATM"), 14.7)
     saveToProjectEnv("PRES.ATM", 14.69)
-    expect_equal(ReadFromProjectEnv("PRES.ATM"), 14.69)
+    expect_equal(readFromProjectEnv("PRES.ATM"), 14.69)
 })
 
 test_that("can read most important variables", {
-    expect_equal(ReadFromProjectEnv("TEMP.STD"), 60)
-    expect_equal(ReadFromProjectEnv("TEMP.RANKINE"), 460)
+    expect_equal(readFromProjectEnv("TEMP.STD"), 60)
+    expect_equal(readFromProjectEnv("TEMP.RANKINE"), 460)
 
 })

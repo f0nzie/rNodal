@@ -1,0 +1,186 @@
+---
+title: "z-factor"
+output: html_notebook
+---
+
+## data
+
+```{r}
+# inputs
+pres <- 200  # psia
+temp <- 180  # deg F
+gas.sg <- 0.65
+n2 <- 0.1
+co2 <- 0.08
+h2s <- 0.02
+```
+
+
+
+
+```{r rows.print=30}
+# calculate z factor using Hall-Yarborough method at different depths. show results in dataframe.
+# uses data from Guo example
+
+library(ggplot2)
+library(dplyr)
+
+load("./data/dpt.rda")    # load Guo base data: depth, pres, temp
+source("gascorrs.R")
+
+sgg <- 0.7
+nRows <- nrow(dpt)
+
+v = x = vector("list", nRows)
+
+for (i in seq_len(nRows)) {
+  depth <- dpt[i, "depth"]
+  pres  <- dpt[i, "pres"]
+  temp  <- dpt[i, "temp"]
+  
+  zlist <- z.hallyarborough(pres, temp, gas.sg) # output is a list
+  z <- zlist$z
+  
+  v[[i]] <- list(depth = depth,           # concatenate depth, pres with z-factor
+              pres = pres, 
+              temp = temp,
+              z = z)
+  
+  x[[i]] <- c(depth = depth,
+              pres = pres,
+              temp = temp,
+              zlist)
+}
+
+zfactor <- data.table::rbindlist(v)     # add row to table
+zfactorAll <- data.table::rbindlist(x)
+
+zfactorAll
+```
+
+
+```{r}
+# plot z factor
+ggplot(zfactor, aes(pres, z)) + geom_point()
+```
+
+
+
+
+```{r}
+source("zfactor.R")
+z <- z.brillbeggs(pres, temp, gas.sg, n2, co2, h2s)
+z
+```
+
+```{r}
+# z.hallyarborough
+source("zfactor.R")
+
+z.hallyarborough(pres, temp, gas.sg, n2, co2, h2s)
+
+```
+
+
+```{r}
+source("zfactor.R")
+# inputs
+pres <- 5000  # psia
+temp <- 180  # deg F
+gas.sg <- 0.65
+n2 <- 0.1
+co2 <- 0.08
+h2s <- 0.02
+
+abcd <- z.hallyarborough(pres, temp, gas.sg, n2, co2, h2s)
+
+A = abcd$A
+B = abcd$B
+C = abcd$C
+D = abcd$D
+ppr <- abcd$ppr
+
+funcY <- function(y) {
+    (y + y^2 + y^3 - y^4) / (1 - y)^3 - A * ppr - B * y^2 + C * y^D
+}
+
+
+```
+
+```{r}
+curve(funcY, xlim = c(-2, 2), ylab='f(x)', 
+      col = 'blue', lty = 2, lwd = 2)
+abline(h=0)
+abline(v=0)
+```
+
+```{r}
+Y <- uniroot(funcY, c(0, 0.3))
+z <- A * ppr / Y$root
+z
+```
+
+
+
+```{r}
+library(rootSolve)
+
+funcY <- function(y) {
+    (y + y^2 + y^3 - y^4) / (1 - y)^3 - A * ppr - B * y^2 + C * y^D
+}
+
+curve(funcY(x), -2, 2, main = "uniroot.all")
+All <- uniroot.all(funcY, c(0, 10))
+points(All, y = rep(0, length(All)), pch = 16, cex = 2)
+
+Y <- min(All)
+z <- A * ppr / Y
+z
+
+```
+
+
+```{r}
+library(rootSolve)
+
+# a well-behaved case...
+fun <- function(x) cos(2*x)^3
+curve(fun(x), 0, 10, main = "uniroot.all")
+All <- uniroot.all(fun, c(0, 10))
+points(All, y = rep(0, length(All)), pch = 16, cex = 2)
+```
+
+```{r}
+# inputs
+pabs <- pres <- 1000  # psia
+tempFar <- temp <- 180  # deg F
+gas.sg <- 0.65
+n2.frac  <- n2 <- 0
+co2.frac <- co2 <- 0
+h2s.frac <- h2s <- 0
+
+  pres.pc <- 678 - 50*(gas.sg - 0.5) - 206.7 * n2.frac + 440 * co2.frac + 606.7 * h2s.frac
+  temp.pc <- 326 + 315.7 * (gas.sg - 0.5) - 240 * n2.frac - 83.3 * co2.frac + 133.3 * h2s.frac
+  pres.pr <- pabs / pres.pc
+  temp.pr <- (tempFar + 460) / temp.pc       # worksheet has a bug in the Farenheit add
+  temp.r <- 1/ temp.pr  # wrong division in worksheet cell c15
+  
+  A <- 0.06125 * temp.r * exp(-1.2 * (1 - temp.r)^2)
+  B <- temp.r * (14.76 - 9.76 * temp.r + 4.58 * temp.r^2)
+  C <- temp.r * (90.7 - 242.2 * temp.r + 42.4 * temp.r^2)
+  D <- 2.18 + 2.82 * temp.r
+  
+  
+  funcY <- function(y) {
+    # implicit equation
+    (y + y^2 + y^3 - y^4) / (1.0 - y)^3 - A * pres.pr - B * y^2 + C * y^D
+  }
+
+  All <- uniroot.all(funcY, c(0, 0.9))
+  Y <- min(All)
+  z <- A * pres.pr / Y
+  zfactors <- list(z = z, Y = Y, A = A, B = B, C = C, D = D, pres.pr = pres.pr)
+  zfactors
+```
+
+

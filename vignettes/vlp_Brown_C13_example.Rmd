@@ -9,6 +9,16 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+```{r}
+library(rNodal)
+nodal_status()
+# [1] "C:/Users/msfz751/Documents/rNodal/default.hdf5"
+```
+
+
+
+
 ```{r rows.print=30}
 library(rNodal)
 

@@ -34,7 +34,7 @@ setHDF5DumpFile <- function(file=paste0(tempfile(), ".h5"))
 }
 
 #' Get dump HDF5 file
-#' @export
+#' @keywords internal
 getHDF5DumpFile <- function()
     get("file", envir=HDF5_dump_settings_envir)
 
@@ -64,8 +64,8 @@ setHDF5DumpName <- function(name)
 }
 
 #' Get the temp name for HDF5 file
-#' @export
 #' @importFrom methods is
+#' @keywords internal
 getHDF5DumpName <- function()
 {
     name <- try(get("name", envir=HDF5_dump_settings_envir), silent=TRUE)

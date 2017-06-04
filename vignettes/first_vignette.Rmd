@@ -11,11 +11,8 @@ vignette: >
 
 ```{r}
 library(rNodal)
-saveToProjectEnv("PRES.ATM", 14.69)
+# saveToProjectEnv("PRES.ATM", 14.69)
+# readFromProjectEnv("PRES.ATM")
 ```
 
-
-```{r}
-ReadFromProjectEnv("PRES.ATM")
-```
 

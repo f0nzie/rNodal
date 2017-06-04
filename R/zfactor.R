@@ -1,5 +1,3 @@
-# library(rootSolve)
-
 #' Calculate Z factor using Hall-Yarborough method
 #' @param pres.a absolute pressure, psia
 #' @param temp.f temperature, deg F

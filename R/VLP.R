@@ -1,5 +1,6 @@
 
-#' @include settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R moody.R FLUIDPROPS.R INTERPOLATION.R
+#' @include utils.R settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R
+#' @include moody.R FLUIDPROPS.R INTERPOLATION.R
 NULL
 
 # library(rhdf5)
@@ -23,6 +24,7 @@ TEMP.RANKINE = 460       # to convert to absolute temperature
 
 
 # setProjectEnvironment()
+
 saveToProjectEnv("PRES.ATM", 14.7)
 saveToProjectEnv("TEMP.STD", 60)
 saveToProjectEnv("TEMP.RANKINE", 460)
@@ -305,21 +307,23 @@ VLPcontrol <- function(well.parameters, model.parameters) {
 #'
 #' @param dataTable data that is going to be written
 #' @param dataset.name the name of the dataset
-#' @export
 #' @importFrom rhdf5 h5write H5close
-#'
+#' @keywords internal
 writeHdf5 <- function(dataTable, dataset.name) {
-    wellFile <- ReadFromProjectEnv("data.file.hdf5")
-    slot     <- ReadFromProjectEnv("slot")
+    wellFile <- readFromProjectEnv("data.file.hdf5")
+    slot     <- readFromProjectEnv("slot")
     data.name <- paste(slot, dataset.name, sep = "/")
     # print(dataTable); print(wellFile); print(data.name)
     rhdf5::h5write(dataTable, wellFile, data.name)                            # hdf5 error
     H5close()
 }
 
-#' @export
+#' Save a slot in the HDF5 file
+#' @param field.name field name to compose the slot
+#' @param well.name well name to compose the slot
+#' @keywords internal
 .saveSlot <- function(field.name, well.name) {
-    hFile      <- ReadFromProjectEnv("data.file.hdf5")
+    hFile <- readFromProjectEnv("data.file.hdf5")
     # get the well slot in HDF5
     slot <- get.well.slot(hFile, field.name, well.name)                  # io error 3
     if (is.null(slot)) stop("Slot not available. Check Field name or Well name.")
