@@ -19,7 +19,6 @@ nodal_status <- function() {
 #' To overwrite it with a fresh copy use overwrite=TRUE
 #'
 #' @param overwrite it is FALSE to prevent overwriting an existing data file
-#' @export
 copyDataContainer <- function(overwrite = FALSE) {
     hdf5_filename <- "default.hdf5"
     source_dir  <- system.file("extdata", package = "rNodal")
@@ -39,15 +38,14 @@ copyDataContainer <- function(overwrite = FALSE) {
 
 
 #' Logical response to presence of HDF5 files anywhere under user root folder
-#' @export
+#' @keywords internal
 isHdf5Files <- function() {
     ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
 }
 
 
 #' List all HDF5 files
-#'
-#' @export
+#' @keywords internal
 listAllHdf5 <- function() {
     root_folder <- system.file("extdata", package = "rNodal")
     stopif(nchar(root_folder) == 0)
@@ -58,13 +56,14 @@ listAllHdf5 <- function() {
 
 
 #' File info for all HDF5 files
-#' @export
+#' @keywords internal
 fileInfoHdf5 <- function() {
     file.info(listAllHdf5())
 }
 
+
 #' Bigger HDF5
-#' @export
+#' @keywords internal
 biggerHdf5 <- function() {
     # find which is the bigger hdf5 file to use that one
     df <- fileInfoHdf5()
@@ -79,12 +78,12 @@ biggerHdf5 <- function() {
 #' @param ...
 #' Any number of (logical) R expressions,
 #' which should evaluate to \code{TRUE}.
-#' @export
 #' @examples
 #' \dontrun{
 #' stopif(is.empty(c(2,1)), 4 < 3) # all FALSE
 #' stopif(is.empty(numeric(0)))
 #' }
+#' @keywords internal
 stopif <- function(...)
     {
         n <- length(ll <- list(...))
@@ -110,7 +109,7 @@ stopif <- function(...)
 #'
 #' @param ... any additional parameter
 #' @importFrom stats setNames
-#' @export
+#' @keywords internal
 named.list <- function(...) {
     nl <- setNames( list(...) , as.character( match.call()[-1]) )
     # nl <- setNames( list(...) , as.character( match.call()[-1]) )

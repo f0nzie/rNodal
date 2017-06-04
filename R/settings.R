@@ -24,14 +24,14 @@ setProjectEnvironment <- function() {
 #' Save a variable to the project environment
 #' @param var variable to save in environment
 #' @param value what is to be saved
-#' @export
+#' @keywords internal
 saveToProjectEnv <- function(var, value) {
     project.env[[var]] <- value
 }
 
 #' Read variable from environment
 #' @param var variable to read
-#' @export
+#' @keywords internal
 readFromProjectEnv <- function(var) {
     project.env[[var]]
 }

@@ -307,11 +307,10 @@ VLPcontrol <- function(well.parameters, model.parameters) {
 #'
 #' @param dataTable data that is going to be written
 #' @param dataset.name the name of the dataset
-#' @export
 #' @importFrom rhdf5 h5write H5close
-#'
+#' @keywords internal
 writeHdf5 <- function(dataTable, dataset.name) {
-wellFile <- readFromProjectEnv("data.file.hdf5")
+    wellFile <- readFromProjectEnv("data.file.hdf5")
     slot     <- readFromProjectEnv("slot")
     data.name <- paste(slot, dataset.name, sep = "/")
     # print(dataTable); print(wellFile); print(data.name)
@@ -319,7 +318,10 @@ wellFile <- readFromProjectEnv("data.file.hdf5")
     H5close()
 }
 
-#' @export
+#' Save a slot in the HDF5 file
+#' @param field.name field name to compose the slot
+#' @param well.name well name to compose the slot
+#' @keywords internal
 .saveSlot <- function(field.name, well.name) {
     if (file.exists(biggerHdf5()))
         hFile <- biggerHdf5()
