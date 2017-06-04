@@ -10,6 +10,11 @@ vignette: >
 ---
 
 
+```{r}
+library(rNodal)
+nodal_status()
+# [1] "C:/Users/msfz751/Documents/rNodal/default.hdf5"
+```
 
 
 
