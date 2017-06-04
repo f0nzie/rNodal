@@ -37,8 +37,11 @@ is_saved_session <- function(session_file = "session.rda") {
 }
 
 getSessionFilename <- function(session_file = "session.rda") {
-    stopifnot(is_saved_session(session_file))
-    paste(getProjectDir(), session_file, sep = "/")
+    if (!is_saved_session(session_file)) {
+        warning("NO session file yet created")
+    } else {
+        paste(getProjectDir(), session_file, sep = "/")
+    }
 }
 
 #' Save the user HDF5 file to a persistant file
@@ -80,7 +83,8 @@ copyDataContainer <- function(overwrite = FALSE) {
     target_dir  <- getProjectDir()
     target_file <- paste(target_dir, hdf5_filename, sep = "/")
     if (file.exists(target_file) && overwrite == FALSE)
-        warning("HDF5 data container already exists.\n Use overwrite=TRUE")
+        warning(sprintf("HDF5 data container already exists.\n Use overwrite=TRUE.
+                There are %d HDF5 files", length(listAllHdf5(where = "local"))))
 
     if (file.copy(from = source_file, to = target_dir, overwrite = overwrite)) {
         saveToProjectEnv("data.file.hdf5", target_file)
