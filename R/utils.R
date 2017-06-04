@@ -1,6 +1,52 @@
+get_extdataDir <- function(variables) {
+    system.file("extdata", package = "rNodal")
+}
+
+
+# this causing error during build
+isSavedSession <- function(session_file = "session.rda") {
+    session_dir <- getProjectDir()
+    .session_file <- paste(session_dir, session_file, sep = "/")
+    ifelse(file.exists(.session_file), TRUE, FALSE)
+}
+
+getSessionFilename <- function(session_file = "session.rda") {
+    stopifnot(isSavedSession(session_file))
+    paste(getProjectDir(), session_file, sep = "/")
+}
+
+#' Save the user HDF5 file to a persistant file
+#' @keywords internal
+saveSession <- function() {
+    hdf5_file <- readFromProjectEnv("data.file.hdf5")
+    save(hdf5_file, file = "session.rda")
+
+}
+
+# this was causing an error during the build
 getProjectDir <- function() {
     # get the project folder
-    rprojroot::find_rstudio_root_file()  # points to project dir
+    out <- tryCatch(
+        {
+            message("this is the try part")
+            rprojroot::find_rstudio_root_file()  # points to project dir
+        },
+        error = function(cond) {
+            message("No root dir found by rprojroot")
+            message(cond)
+            return(get_extdataDir())
+        },
+        warning = function(cond) {
+            message("rprojroot caused a warning")
+            message("here is the original warning msg")
+            message(cond)
+            return(get_extdataDir())
+        },
+        finally = {
+            message("final message")
+        }
+    )
+    return(out)
 }
 
 
@@ -27,11 +73,13 @@ copyDataContainer <- function(overwrite = FALSE) {
 
     target_dir  <- getProjectDir()
     target_file <- paste(target_dir, hdf5_filename, sep = "/")
-    if (file.exists(target_file))
+    if (file.exists(target_file) && overwrite == FALSE)
         warning("HDF5 data container already exists.\n Use overwrite=TRUE")
 
-    if (file.copy(from = source_file, to = target_dir, overwrite = overwrite))
+    if (file.copy(from = source_file, to = target_dir, overwrite = overwrite)) {
         saveToProjectEnv("data.file.hdf5", target_file)
+        saveSession()
+    }
     else
         warning("File copy operation failed")
 }
@@ -39,15 +87,19 @@ copyDataContainer <- function(overwrite = FALSE) {
 
 #' Logical response to presence of HDF5 files anywhere under user root folder
 #' @keywords internal
-isHdf5Files <- function() {
-    ifelse(length(listAllHdf5()) > 0, TRUE, FALSE)
+isHdf5Files <- function(where = "local") {
+    stopifnot(where == "local" || where == "package")
+    ifelse(length(listAllHdf5(where)) > 0, TRUE, FALSE)
 }
 
 
 #' List all HDF5 files
 #' @keywords internal
-listAllHdf5 <- function() {
-    root_folder <- system.file("extdata", package = "rNodal")
+listAllHdf5 <- function(where = "local") {
+    if (where == "local")
+        root_folder <- getProjectDir()
+    else if (where == "package")
+        root_folder <- get_extdataDir()
     stopif(nchar(root_folder) == 0)
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
                all.files = FALSE, full.names = TRUE, recursive = FALSE,
@@ -56,24 +108,29 @@ listAllHdf5 <- function() {
 
 
 #' File info for all HDF5 files
+#' @param where "local" for project. The other option is "package"
 #' @keywords internal
-fileInfoHdf5 <- function() {
-    file.info(listAllHdf5())
+fileInfoHdf5 <- function(where = "local") {
+    stopifnot(where == "local" || where == "package")
+    file.info(listAllHdf5(where))
 }
 
 
-#' Bigger HDF5
+#' Find the bigger HDF5 file
+#'
+#' @param where "local" for project. The other option is "package"
 #' @keywords internal
-biggerHdf5 <- function() {
+biggerHdf5 <- function(where = "local") {
     # find which is the bigger hdf5 file to use that one
-    df <- fileInfoHdf5()
+    stopifnot(where == "local" || where == "package")
+    df <- fileInfoHdf5(where)
     row.names(df[which(max(df$size) == df$size),])
 }
 
 
 
 
-#' Ensure that R expressions are false
+#' Ensure that R expressions are false in unit tests
 #'
 #' @param ...
 #' Any number of (logical) R expressions,
@@ -107,7 +164,7 @@ stopif <- function(...)
 #'
 #' This avoids retyping the name of the object as in a list
 #'
-#' @param ... any additional parameter
+#' @param ... any additional parameters
 #' @importFrom stats setNames
 #' @keywords internal
 named.list <- function(...) {
