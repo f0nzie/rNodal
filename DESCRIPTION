@@ -15,17 +15,17 @@ LazyData: true
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown, testthat
-Collate:
+Collate: 
     'FANBR.R'
     'FLUIDPROPS.R'
     'moody.R'
     'zfactor.R'
     'gascorrs.R'
     'HAGBR.R'
-    'INTERPOLATION.R'
     'settings.R'
     'hdf5.R'
     'Rutils.R'
+    'INTERPOLATION.R'
     'VLP.tools.R'
     'utils.R'
     'VLP.R'
@@ -33,6 +33,7 @@ Collate:
     'dunsros.R'
     'gas.R'
     'gas_viscosity.R'
+    'interpolation.R'
     'poettmann.R'
     'rNodal-package.r'
     'zzz.R'

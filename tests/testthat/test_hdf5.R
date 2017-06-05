@@ -1,4 +1,5 @@
 library(testthat)
+
 context("HDF5 management")
 
 test_that("hdf5 file is created", {
