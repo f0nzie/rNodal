@@ -14,7 +14,7 @@ is_checking_package <- function() {
 }
 
 
-get_extdataDir <- function(variables) {
+get_extdata_dir <- function(variables) {
     system.file("extdata", package = "rNodal")
 }
 
@@ -37,8 +37,12 @@ is_saved_session <- function(session_file = "session.rda") {
 }
 
 getSessionFilename <- function(session_file = "session.rda") {
-    stopifnot(is_saved_session(session_file))
-    paste(getProjectDir(), session_file, sep = "/")
+    if (!is_saved_session(session_file)) {
+        warning("NO session file yet created")
+        return(NULL)
+    } else {
+        return(paste(getProjectDir(), session_file, sep = "/"))
+    }
 }
 
 #' Save the user HDF5 file to a persistant file
@@ -47,6 +51,12 @@ saveSession <- function() {
     hdf5_file <- readFromProjectEnv("data.file.hdf5")
     save(hdf5_file, file = "session.rda")
 
+}
+
+#' Get the name of the default DataContainer
+#' @keywords internal
+getDefaultDataContainerName <- function() {
+    readFromProjectEnv("data.file.hdf5")
 }
 
 # this was causing an error during the build
@@ -80,7 +90,8 @@ copyDataContainer <- function(overwrite = FALSE) {
     target_dir  <- getProjectDir()
     target_file <- paste(target_dir, hdf5_filename, sep = "/")
     if (file.exists(target_file) && overwrite == FALSE)
-        warning("HDF5 data container already exists.\n Use overwrite=TRUE")
+        warning(sprintf("HDF5 data container already exists.\n Use overwrite=TRUE.
+                There are %d HDF5 files", length(listAllHdf5(where = "local"))))
 
     if (file.copy(from = source_file, to = target_dir, overwrite = overwrite)) {
         saveToProjectEnv("data.file.hdf5", target_file)
@@ -105,7 +116,7 @@ listAllHdf5 <- function(where = "local") {
     if (where == "local")
         root_folder <- getProjectDir()
     else if (where == "package")
-        root_folder <- get_extdataDir()
+        root_folder <- get_extdata_dir()
     stopif(nchar(root_folder) == 0)
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
                all.files = FALSE, full.names = TRUE, recursive = FALSE,
