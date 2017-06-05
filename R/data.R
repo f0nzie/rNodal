@@ -1,4 +1,4 @@
-#' dataset from Guo example calculations
+#' dataset from Guo, example calculations
 #'
 #' @usage data(dpt)
 #' @keywords datasets
