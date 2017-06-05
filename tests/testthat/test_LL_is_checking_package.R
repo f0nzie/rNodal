@@ -1,6 +1,6 @@
 library(testthat)
 
-context("is_checking_package")
+context("is_checking_package function")
 
 prj_dir <- R.utils::getParent(R.utils::getParent(getwd()))
 # from check:
@@ -8,11 +8,23 @@ prj_dir <- R.utils::getParent(R.utils::getParent(getwd()))
 # from test:
 #      "C:/Users/msfz751/Documents/rNodal"
 
+test_that("the folder for rNodal changes during devtools::check", {
+    if (is_checking_package())
+        expect_true("rNodal.Rcheck" %in% unlist(strsplit(getwd(), split = "/")))
+})
 
-if (is_checking_package()) # print(getwd()) else print(prj_dir)
-    expect_false("rNodal" %in% getwd())
+test_that(".Rcheck is part of the getwd() path when devtools::check", {
+    if (is_checking_package())
+        expect_true(grepl(".Rcheck", prj_dir))
+})
 
-if (is_checking_package())  expect_true(grepl(".Rcheck", prj_dir))
 
-
-if (is_checking_package()) expect_true(is_checking_package())
+test_that("getwd() contains these member in its path", {
+    result <- unlist(strsplit(getwd(), split = "/"))
+    if (is_checking_package()) {
+        # expect_true(is_checking_package())
+        expect_true("testthat" %in% result)
+        expect_true("tests" %in% result)
+        expect_true("rNodal.Rcheck" %in% result)
+    }
+})
