@@ -2,12 +2,6 @@ library(testthat)
 
 context("test_paths")
 
-# disabling test lines because they do not work while building check
-#
-# pkg_root_folder <- system.file("..", package = "rNodal")
-# print(pkg_root_folder)
-# user_root_folder <- rprojroot::find_rstudio_root_file()
-# print(user_root_folder)
 
 test_that("testthat is the last folder in getwd()",
     expect_true(c("testthat") %in% unlist(strsplit(getwd(), split = "/")))
