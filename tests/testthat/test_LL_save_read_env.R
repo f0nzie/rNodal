@@ -1,6 +1,6 @@
 library(testthat)
 
-context("read save to environment")
+context("save/read to environment")
 
 test_that("save value to environment", {
     expect_equal(readFromProjectEnv("PRES.ATM"), 14.7)
