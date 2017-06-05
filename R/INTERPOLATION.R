@@ -39,15 +39,6 @@ interp.fanbr <- function(drhov, GLR, degree) {
     y.val <- as.numeric(predict(model, val))
     ff <- exp(y.val)
 
-    # list(drhov = drhov,
-    #      GLR = GLR,
-    #      curve = curve,
-    #      degree = degree,
-    #      # y.df = y.df,
-    #      # ff.df = ff.df,
-    #      model = model,
-    #      ff.val = ff.val
-    # )
     named.list( drhov, GLR, degree, curve, model, y.val, ff )
 }
 
