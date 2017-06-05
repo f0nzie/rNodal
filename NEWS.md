@@ -1,3 +1,12 @@
+## 20170605 9008
+* FIX problem with interpolation.R. It was renamed but this causes conflicts 
+with existing file in the repository because the old file INTERPOLATION.R is not
+removed or renamed. Fixed by moving `interpolation.R` to another folder and then
+bringing it back.
+* Next time, instead of renaming a file try `Save As`.
+* Tag 0.0.0.9007, 9008 deleted.
+
+
 ## 20170605 9006
 * complete low level tests adding test_that
 * tried to use subfolders under testthat bu was not succesful
