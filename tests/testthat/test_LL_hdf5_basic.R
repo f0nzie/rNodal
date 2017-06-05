@@ -1,9 +1,9 @@
 library(testthat)
 
-context("HDF5 basic functions")
+context("hdf5_basic")
 
 library(rhdf5)
-load("test_hdf5_basic.rda")
+load("test_LL_hdf5_basic.rda")
 h5_file <- "ex_hdf5file.h5"
 
 if (file.exists(h5_file)) file.remove(h5_file)

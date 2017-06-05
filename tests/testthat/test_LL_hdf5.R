@@ -1,6 +1,6 @@
 library(testthat)
 
-context("HDF5 management")
+context("hdf5_management")
 
 test_that("hdf5 file is created", {
     setHDF5DumpFile()
