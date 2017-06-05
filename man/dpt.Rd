@@ -3,12 +3,12 @@
 \docType{data}
 \name{dpt}
 \alias{dpt}
-\title{dataset from Guo example calculations}
+\title{dataset from Guo, example calculations}
 \format{An object of class \code{data.frame} with 30 rows and 3 columns.}
 \usage{
 data(dpt)
 }
 \description{
-dataset from Guo example calculations
+dataset from Guo, example calculations
 }
 \keyword{datasets}
