@@ -14,7 +14,7 @@ is_checking_package <- function() {
 }
 
 
-get_extdataDir <- function(variables) {
+get_extdata_dir <- function(variables) {
     system.file("extdata", package = "rNodal")
 }
 
@@ -39,8 +39,9 @@ is_saved_session <- function(session_file = "session.rda") {
 getSessionFilename <- function(session_file = "session.rda") {
     if (!is_saved_session(session_file)) {
         warning("NO session file yet created")
+        return(NULL)
     } else {
-        paste(getProjectDir(), session_file, sep = "/")
+        return(paste(getProjectDir(), session_file, sep = "/"))
     }
 }
 
@@ -50,6 +51,12 @@ saveSession <- function() {
     hdf5_file <- readFromProjectEnv("data.file.hdf5")
     save(hdf5_file, file = "session.rda")
 
+}
+
+#' Get the name of the default DataContainer
+#' @keywords internal
+getDefaultDataContainerName <- function() {
+    readFromProjectEnv("data.file.hdf5")
 }
 
 # this was causing an error during the build
@@ -109,7 +116,7 @@ listAllHdf5 <- function(where = "local") {
     if (where == "local")
         root_folder <- getProjectDir()
     else if (where == "package")
-        root_folder <- get_extdataDir()
+        root_folder <- get_extdata_dir()
     stopif(nchar(root_folder) == 0)
     list.files(path = root_folder, pattern = "*.h5$|*.hdf5$",
                all.files = FALSE, full.names = TRUE, recursive = FALSE,
