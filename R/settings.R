@@ -20,42 +20,21 @@ setProjectEnvironment <- function() {
     project.env[["data.file.hdf5"]]  <- datafile.hdf5    # HDF5 file
     project.env[["data.file.rda"]]   <- datafile.rda     # RDA file
 
-    current_dir <- getwd()
-    # print(current_dir)
 
 
-    # this causing error during build
-    if (is_saved_session()) {
-        # stop("there is a saved session")
-        name_of_the_file <- load(getSessionFilename())
-        project.env[["data.file.hdf5"]] <- get(name_of_the_file)
-    }
-    # else stop("on purpose")
-
-    if (is_checking_package()) {
-        # stop("it is a package")
-        system("touch a_file.txt")
-        listAllHdf5(where = "local")
-        listAllHdf5(where = "package")
-    } else {
-        # stop("not a package")
+    if (!is_checking_package()) {
+        # it is a user project folder. Not in building package mode
         if (is_saved_session()) {
             name_of_the_file <- load(getSessionFilename())
             project.env[["data.file.hdf5"]] <- get(name_of_the_file)
         } else {
-            warning("Save session not found")
+            cat("Save session not found\n")
         }
         if (is_hdf5_files()) {
-            listAllHdf5(where = "local")
+            cat(sprintf("There are %d HDF5 files\n", length(listAllHdf5(where = "local"))))
             # pick the bigger
-        } else {
-            warning("No HDF5 file found")
         }
-
     }
-
-
-
 }
 
 
