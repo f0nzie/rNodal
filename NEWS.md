@@ -1,3 +1,11 @@
+## 20170605 9006
+* complete low level tests adding test_that
+* tried to use subfolders under testthat bu was not succesful
+* rename tests to be able to group them later. Low level tests now have a tag LL.
+* change name and references of file INTERPOLATION.R to lowercase.
+* rename data file used in tests. Start with `data`.
+
+
 ## 20170604 0.0.0.9003
 * running OK
 * rename get_extdataDir
