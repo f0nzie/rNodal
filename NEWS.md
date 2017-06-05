@@ -1,3 +1,11 @@
+## 20170604 0.0.0.9003
+* running OK
+* rename get_extdataDir
+* add getDefaultDataContainerName
+* new test is_checking_package
+* remove warnings in settings.R
+
+
 ## 20170604 0.0.0.9002
 * Implemented a way to capture if we are in build package mode using a new function is_checking_package.
 * added a bunch of small tests for testing paths.
