@@ -7,7 +7,8 @@ context("nodal_status function")
 test_that("getwd() match folders when testing or checking", {
     result <- getwd()
     if (!is_checking_package()) {
-        expect_equal(result, "C:/Users/msfz751/Documents/rNodal/tests/testthat")
+        expect_true(result == "C:/Users/msfz751/Documents/rNodal/tests/testthat" ||
+            result == "I:/src/rNodal/tests/testthat")
     } else {
         expect_equal(result, "C:/Users/msfz751/Documents/rNodal.Rcheck/tests/testthat")
     }
