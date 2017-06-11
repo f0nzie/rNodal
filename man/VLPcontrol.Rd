@@ -2,9 +2,7 @@
 % Please edit documentation in R/VLP.R
 \name{VLPcontrol}
 \alias{VLPcontrol}
-\title{VLP control marching algorithm to calculate bottomhole pressure given the
-wellhead pressure and temperature. Fluid properties are calculated at each
-of the segment depths}
+\title{VLP calculation algorithm}
 \usage{
 VLPcontrol(well.parameters, model.parameters)
 }

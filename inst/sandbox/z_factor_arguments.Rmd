@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+d = 10   # `d` doesn't pass as part of the environment
+
+tempf <- function(a, b = 2, ...) {
+    argg <- c(as.list(environment()), list(...))
+    print(argg)
+}
+
+tempf(1, c = 3)
+```
+
+## removing one of the parameters
+
+```{r}
+d = 10
+
+tempf <- function(a, b = 2, ...) {
+    argg <- c(as.list(environment()), list(...))
+    argg$a <- NULL   # remove parameter a
+    print(argg)
+}
+
+tempf(1, c = 3)
+```
+
+
+
+```{r}
+library(rNodal)
+
+Z <- function(correlation, pres.a, temp.f, gas.sg,
+              n2.frac = 0, co2.frac = 0, h2s.frac = 0, ...) {
+    if (correlation == "HY" || correlation == 1) {
+        arggs <- c(as.list(environment()), list(...))
+        
+        arggs$correlation <- NULL
+        return(do.call(z.hallyarborough, arggs)$z)
+    }
+}
+
+Z(correlation = "HY", pres.a = pres, temp.f = temp, gas.sg)
+Z(correlation = 1, pres.a = pres, temp.f = temp, gas.sg)
+```
