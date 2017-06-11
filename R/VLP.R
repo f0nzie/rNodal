@@ -164,9 +164,6 @@ getBasicCalcs <- function(well.input) {
 
 
 
-
-
-
 #' Run the VLP calculations
 #'
 #' @param well.input        well input data as a list
@@ -196,6 +193,8 @@ runVLP <- function(well.input, model.parameters) {
 
 
 
+#' VLP calculation algorithm
+#'
 #' VLP control marching algorithm to calculate bottomhole pressure given the
 #' wellhead pressure and temperature. Fluid properties are calculated at each
 #' of the segment depths
