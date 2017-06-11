@@ -1,11 +1,45 @@
-#' Calculate Z factor using Hall-Yarborough method
 #' @param pres.a absolute pressure, psia
 #' @param temp.f temperature, deg F
 #' @param gas.sg gas specific gravity
 #' @param n2.frac N2
 #' @param co2.frac CO2
 #' @param h2s.frac H2S
-#' @rdname zfactor-functions
+#' @rdname Z
+#' @name zcorr
+NULL
+
+#' Calculate Z factors. Generic function
+#'
+#' @param correlation a string or number that identifies the correlation. It could the
+#'     values of "HY" for "Hall-Yarborough or "BB" for Brill-Beggs. TIt can also
+#'     take numeric values such as 1 or 2.
+#' @param ... any additional parameter
+#' @inheritParams zcorr
+#' @family Z factor correlations
+#' @export
+Z <- function(correlation, pres.a, temp.f, gas.sg,
+              n2.frac = 0, co2.frac = 0, h2s.frac = 0, ...) {
+
+    if (correlation == "HY" || correlation == 1) {
+        arggs <- c(as.list(environment()), list(...))
+        arggs$correlation <- NULL
+        return(do.call(z.hallyarborough, arggs)$z)
+    }
+    if (correlation == "BB" || correlation == 2) {
+        arggs <- c(as.list(environment()), list(...))
+        arggs$correlation <- NULL
+        z <- do.call(z.brillbeggs, arggs)
+        return(z)
+    }
+}
+
+
+
+#' Calculate the Z factor using the Hall-Yarborough method
+#'
+#' @inheritParams zcorr
+#' @family Z factor correlations
+#' @section Gas correlations
 #' @export
 z.hallyarborough <-function(pres.a, temp.f, gas.sg,
                             n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
@@ -39,9 +73,11 @@ z.hallyarborough <-function(pres.a, temp.f, gas.sg,
 
 
 #' Calculate the pressure and temperature criticals
-#' Returns list
-#' @inheritParams z.hallyarborough
-#' @rdname zfactor-functions
+#'
+#' Returns a list of calculated pseudo-reduced and pseudo-critical
+#' pressure and temperature
+#' @return list
+#' @inheritParams zcorr
 calcCriticals <- function(pres.a, temp.f, gas.sg,
                           co2.frac = 0, h2s.frac = 0, n2.frac = 0) {
   if (h2s.frac < 0.03 & n2.frac < 0.05) {
@@ -72,24 +108,46 @@ calcCriticals <- function(pres.a, temp.f, gas.sg,
   return(criticals)
 }
 
-#' @param pabs absolute pressure, psia
-#' @param tempFar temperature degF
-#' @inheritParams z.hallyarborough
-#' @rdname zfactor-functions
-z.brillbeggs <- function(pabs, tempFar, gas.sg,
-                         n2.frac, co2.frac, h2s.frac) {
 
-  pres.pc <- 678 - 50*(gas.sg - 0.5) - 206.7 * n2.frac + 440 * co2.frac + 606.7 * h2s.frac
-  temp.pc <- 326+315.7 * (gas.sg - 0.5) - 240 * n2.frac - 83.3 * co2.frac + 133.3 * h2s.frac
-  pres.pr <- pabs / pres.pc
-  temp.pr <- (tempFar + 460) / temp.pc       # worksheet has a bug in the Farenheit add
+#' Calculate the Z factor with the Brill-Beggs correlation
+#'
+#' @inheritParams zcorr
+#' @family Z factor correlations
+#' @section Gas correlations
+#' @export
+z.brillbeggs <- function(pres.a, temp.f, gas.sg,
+                         n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
 
-  A <- 1.39 *(temp.pr - 0.92)^0.5 - 0.36 * temp.pr - 0.101
-  B <- (0.62 - 0.23 * temp.pr) * pres.pr +
-    (0.066 / (temp.pr - 0.86) - 0.037) * pres.pr^2 +
-    0.32/10^(9 *(temp.pr - 1))*pres.pr^6
-  C <- 0.132 - 0.32 * log10(temp.pr)
-  D <- 10^(0.3106-0.49*temp.pr+0.1824*temp.pr^2)
-  z <- A + (1 - A) / exp(B) + C * pres.pr^D
+    .z <- .z.brillbeggs(pres.a, temp.f, gas.sg,
+                              n2.frac, co2.frac, h2s.frac)
+    return(.z$z)
 }
 
+
+.z.brillbeggs <- function(pres.a, temp.f, gas.sg,
+                         n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
+    # Brill and Beggs compressibility factor (1973)
+
+    pres.pc <- 678 - 50*(gas.sg - 0.5) - 206.7 * n2.frac + 440 * co2.frac +
+        606.7 * h2s.frac
+    temp.pc <- 326+315.7 * (gas.sg - 0.5) - 240 * n2.frac - 83.3 * co2.frac +
+        133.3 * h2s.frac
+    pres.pr <- pres.a / pres.pc
+
+    # worksheet has a bug in the Farenheit add formula in the book
+    temp.pr <- (temp.f + 460) / temp.pc
+
+    A <- 1.39 *(temp.pr - 0.92)^0.5 - 0.36 * temp.pr - 0.101
+    E <- 9 * (temp.pr - 1)
+    F <- 0.3106 - 0.49 * temp.pr + 0.1824 * temp.pr^2
+    B <- (0.62 - 0.23 * temp.pr) * pres.pr +
+        (0.066 / (temp.pr - 0.86) - 0.037) * pres.pr^2 +
+        0.32 * pres.pr^2 / 10^E
+    C <- 0.132 - 0.32 * log10(temp.pr)
+    # D <- 10^(0.3106 - 0.49 * temp.pr+0.1824*temp.pr^2)
+    D <- 10^F
+
+    z <- A + (1 - A) / exp(B) + C * pres.pr^D
+
+    return(named.list(pres.pc, temp.pc, pres.pr, temp.pr, A, B, C, D, z))
+}
