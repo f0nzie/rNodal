@@ -1,4 +1,7 @@
 ## 20170611 9010
+* add new file STRATEGY.md
+
+## 20170611 9010
 * changes in z factor
 * new equation for z.
 * strategy to extract single values instead of list
