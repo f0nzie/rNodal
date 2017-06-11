@@ -4,7 +4,7 @@ context("nodal_status function")
 
 # Goal: trying to find if there is a Hdf5 file present
 
-test_that("getwd() match folders when tsting or checking", {
+test_that("getwd() match folders when testing or checking", {
     result <- getwd()
     if (!is_checking_package()) {
         expect_equal(result, "C:/Users/msfz751/Documents/rNodal/tests/testthat")
