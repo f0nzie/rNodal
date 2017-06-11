@@ -1,3 +1,8 @@
+## 20170611 9010
+* changes in z factor
+* new equation for z.
+* strategy to extract single values instead of list
+
 ## 20170605 9008
 * FIX problem with interpolation.R. It was renamed but this causes conflicts 
 with existing file in the repository because the old file INTERPOLATION.R is not
