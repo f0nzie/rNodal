@@ -1,4 +1,7 @@
-## 20170611 9010
+## 20170611 9012
+* fix two tests in test_nodal_status.R because of a change of folder in rNodal.
+
+## 20170611 9011
 * add new file STRATEGY.md
 
 ## 20170611 9010
