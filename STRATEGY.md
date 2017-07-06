@@ -5,3 +5,13 @@
 ## functions with dots
 * these functions are hidden and are special
 
+## The major blocks of rNodal
+* the oil properties
+* gas properties
+* water properties
+* the tubing at-depth iterator (marching algorithm
+* the VLP correlations
+* the IPR correlations
+* the hierarchical structure storage
+* plotting modules
+* statistical modules
