@@ -6,13 +6,25 @@
 * these functions are hidden and are special
 
 ## The major blocks of rNodal
-* the oil properties
-* gas properties
-* water properties
-* the tubing at-depth iterator (marching algorithm
+* PVT
+    * the oil properties
+    * gas properties
+    * water properties
+
+* the tubing at-depth iterator (marching algorithm)
 * the VLP correlations
 * the IPR correlations
-* the hierarchical structure storage (hdf5)
+
 * plotting modules (ggplot2)
 * statistical modules
+    * interpolation
+
 * compressibility factor, sweet hydrocarbon gases (zFactor)
+
+* utilities
+    * the hierarchical structure storage (hdf5)
+    * list.names
+    * matrix conversion
+
+    
+
