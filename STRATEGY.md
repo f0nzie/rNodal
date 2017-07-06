@@ -12,6 +12,7 @@
 * the tubing at-depth iterator (marching algorithm
 * the VLP correlations
 * the IPR correlations
-* the hierarchical structure storage
-* plotting modules
+* the hierarchical structure storage (hdf5)
+* plotting modules (ggplot2)
 * statistical modules
+* compressibility factor, sweet hydrocarbon gases (zFactor)
