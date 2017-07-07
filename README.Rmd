@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # rNodal
 
-The goal of rNodal is to ...
+The goal of rNodal is to provide nodal analysis for oil and gas wells.
 
 ## Installation
 
