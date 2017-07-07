@@ -18,9 +18,10 @@
 * the VLP correlations
 * the IPR correlations
 
-* plotting modules (ggplot2)
+* plotting modules (ggplot2, base)
 * statistical modules
     * interpolation
+    * data.table, dataframes
 
 * compressibility factor, sweet hydrocarbon gases (zFactor)
 
