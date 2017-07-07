@@ -1,3 +1,9 @@
+## 20170706 0.0.1.9000
+* all tests running ok
+* move folders from inst to notebooks
+* improve strategy
+
+
 ## 20170706 0.0.1
 * keeping 9012 as a base
 * changes to z return values were discarded; causing problems

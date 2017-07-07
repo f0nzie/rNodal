@@ -3,3 +3,5 @@
 ^cran-comments\.md
 ^NEWS\.md$
 ^STRATEGY\.md$
+^README\.Rmd$
+^README-.*\.png$
