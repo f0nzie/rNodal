@@ -4,6 +4,7 @@
 * the core function should a have a dot . like in .z.HallYarborough()
 * The core functions are called by functions that do more complex activities like sapply, lapply or create matrices from the core.
 
+
 ## functions with dots
 * these functions are hidden and are special. some may be core functions.
 
@@ -14,7 +15,7 @@
     * gas properties
     * water properties
 
-* the tubing at-depth iterator (marching algorithm)
+* the tubing at-depth iterator (marching algorithm). class
 * the VLP correlations
 * the IPR correlations
 
