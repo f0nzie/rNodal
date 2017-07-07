@@ -26,7 +26,7 @@
 
 * utilities
     * the hierarchical structure storage (hdf5)
-    * list.names
+    * list.names: makes unnecssary to type the variable twice
     * matrix conversion
 
     
