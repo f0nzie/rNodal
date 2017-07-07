@@ -5,7 +5,8 @@
 * The core functions are called by functions that do more complex activities like sapply, lapply or create matrices from the core.
 
 ## functions with dots
-* these functions are hidden and are special
+* these functions are hidden and are special. some may be core functions.
+
 
 ## The major blocks of rNodal
 * PVT
