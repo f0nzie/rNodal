@@ -1,5 +1,7 @@
 ## 20170706 0.0.1.9000
 * all tests running ok
+* move folders from inst to notebooks
+* improve strategy
 
 
 ## 20170706 0.0.1
