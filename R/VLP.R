@@ -272,9 +272,18 @@ VLPcontrol <- function(well.parameters, model.parameters) {
                 cum_iter <- cum_iter + 1           # number of total iterations
             } # end of while
 
-            segment_row_vector[[i]] <- c(i = i, depth = depths[i], dL = dL,
-                          temp = t1, pres = p1,
-                          segment = i-1, hagbr)
+            # build a row-vector out of:
+            #     depth, dL, temperature, pressure, segment, correlation results
+            segment_row_vector[[i]] <- c(
+                            i = i,             # row
+                            depth = depths[i], # depth
+                            dL = dL,           # length of pipe increment
+                            temp = t1,         # current temperature
+                            pres = p1,         # current pressure at depth
+                            segment = i-1,     # segment number
+                            hagbr              # correlation results
+                            )
+
             p0 = p1      # assign p1 to the inlet pressure of new segment, p0
             t0 = t1      # do the same with the temperature
 
