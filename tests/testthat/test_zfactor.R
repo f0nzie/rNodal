@@ -1,6 +1,6 @@
 library(testthat)
 
-context("Functions at Zfactor.R")
+context("test functions at Zfactor.R")
 
 test_that("Hall-Yarborough give correct value", {
     result <- z.hallyarborough(14.7, 60, 0.65)

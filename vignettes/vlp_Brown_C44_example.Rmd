@@ -48,9 +48,14 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
 
 
-runVLP(well.input = input_example, well_model)
+df <- runVLP(well.input = input_example, well_model)
 ```
 
+p30 = 906.7220
+
+[h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[hdf5 in inst/extdata](I:\src\rNodal\inst\extdata\brown_c44.h5)
 
 
 

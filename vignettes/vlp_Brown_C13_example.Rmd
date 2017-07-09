@@ -33,3 +33,11 @@ well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.000001
 runVLP(well.input = input.example.C13, well.model)
 ```
 
+p30 = 1043.8745
+
+[link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[hdf5 in inst/extdata](I:\src\rNodal\inst\extdata\brown_c13.h5)
+
+[h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
+

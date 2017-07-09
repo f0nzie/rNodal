@@ -1,14 +1,13 @@
 Package: rNodal
 Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Author: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Maintainer: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Description: Vertical Lift Performance calculations for oil and gas wells.
 Depends: R (>= 3.2), methods,
 Imports: rootSolve,
     dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13),
-    rprojroot,
-    R.utils
+    rprojroot, R.utils, zFactor
 License: GPL-2
 Encoding: UTF-8
 LazyData: true

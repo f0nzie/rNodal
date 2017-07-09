@@ -88,8 +88,8 @@ hagbr.guo <- function(pres, temp, surf.params) {
 #' @param    temp    temperature at depth       deg F   dbl
 #' @param    surf.params  surface parameters            list
 #'
-hagbr.mod <- function(pres, temp, surf.params) {
-  with(as.list(surf.params), {
+hagbr.mod <- function(pres, temp, well.params) {
+  with(as.list(well.params), {
 
     # calculate gradient as function of pres and temp
 

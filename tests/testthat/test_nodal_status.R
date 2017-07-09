@@ -1,6 +1,6 @@
 library(testthat)
 
-context("nodal_status function")
+context("test nodal_status function")
 
 # Goal: trying to find if there is a Hdf5 file present
 
