@@ -1,5 +1,4 @@
-
-#' @include utils.R settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R
+#' @include utils.R settings.R  zfactor.R gas_correlations.R
 #' @include moody.R FLUIDPROPS.R interpolation.R
 NULL
 
