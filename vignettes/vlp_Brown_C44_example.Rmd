@@ -49,9 +49,11 @@ well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
 
 
 df <- runVLP(well.input = input_example, well_model)
+df
 ```
 
 p30 = 906.7220
+p30 = 906.7217 (with zFactor)
 
 [h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 
