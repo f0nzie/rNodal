@@ -320,6 +320,7 @@ writeHdf5 <- function(dataTable, dataset.name) {
 #' Save a slot in the HDF5 file
 #' @param field.name field name to compose the slot
 #' @param well.name well name to compose the slot
+#' @noRd
 #' @keywords internal
 .saveSlot <- function(field.name, well.name) {
     hFile <- readFromProjectEnv("data.file.hdf5")

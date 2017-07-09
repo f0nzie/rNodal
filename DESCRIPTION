@@ -27,7 +27,6 @@ Collate:
     'settings.R'
     'utils.R'
     'VLP.R'
-    'data.R'
     'hdf5.R'
     'rNodal-package.r'
     'zzz.R'
