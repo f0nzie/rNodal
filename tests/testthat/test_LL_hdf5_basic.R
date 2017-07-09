@@ -1,6 +1,6 @@
 library(testthat)
 
-context("hdf5_basic")
+context("test hdf5 basic")
 
 library(rhdf5)
 load("data_hdf5_basic.rda")
