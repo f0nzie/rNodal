@@ -2,6 +2,11 @@
 * add links to h5 files in vignettes
 * h5 temp file is the same for all vignettes VLP runs
 * VLP tables are added to h5 in temp file unless R session is restarted
+* add word test to all test files
+* add new test for all VLP runs that were in vignettes. 
+* each VLP test now has its own rda file for test check
+* add verbose to functions VLPControl and hdf5 creation function
+* rename surf.params to well.params
 
 ## 20170707 0.0.1.9001
 * change source of notebooks to ../R
