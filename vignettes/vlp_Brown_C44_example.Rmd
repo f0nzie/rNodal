@@ -48,7 +48,7 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
 
 
-runVLP(well.input = input_example, well_model)
+df <- runVLP(well.input = input_example, well_model)
 ```
 
 p30 = 906.7220
