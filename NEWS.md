@@ -1,3 +1,8 @@
+## 20170709 0.0.1.9002
+* add links to h5 files in vignettes
+* h5 temp file is the same for all vignettes VLP runs
+* VLP tables add to h5 in temp file
+
 ## 20170707 0.0.1.9001
 * change source of notebooks to ../R
 * re-running vignettes
