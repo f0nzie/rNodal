@@ -1,3 +1,8 @@
+## 20170709 0.0.2.9001
+* 
+*
+
+
 ## 20170709 0.0.2.9000
 * rename VLP scripts to author names separated by dashes.
 * move functions in dunsros.R to own script.
@@ -20,7 +25,6 @@
 * use zFactor::HallYarborough directly in the tests supplying sequences of Ppr and Tpr that are in a reasonable range of oil wells.
 * using zFactor::HallYarborough at low and high Ppr, Tpr
 * create a rda file for test check zFactor with returning lists of z, pres.pr, temp.pr and temp.r
-
 
 
 ## 20170709 0.0.1.9002
