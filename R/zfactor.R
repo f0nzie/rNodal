@@ -43,6 +43,21 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
 #' @export
 z.hallyarborough <-function(pres.a, temp.f, gas.sg,
                             n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
+    # pres.a = absolute pressure, psia; temp.f  = temperature, deg F
+
+    # calculate pseudo-critical pressure and temperature
+    # get pseudo-reduced
+    crit <- calcCriticals(pres.a, temp.f, gas.sg, co2.frac, h2s.frac, n2.frac)
+    pres.pr <- crit$pres.pr
+    temp.pr <- crit$temp.pr
+    temp.r  <- crit$temp.r
+
+    zFactor::z.HallYarborough(pres.pr = pres.pr, temp.pr = temp.pr)
+}
+
+
+old.z.hallyarborough <-function(pres.a, temp.f, gas.sg,
+                            n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
   # pres.a = absolute pressure, psia
   # temp.f  = temperature, deg F
   funcY <- function(y) {
@@ -54,7 +69,7 @@ z.hallyarborough <-function(pres.a, temp.f, gas.sg,
   crit <- calcCriticals(pres.a, temp.f, gas.sg, co2.frac, h2s.frac, n2.frac)
   pres.pr <- crit$pres.pr
   temp.pr <- crit$temp.pr
-  temp.r <- crit$temp.r
+  temp.r  <- crit$temp.r
 
   A <- 0.06125 * temp.r * exp(-1.2 * (1 - temp.r)^2)
   B <- temp.r * (14.76 - 9.76 * temp.r + 4.58 * temp.r^2)
