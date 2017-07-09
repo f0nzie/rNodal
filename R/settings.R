@@ -28,7 +28,7 @@ setProjectEnvironment <- function() {
             name_of_the_file <- load(getSessionFilename())
             project.env[["data.file.hdf5"]] <- get(name_of_the_file)
         } else {
-            cat("Save session not found\n")
+            # cat("Save session not found\n")
         }
         if (is_hdf5_files()) {
             cat(sprintf("There are %d HDF5 files\n", length(listAllHdf5(where = "local"))))

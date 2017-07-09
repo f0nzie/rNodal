@@ -34,7 +34,7 @@ z.hallyarborough(pres, temp, gas.sg) # output is a list
 ## Hall-Yarborough
 
 ```{r}
-z.hallyarborough(pres, temp, gas.sg)$z
+z.hallyarborough(pres, temp, gas.sg)
 ```
 
 ```{r}

@@ -22,7 +22,7 @@ fanbr.fanbr <- function(pres, temp, surf.params) {
     # total volume of oil, gas and water as per C.13.6
 
     # calculate z factor
-    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)$z
+    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)
 
     # assuming no slippage and calculate according to C.12
     # Rs <- oil.Rs(pres, temp, oil.sg, GOR)

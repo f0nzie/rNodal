@@ -1,6 +1,6 @@
 library(testthat)
 
-context("test_paths")
+context("test paths")
 
 
 test_that("testthat is the last folder in getwd()",

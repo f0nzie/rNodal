@@ -1,9 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
-inst/doc
+# inst/doc
 # man/
 # *.html
 # vignettes/*.R
-
-man/
+inst/doc
+inst/extdata/default.hdf5

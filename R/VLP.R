@@ -202,15 +202,17 @@ runVLP <- function(well.input, model.parameters) {
 #' @param well.parameters    well input and core calculations at surface
 #' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
+#' @param verbose FALSE to prevent printing messages
 #'
 #' @export
-VLPcontrol <- function(well.parameters, model.parameters) {
+VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
+    # called by runVLP()
 
     with(as.list(c(well.parameters, model.parameters)),
     {
         .saveSlot(field.name, well.name)    # get datetime slot for saving
                                              # /field/well/dataset to HDF5
-        cat("VLP control for well model:", vlp.model, "\n")
+        if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the function that is needed
         vlp.function = loadVLP(vlp.model)
@@ -250,10 +252,10 @@ VLPcontrol <- function(well.parameters, model.parameters) {
             while (eps > tol) {           # loop until AE greater than tolerance
                 p.avg  <- (p0 + p1) / 2    # try with an initial pressure
 
-                # calculate pressure losses
-                hagbr <- vlp.function(pres = p1, temp = t1, well.parameters)
-                dp.dz <-  hagbr$dp.dz       # extract dp/dz or pressure gradient
-                z     <-  hagbr$z
+                # calculate pressure losses using selected correlation
+                corr  <- vlp.function(pres = p1, temp = t1, well.parameters)
+                dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
+                z     <- corr$z
 
                 p.calc <- p0 - (-dp.dz) * dL # negative, we are going down
                 eps    <- abs( (p1 - p.calc) / p.calc )  # absolute error
@@ -272,15 +274,24 @@ VLPcontrol <- function(well.parameters, model.parameters) {
                 cum_iter <- cum_iter + 1           # number of total iterations
             } # end of while
 
-            segment_row_vector[[i]] <- c(i = i, depth = depths[i], dL = dL,
-                          temp = t1, pres = p1,
-                          segment = i-1, hagbr)
+            # build a row-vector out of:
+            #     depth, dL, temperature, pressure, segment, correlation results
+            segment_row_vector[[i]] <- c(
+                            i = i,             # row
+                            depth = depths[i], # depth
+                            dL = dL,           # length of pipe increment
+                            temp = t1,         # current temperature
+                            pres = p1,         # current pressure at depth
+                            segment = i-1,     # segment number
+                            corr              # correlation results
+                            )
+
             p0 = p1      # assign p1 to the inlet pressure of new segment, p0
             t0 = t1      # do the same with the temperature
 
     } # end for
         iter.tbl <- data.table::rbindlist(iter_row_vector) # build iterations DF
-        print(iter.tbl)                        # show the dataframe
+        # print(iter.tbl)                        # show the dataframe
         writeHdf5(iter.tbl, "iterations")     # write table to HDF5
 
     segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
@@ -331,6 +342,7 @@ runVLPdefaults <- function() {
     #return(well.inputs)
     #return(c(well.inputs, model.parameters))
 }
+
 
 
 #' Load only the source necessary for model or correlation

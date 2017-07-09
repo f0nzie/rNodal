@@ -4,7 +4,7 @@
 \alias{get.well.slot}
 \title{Add a record to HDF5 file of well inputs and outputs}
 \usage{
-get.well.slot(hFile, fieldName, wellName)
+get.well.slot(hFile, fieldName, wellName, verbose = FALSE)
 }
 \arguments{
 \item{hFile}{HDF5 file, full path}
@@ -12,6 +12,8 @@ get.well.slot(hFile, fieldName, wellName)
 \item{fieldName}{the field name}
 
 \item{wellName}{the well name}
+
+\item{verbose}{FALSE to prevent printing messages}
 }
 \value{
 a string with /field/well/datetime if creation successful

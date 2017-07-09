@@ -20,7 +20,7 @@ hagbr.guo <- function(pres, temp, surf.params) {
   with(as.list(surf.params), {
 
     # calculate gas compressibility
-    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)$z
+    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)
 
     # calculate gas.massrt
     # calculate gas.dens
@@ -86,10 +86,10 @@ hagbr.guo <- function(pres, temp, surf.params) {
 #'
 #' @param    pres    pressure at depth          psia    dbl
 #' @param    temp    temperature at depth       deg F   dbl
-#' @param    surf.params  surface parameters            list
+#' @param    well.params  surface parameters            list
 #'
-hagbr.mod <- function(pres, temp, surf.params) {
-  with(as.list(surf.params), {
+hagbr.mod <- function(pres, temp, well.params) {
+  with(as.list(well.params), {
 
     # calculate gradient as function of pres and temp
 
@@ -118,10 +118,11 @@ hagbr.mod <- function(pres, temp, surf.params) {
 
 
     # 7. Assuming T = constant, calculate z(P, T)
-    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)$z
+    z <- z.hallyarborough(pres.a = pres, temp.f = temp, gas.sg)
 
     # 8. calculate the average density of the gas phase
-    gas.dens = 0.0764 * gas.sg * (pres / PRES.ATM) * ((460 + TEMP.STD) / (460 + temp)) * (1 / z)
+    gas.dens = 0.0764 * gas.sg * (pres / PRES.ATM) *
+        ((460 + TEMP.STD) / (460 + temp)) * (1 / z)
 
     # this is missing from C.42 procedure
     # mu.gas() returns a list. Need to extract $gas.visc

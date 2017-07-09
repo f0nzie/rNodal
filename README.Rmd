@@ -1,0 +1,48 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# rNodal
+
+The goal of rNodal is to provide nodal analysis for oil and gas wells.
+
+## Installation
+
+You can install rNodal from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("f0nzie/rNodal")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+## basic example code
+```
+
+
+## Using `zFactor`
+
+```{r}
+# use the new library zFactor
+library(zFactor)
+
+z.HallYarborough(pres.pr = 4.5, temp.pr = 1.4)
+z.DranchukAbuKassem(pres.pr = 4.5, temp.pr = 1.4)
+z.BeggsBrill(pres.pr = 4.5, temp.pr = 1.4)
+z.Ann10(pres.pr = 4.5, temp.pr = 1.4)
+```
+

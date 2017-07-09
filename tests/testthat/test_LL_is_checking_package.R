@@ -1,6 +1,6 @@
 library(testthat)
 
-context("is_checking_package function")
+context("test is_checking_package function")
 
 prj_dir <- R.utils::getParent(R.utils::getParent(getwd()))
 # from check:

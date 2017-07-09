@@ -23,7 +23,7 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
     if (correlation == "HY" || correlation == 1) {
         arggs <- c(as.list(environment()), list(...))
         arggs$correlation <- NULL
-        return(do.call(z.hallyarborough, arggs)$z)
+        return(do.call(z.hallyarborough, arggs))
     }
     if (correlation == "BB" || correlation == 2) {
         arggs <- c(as.list(environment()), list(...))
@@ -38,37 +38,30 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
 #' Calculate the Z factor using the Hall-Yarborough method
 #'
 #' @inheritParams zcorr
+#' @param as_list FALSE to return single value z; otherwise returns a list
 #' @family Z factor correlations
 #' @section Gas correlations
 #' @export
 z.hallyarborough <-function(pres.a, temp.f, gas.sg,
-                            n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
-  # pres.a = absolute pressure, psia
-  # temp.f  = temperature, deg F
-  funcY <- function(y) {
-    # implicit equation
-    (y + y^2 + y^3 - y^4) / (1 - y)^3 - A * pres.pr - B * y^2 + C * y^D
-  }
-  # calculate pseudo-critical pressure and temperature
-  # get pseudo-reduced
-  crit <- calcCriticals(pres.a, temp.f, gas.sg, co2.frac, h2s.frac, n2.frac)
-  pres.pr <- crit$pres.pr
-  temp.pr <- crit$temp.pr
-  temp.r <- crit$temp.r
+                            n2.frac = 0, co2.frac = 0, h2s.frac = 0,
+                            as_list = FALSE) {
+    # pres.a = absolute pressure, psia; temp.f  = temperature, deg F
 
-  A <- 0.06125 * temp.r * exp(-1.2 * (1 - temp.r)^2)
-  B <- temp.r * (14.76 - 9.76 * temp.r + 4.58 * temp.r^2)
-  C <- temp.r * (90.7 - 242.2 * temp.r + 42.4 * temp.r^2)
-  D <- 2.18 + 2.82 * temp.r
+    # calculate pseudo-critical pressure and temperature
+    # get pseudo-reduced
+    crit <- calcCriticals(pres.a, temp.f, gas.sg, co2.frac, h2s.frac, n2.frac)
+    pres.pr <- crit$pres.pr
+    temp.pr <- crit$temp.pr
+    temp.r  <- crit$temp.r
 
-  All <- rootSolve::uniroot.all(funcY, c(0, 10))   # find the root of the equation
-  Y <- min(All)                         # minimum value
-  z <- A * pres.pr / Y                  # calculate z
-  zfactors <- list(z = z,
-                   Y = Y, A = A, B = B, C = C, D = D,
-                   pres.pr = pres.pr, temp.pr = temp.pr)
-  return(zfactors)
+    z <- zFactor::z.HallYarborough(pres.pr = pres.pr, temp.pr = temp.pr)
+    if (as_list) {
+        z <- named.list(z, pres.pr, temp.pr, temp.r)
+    }
+    return(z)
 }
+
+
 
 
 

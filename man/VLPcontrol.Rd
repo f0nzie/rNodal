@@ -4,13 +4,15 @@
 \alias{VLPcontrol}
 \title{VLP calculation algorithm}
 \usage{
-VLPcontrol(well.parameters, model.parameters)
+VLPcontrol(well.parameters, model.parameters, verbose = FALSE)
 }
 \arguments{
 \item{well.parameters}{well input and core calculations at surface}
 
 \item{model.parameters}{model characteristics. Hagedorn-Brown, Duns-Ros,
 Fancher-Brown, etc. Also tolerances and boundaries}
+
+\item{verbose}{FALSE to prevent printing messages}
 }
 \description{
 VLP control marching algorithm to calculate bottomhole pressure given the

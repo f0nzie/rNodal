@@ -1,0 +1,43 @@
+---
+title: "VLP Brown Example: Oilwell-01"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{VLP Brown Example: Oilwell-01}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Example 01
+This notebook runs the modified Hagedorn-Brown correlation calculated according
+to Brown's book and procedure in Appendix C. 
+
+
+```{r rows.print=30}
+library(rNodal)
+
+# Example from Prosper oil well 01
+
+
+input_example <-  setWellInput(field.name = "HAGBR.MOD", 
+                               well.name = "Oilwell_01", 
+                               depth.wh = 0, depth.bh = 9275, 
+                               diam.in = 4.052, 
+                               GLR = 800, liq.rt = 700, wcut = 0.0, 
+                               thp = 100, tht = 60, bht = 210, 
+                               API = 37, oil.visc = 1.0, 
+                               gas.sg = 0.76, wat.sg = 1.07, if.tens = 30, 
+                               salinity = 23000
+                                 )
+
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
+
+runVLP(well.input = input_example, well_model)
+```
+
+p30 = 740.1965
+
+[h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[3 runs inst/extdata](I:\src\rNodal\inst\extdata\brown_20170709.h5)
+

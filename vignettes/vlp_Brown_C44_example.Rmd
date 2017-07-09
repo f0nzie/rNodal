@@ -1,10 +1,9 @@
 ---
-title: "VLP Brown C44 example"
-author: "Vignette Author"
+title: "VLP Brown Example: C44"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{VLP Brown C44 example}
+  %\VignetteIndexEntry{VLP Brown example C44}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,7 +22,7 @@ The pressures at both ends of the tubing: P1 is 500 psia and P2 1000 psia.
 ```{r rows.print=30}
 library(rNodal)
 
-# Example from C.44 in Brown
+# Example from C.44 in Brown's book
 # P2 (pressure at end point is given in the original example). 
 # The original question is: what is the length of the tubing.
 #
@@ -36,8 +35,6 @@ library(rNodal)
 # The final results are very close to those of Brown.
 
 
-
-# rhdf5::H5close()
 input_example <- setWellInput(field.name = "HAGBR.MOD",
                                  well.name = "Brown_C44", 
                                  depth.wh = 0, depth.bh = 3590, 
@@ -51,9 +48,16 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
 
 
-runVLP(well.input = input_example, well_model)
+df <- runVLP(well.input = input_example, well_model)
+df
 ```
 
+p30 = 906.7220
+p30 = 906.7217 (with zFactor)
+
+[h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[hdf5 in inst/extdata](I:\src\rNodal\inst\extdata\brown_c44.h5)
 
 
 
