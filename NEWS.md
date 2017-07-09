@@ -1,5 +1,6 @@
 ## 20170709 0.0.2
-*
+* document few functions
+* ignore folder notebooks
 
 
 ## 20170709 0.0.1.9003
