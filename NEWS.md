@@ -1,3 +1,7 @@
+## 20170709 0.0.2
+*
+
+
 ## 20170709 0.0.1.9003
 * use Hall-Yarborough from zFactor
 * remove old HY built-in in this package
