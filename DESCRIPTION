@@ -1,6 +1,6 @@
 Package: rNodal
 Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Author: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Maintainer: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Description: Vertical Lift Performance calculations for oil and gas wells.

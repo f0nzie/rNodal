@@ -250,10 +250,10 @@ VLPcontrol <- function(well.parameters, model.parameters) {
             while (eps > tol) {           # loop until AE greater than tolerance
                 p.avg  <- (p0 + p1) / 2    # try with an initial pressure
 
-                # calculate pressure losses
-                hagbr <- vlp.function(pres = p1, temp = t1, well.parameters)
-                dp.dz <-  hagbr$dp.dz       # extract dp/dz or pressure gradient
-                z     <-  hagbr$z
+                # calculate pressure losses using selected correlation
+                corr  <- vlp.function(pres = p1, temp = t1, well.parameters)
+                dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
+                z     <- corr$z
 
                 p.calc <- p0 - (-dp.dz) * dL # negative, we are going down
                 eps    <- abs( (p1 - p.calc) / p.calc )  # absolute error
@@ -281,7 +281,7 @@ VLPcontrol <- function(well.parameters, model.parameters) {
                             temp = t1,         # current temperature
                             pres = p1,         # current pressure at depth
                             segment = i-1,     # segment number
-                            hagbr              # correlation results
+                            corr              # correlation results
                             )
 
             p0 = p1      # assign p1 to the inlet pressure of new segment, p0
