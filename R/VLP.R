@@ -204,13 +204,14 @@ runVLP <- function(well.input, model.parameters) {
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
 #'
 #' @export
-VLPcontrol <- function(well.parameters, model.parameters) {
+VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
+    # called by runVLP()
 
     with(as.list(c(well.parameters, model.parameters)),
     {
         .saveSlot(field.name, well.name)    # get datetime slot for saving
                                              # /field/well/dataset to HDF5
-        cat("VLP control for well model:", vlp.model, "\n")
+        if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the function that is needed
         vlp.function = loadVLP(vlp.model)
@@ -289,7 +290,7 @@ VLPcontrol <- function(well.parameters, model.parameters) {
 
     } # end for
         iter.tbl <- data.table::rbindlist(iter_row_vector) # build iterations DF
-        print(iter.tbl)                        # show the dataframe
+        # print(iter.tbl)                        # show the dataframe
         writeHdf5(iter.tbl, "iterations")     # write table to HDF5
 
     segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
@@ -340,6 +341,7 @@ runVLPdefaults <- function() {
     #return(well.inputs)
     #return(c(well.inputs, model.parameters))
 }
+
 
 
 #' Load only the source necessary for model or correlation
