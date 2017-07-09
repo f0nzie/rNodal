@@ -28,7 +28,7 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     API = 22, gas.sg = 0.65, wat.sg = 1.07, if.tens = 30)
 
 
-well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.000001)
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
 
 df <- runVLP(well.input = input.example.C13, well.model)
 df
@@ -43,3 +43,19 @@ p30 = 1043.8793
 
 [h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
 
+
+
+        0	    0   	500.0	135.8
+        242.7	242.7	563.1	137.9
+        485.5	485.5	627.5	139.8
+        728.2	728.2	693.1	141.6
+        970.9	970.9	759.8	143.4
+        1213.6	1213.6	827.6	144.9
+        1456.4	1456.4	896.5	146.3
+        1699.1	1699.1	966.4	147.6
+        1941.8	1941.8	1037.3	148.6
+        2184.5	2184.5	1109.3	149.3
+        2427.3	2427.3	1182.2	149.8
+        2670.0	2670.0	1255.9	150.0
+        
+        
