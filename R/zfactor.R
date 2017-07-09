@@ -42,7 +42,8 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
 #' @section Gas correlations
 #' @export
 z.hallyarborough <-function(pres.a, temp.f, gas.sg,
-                            n2.frac = 0, co2.frac = 0, h2s.frac = 0) {
+                            n2.frac = 0, co2.frac = 0, h2s.frac = 0,
+                            as_list = FALSE) {
     # pres.a = absolute pressure, psia; temp.f  = temperature, deg F
 
     # calculate pseudo-critical pressure and temperature
@@ -52,8 +53,17 @@ z.hallyarborough <-function(pres.a, temp.f, gas.sg,
     temp.pr <- crit$temp.pr
     temp.r  <- crit$temp.r
 
-    zFactor::z.HallYarborough(pres.pr = pres.pr, temp.pr = temp.pr)
+    z <- zFactor::z.HallYarborough(pres.pr = pres.pr, temp.pr = temp.pr)
+    #ztable <- data.frame(pres.pr, temp.pr, temp.r, z)
+    #if (saveRda) save(ztable, file = "zfactor.rda")
+    # cat(sprintf("%12f %12f %12f %12f \n", pres.pr, temp.pr, temp.r, z))
+    if (as_list) {
+        z <- named.list(z, pres.pr, temp.pr, temp.r)
+    }
+    return(z)
 }
+
+
 
 
 
