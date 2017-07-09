@@ -19,6 +19,8 @@ z.hallyarborough(pres.a, temp.f, gas.sg, n2.frac = 0, co2.frac = 0,
 \item{co2.frac}{CO2}
 
 \item{h2s.frac}{H2S}
+
+\item{as_list}{FALSE to return single value z; otherwise returns a list}
 }
 \description{
 Calculate the Z factor using the Hall-Yarborough method

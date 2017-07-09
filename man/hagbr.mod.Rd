@@ -11,7 +11,7 @@ hagbr.mod(pres, temp, well.params)
 
 \item{temp}{temperature at depth       deg F   dbl}
 
-\item{surf.params}{surface parameters            list}
+\item{well.params}{surface parameters            list}
 }
 \description{
 Hagedorn correlation from the Brown's book. Procedure C.42

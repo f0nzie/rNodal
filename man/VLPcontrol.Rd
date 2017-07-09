@@ -11,6 +11,8 @@ VLPcontrol(well.parameters, model.parameters, verbose = FALSE)
 
 \item{model.parameters}{model characteristics. Hagedorn-Brown, Duns-Ros,
 Fancher-Brown, etc. Also tolerances and boundaries}
+
+\item{verbose}{FALSE to prevent printing messages}
 }
 \description{
 VLP control marching algorithm to calculate bottomhole pressure given the

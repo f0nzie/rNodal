@@ -12,6 +12,8 @@ get.well.slot(hFile, fieldName, wellName, verbose = FALSE)
 \item{fieldName}{the field name}
 
 \item{wellName}{the well name}
+
+\item{verbose}{FALSE to prevent printing messages}
 }
 \value{
 a string with /field/well/datetime if creation successful

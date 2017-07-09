@@ -38,6 +38,7 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
 #' Calculate the Z factor using the Hall-Yarborough method
 #'
 #' @inheritParams zcorr
+#' @param as_list FALSE to return single value z; otherwise returns a list
 #' @family Z factor correlations
 #' @section Gas correlations
 #' @export

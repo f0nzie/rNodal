@@ -86,7 +86,7 @@ hagbr.guo <- function(pres, temp, surf.params) {
 #'
 #' @param    pres    pressure at depth          psia    dbl
 #' @param    temp    temperature at depth       deg F   dbl
-#' @param    surf.params  surface parameters            list
+#' @param    well.params  surface parameters            list
 #'
 hagbr.mod <- function(pres, temp, well.params) {
   with(as.list(well.params), {
