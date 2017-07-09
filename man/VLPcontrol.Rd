@@ -4,7 +4,7 @@
 \alias{VLPcontrol}
 \title{VLP calculation algorithm}
 \usage{
-VLPcontrol(well.parameters, model.parameters)
+VLPcontrol(well.parameters, model.parameters, verbose = FALSE)
 }
 \arguments{
 \item{well.parameters}{well input and core calculations at surface}

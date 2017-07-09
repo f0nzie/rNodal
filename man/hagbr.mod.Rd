@@ -4,7 +4,7 @@
 \alias{hagbr.mod}
 \title{Hagedorn correlation from the Brown's book. Procedure C.42}
 \usage{
-hagbr.mod(pres, temp, surf.params)
+hagbr.mod(pres, temp, well.params)
 }
 \arguments{
 \item{pres}{pressure at depth          psia    dbl}

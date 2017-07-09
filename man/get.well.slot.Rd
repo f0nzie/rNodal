@@ -4,7 +4,7 @@
 \alias{get.well.slot}
 \title{Add a record to HDF5 file of well inputs and outputs}
 \usage{
-get.well.slot(hFile, fieldName, wellName)
+get.well.slot(hFile, fieldName, wellName, verbose = FALSE)
 }
 \arguments{
 \item{hFile}{HDF5 file, full path}

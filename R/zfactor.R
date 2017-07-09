@@ -23,7 +23,7 @@ Z <- function(correlation, pres.a, temp.f, gas.sg,
     if (correlation == "HY" || correlation == 1) {
         arggs <- c(as.list(environment()), list(...))
         arggs$correlation <- NULL
-        return(do.call(z.hallyarborough, arggs)$z)
+        return(do.call(z.hallyarborough, arggs))
     }
     if (correlation == "BB" || correlation == 2) {
         arggs <- c(as.list(environment()), list(...))
