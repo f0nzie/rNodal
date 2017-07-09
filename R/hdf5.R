@@ -1,5 +1,3 @@
-# #' @importFrom S4Vectors isSingleString
-# #' @importFrom rhdf5 h5write h5ls
 
 .check_HDF5_dump_file <- function(file)
 {

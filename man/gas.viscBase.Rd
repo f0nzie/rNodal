@@ -2,7 +2,9 @@
 % Please edit documentation in R/gas_correlations.R
 \name{gas.viscBase}
 \alias{gas.viscBase}
-\title{Correlation for gas base viscosity
+\title{#' @include zfactor.R
+NULL
+Correlation for gas base viscosity
 at atmospheric conditions. Dempsey (1965)
 Guo, pg. 2/23 Eq 2.36}
 \usage{
@@ -14,6 +16,8 @@ gas.viscBase(temp, sgg)
 \item{sgg}{specific gravity of gas}
 }
 \description{
+#' @include zfactor.R
+NULL
 Correlation for gas base viscosity
 at atmospheric conditions. Dempsey (1965)
 Guo, pg. 2/23 Eq 2.36

@@ -1,4 +1,4 @@
-#' @include zfactor.R gas_correlations.R moody.R
+#' @include gas_correlations.R friction.R
 NULL
 
 # this script contains the HAGBR correlation in pure R

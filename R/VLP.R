@@ -1,5 +1,5 @@
-#' @include utils.R settings.R  zfactor.R gas_correlations.R
-#' @include moody.R FLUIDPROPS.R interpolation.R
+#' @include utils.R settings.R  gas_correlations.R
+#' @include friction.R oil_correlations.R interpolation.R
 NULL
 
 
