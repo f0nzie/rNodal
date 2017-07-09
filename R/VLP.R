@@ -202,6 +202,7 @@ runVLP <- function(well.input, model.parameters) {
 #' @param well.parameters    well input and core calculations at surface
 #' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
+#' @param verbose FALSE to prevent printing messages
 #'
 #' @export
 VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {

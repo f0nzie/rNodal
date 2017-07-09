@@ -27,6 +27,7 @@ hGroup.exists <- function(hFile, hGroup) {
 #' @param    hFile      HDF5 file, full path
 #' @param    fieldName  the field name
 #' @param    wellName   the well name
+#' @param verbose FALSE to prevent printing messages
 #' @return   a string with /field/well/datetime if creation successful
 #'           otherwise, NULL
 # #' @importFrom rhdf5 h5ls h5createGroup H5close H5Fcreate
