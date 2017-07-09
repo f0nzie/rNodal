@@ -1,3 +1,7 @@
+## 20170707 0.0.1.9001
+* change source of notebooks to ../R
+
+
 ## 20170706 0.0.1.9000
 * all tests running ok
 * move folders from inst to notebooks
