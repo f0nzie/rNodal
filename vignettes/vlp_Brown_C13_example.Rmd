@@ -30,10 +30,12 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.000001)
 
-runVLP(well.input = input.example.C13, well.model)
+df <- runVLP(well.input = input.example.C13, well.model)
+df
 ```
 
 p30 = 1043.8745
+p30 = 1043.8793
 
 [link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 

@@ -1,3 +1,14 @@
+## 20170709 0.0.1.9003
+* use Hall-Yarborough from zFactor
+* remove old HY built-in in this package
+* new datasets in testthat regenerated with new values of z with zFactor
+* add more tests to test_zfactor.R
+* use zFactor::HallYarborough directly in the tests supplying sequences of Ppr and Tpr that are in a reasonable range of oil wells.
+* using zFactor::HallYarborough at low and high Ppr, Tpr
+* create a rda file for test check zFactor with returning lists of z, pres.pr, temp.pr and temp.r
+
+
+
 ## 20170709 0.0.1.9002
 * add links to h5 files in vignettes
 * h5 temp file is the same for all vignettes VLP runs
