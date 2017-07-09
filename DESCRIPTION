@@ -7,8 +7,7 @@ Description: Vertical Lift Performance calculations for oil and gas wells.
 Depends: R (>= 3.2), methods,
 Imports: rootSolve,
     dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13),
-    rprojroot,
-    R.utils
+    rprojroot, R.utils, zFactor
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
