@@ -54,9 +54,6 @@ z.hallyarborough <-function(pres.a, temp.f, gas.sg,
     temp.r  <- crit$temp.r
 
     z <- zFactor::z.HallYarborough(pres.pr = pres.pr, temp.pr = temp.pr)
-    #ztable <- data.frame(pres.pr, temp.pr, temp.r, z)
-    #if (saveRda) save(ztable, file = "zfactor.rda")
-    # cat(sprintf("%12f %12f %12f %12f \n", pres.pr, temp.pr, temp.r, z))
     if (as_list) {
         z <- named.list(z, pres.pr, temp.pr, temp.r)
     }
