@@ -6,3 +6,4 @@
 # *.html
 # vignettes/*.R
 inst/doc
+inst/extdata/default.hdf5
