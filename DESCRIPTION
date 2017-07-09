@@ -1,6 +1,6 @@
 Package: rNodal
 Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
-Version: 0.0.2
+Version: 0.0.2.9000
 Author: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Maintainer: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Description: Vertical Lift Performance calculations for oil and gas wells.
@@ -16,23 +16,17 @@ Suggests: knitr,
     rmarkdown, testthat
 VignetteBuilder: knitr
 Collate: 
-    'FANBR.R'
-    'FLUIDPROPS.R'
-    'moody.R'
-    'zfactor.R'
-    'gascorrs.R'
-    'HAGBR.R'
-    'settings.R'
-    'hdf5.R'
-    'Rutils.R'
+    'Duns-Ros.R'
+    'Fancher-Brown.R'
+    'friction.R'
+    'gas_correlations.R'
+    'Hagedorn-Brown.R'
+    'Poettmann-Carpenter.R'
     'interpolation.R'
-    'VLP.tools.R'
+    'oil_correlations.R'
+    'settings.R'
     'utils.R'
     'VLP.R'
-    'data.R'
-    'dunsros.R'
-    'gas.R'
-    'gas_viscosity.R'
-    'poettmann.R'
+    'hdf5.R'
     'rNodal-package.r'
     'zzz.R'

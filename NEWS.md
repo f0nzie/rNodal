@@ -1,3 +1,12 @@
+## 20170709 0.0.2.9000
+* rename VLP scripts to author names separated by dashes.
+* move functions in dunsros.R to own script.
+* move any gas fucntion to gas_correlations.R
+* rename FLUIDPROPS.R to oil_correlations.R
+* move functions in zfactor.R to gas_correlations.R
+* remove data.R. move its functions to rNodal-package.r
+* no Rd for .saveSlot function
+
 ## 20170709 0.0.2
 * document few functions
 * ignore folder notebooks

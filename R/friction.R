@@ -1,5 +1,5 @@
-
 #' Chen Friction factor correl1ation
+#'
 #' Guo pg 4/48
 #' @param ed relative roughness
 #' @param Re Reynolds number

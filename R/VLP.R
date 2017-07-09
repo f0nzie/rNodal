@@ -1,6 +1,5 @@
-
-#' @include utils.R settings.R Rutils.R VLP.tools.R zfactor.R gascorrs.R
-#' @include moody.R FLUIDPROPS.R interpolation.R
+#' @include utils.R settings.R  gas_correlations.R
+#' @include friction.R oil_correlations.R interpolation.R
 NULL
 
 
@@ -321,6 +320,7 @@ writeHdf5 <- function(dataTable, dataset.name) {
 #' Save a slot in the HDF5 file
 #' @param field.name field name to compose the slot
 #' @param well.name well name to compose the slot
+#' @noRd
 #' @keywords internal
 .saveSlot <- function(field.name, well.name) {
     hFile <- readFromProjectEnv("data.file.hdf5")
