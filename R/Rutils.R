@@ -33,7 +33,7 @@ hGroup.exists <- function(hFile, hGroup) {
 #' @import rhdf5
 #' @include hdf5.R settings.R
 #' @export
-get.well.slot <- function(hFile, fieldName, wellName) {
+get.well.slot <- function(hFile, fieldName, wellName, verbose = FALSE) {
     fid <- NULL
     stopifnot(!is.null(hFile))
     if (!dir.exists(dirname(hFile))) {
@@ -56,20 +56,22 @@ get.well.slot <- function(hFile, fieldName, wellName) {
 
     # check if /field/well group exists
     if (!field.well %in% group.paths) {
-        cat(hFile, fid, "\n")
-        cat("\nGroup: ", field.well, " DOES NOT exist \n")  # if it doesn't, say it
+        if (verbose) {
+            cat(hFile, fid, "\n")
+            cat("\nGroup: ", field.well, " DOES NOT exist \n")  # if it doesn't, say it
+        }
         if (!hGroup.exists(hFile, fieldName)) {             # if /field does not exist
             h5createGroup(hFile, fieldName)                 # create /field
-            cat("Group: ", fieldName, "just created\n")
+            if (verbose) cat("Group: ", fieldName, "just created\n")
         } else {                                            # otherwise say already exists
-            cat("\t but group ", fieldName, " already exists\n")
+            if (verbose) cat("\t but group ", fieldName, " already exists\n")
         }
         # now that we know that /field group is ready we can add  a /well to it
         h5createGroup(hFile, field.well)                    # if /field exists, then
-        cat("\t", wellName, "well just added")              # we create /field/well group
+        if (verbose) cat("\t", wellName, "well just added")              # we create /field/well group
     } else  {
         # /field/well group already exists
-        cat("\n Group", field.well," already exists. Ready to add observation ...") # just say it
+        if (verbose) cat("\n Group", field.well," already exists. Ready to add observation ...") # just say it
     }
     # add datetime group to /field/well/
     stamp <- format(Sys.time(), "%Y%m%d.%H%M%S")            # get datetime up to seconds
