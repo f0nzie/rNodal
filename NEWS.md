@@ -1,3 +1,11 @@
+## 20170707 0.0.1.9001
+* change source of notebooks to ../R
+* re-running vignettes
+* remove html and R from vignettes
+* rename one vignette
+* add title to index vignette
+
+
 ## 20170706 0.0.1.9000
 * all tests running ok
 * move folders from inst to notebooks

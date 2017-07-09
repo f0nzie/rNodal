@@ -5,7 +5,7 @@ output: html_notebook
 
 
 ```{r rows.print=30}
-source("HAGBR.R")
+source("../R/HAGBR.R")
 
 # high level function that should call with any VLP corr
 run.vlp <- function(depth.wh = 0,         # depth at wellhead

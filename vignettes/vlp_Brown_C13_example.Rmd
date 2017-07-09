@@ -1,21 +1,13 @@
 ---
-title: "VLP: Brown C13 example"
+title: "VLP Brown - Example C13"
 author: "Vignette Author"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{VLP Brown - Example C13}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-
-```{r}
-library(rNodal)
-nodal_status()
-# [1] "C:/Users/msfz751/Documents/rNodal/default.hdf5"
-```
-
 
 
 
@@ -23,7 +15,8 @@ nodal_status()
 library(rNodal)
 
 # Example from C.13 in Brown
-# P2 (pressure at end point is given). THe question is: what is the length of the tubing.
+# P2 (pressure at end point is given). 
+# The question is: what is the length of the tubing.
 # P2 = 1000 psia
 
 
