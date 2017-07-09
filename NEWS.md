@@ -1,3 +1,8 @@
+## 20170709 0.0.1.9003
+* 
+*
+
+
 ## 20170709 0.0.1.9002
 * add links to h5 files in vignettes
 * h5 temp file is the same for all vignettes VLP runs
