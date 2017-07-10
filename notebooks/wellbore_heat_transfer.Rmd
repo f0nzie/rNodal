@@ -56,6 +56,14 @@ well_table
 ```
 
 ```{r}
+library(data.table)
 
+df <- data.frame()
+row <- vector("list", 30)
+for (i in nrow(well_table):1) {
+    cat(i, depth - well_table[i, "depth"], "\n")
+    # row[[i]] <- list(L = (depth - well_table[i, "depth"]))
+    well_table[i, "L"] <- depth - well_table[i, "depth"]
+}
 ```
 
