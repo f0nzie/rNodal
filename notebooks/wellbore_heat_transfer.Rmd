@@ -6,6 +6,15 @@ output: html_notebook
 
 
 ```{r rows.print=30}
+theta <-  pi /2
+diam.in <- 1.995
+diam.ft <- diam.in / 12
+area <- pi / 4 * diam.ft^2
+tht <- 180
+bhp <- 180
+depth <- 9700
+ge <- (bhp - tht) / depth
+
 well <- "
 depth	dL	pres	temp
 0	0	200	80.0
