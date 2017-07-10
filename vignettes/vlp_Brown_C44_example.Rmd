@@ -54,6 +54,7 @@ df
 
 p30 = 906.7220
 p30 = 906.7217 (with zFactor)
+p30 = 908.1580
 p30-9 = 958.1
 
 [h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)

@@ -283,11 +283,11 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                             p_avg = p.avg,
                             t_avg = t.avg,
                             segment = i-1,     # segment number
-                            corr              # correlation results
+                            corr               # correlation results
                             )
 
-            p0 = p1      # assign p1 to the inlet pressure of new segment, p0
-            t0 = t1      # do the same with the temperature
+            p0 = p.calc   # assign p1 to the inlet pressure of new segment, p0
+            t0 = t1       # do the same with the temperature
 
     } # end for
         iter.tbl <- data.table::rbindlist(iter_row_vector) # build iterations DF

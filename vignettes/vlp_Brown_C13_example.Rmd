@@ -38,6 +38,7 @@ p30 = 1043.8745
 p30 = 1043.8793
 p30 = 1045.1834
 p30 = 1043.1091 (after using p.avg and t.avg)
+p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
 
 [link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 
