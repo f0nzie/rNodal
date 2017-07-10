@@ -29,10 +29,10 @@ saveToProjectEnv("TEMP.RANKINE", 460)
 #' @param tol           tolerance for error during interations
 #' @param dp.dz.ini     initial gradient
 #' @export
-setVLPmodel <- function( vlp.model = "hagbr.guo",
-                         segments = 29,
-                         tol = 0.0001,
-                         dp.dz.ini = 0.002
+setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
+                         segments = 29,            # table rows = segments + 1
+                         tol = 0.0001,             # tolerance in dp.dz calc
+                         dp.dz.ini = 0.002         # initial value for dp.dz
                          ) {
 
     named.list(vlp.model,
@@ -213,13 +213,13 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                                              # /field/well/dataset to HDF5
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
-        # load the function that is needed
+        # load the VLP function that is needed
         vlp.function = loadVLP(vlp.model)
 
-        # Calculate well segments and depths
+        # Calculate the well segments and depths
         # Depth counts have to be greater than segments to allocate the zero or
-        # initial depth value
-        # consider that in R for length.out parameter. index starts at 1 not 0
+        # initial depth value.
+        # Consider that in R for length.out parameter. index starts at 1 not 0
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
 
@@ -232,8 +232,6 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
         segment_row_vector <- vector("list", n)
         iter_row_vector <- vector("list")
 
-        # TODO: consider adding different tubing sizes along the well
-
         cum_iter <- 1                      # counter for all iterations
         for (i in seq_len(n)) {            # n is the number of depths = # rows
             if (i == 1) {                  # make the previous depth the top
@@ -243,8 +241,8 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
             }
             dL  <- depths[i] - depth.prev        # calculate dL
             p1  <- p0 + dp.dz * dL               # calculate outlet pressure
-            t1  <-  t0 + dt.dz * dL               # calculat outlet temperature
-            eps <-  1                           # initial value for epsilon
+            t1  <-  t0 + dt.dz * dL              # calculat outlet temperature
+            eps <-  1                            # initial value for epsilon
 
             # here we start iterating for the pressure gradient
             iter_dpdz <- 1                      # AE: absolute error
@@ -347,7 +345,7 @@ runVLPdefaults <- function() {
 
 #' Load only the source necessary for model or correlation
 #' Note: it doesn't unload the functions sourced yet
-#' @param model   the model name
+#' @param model   the model name       string
 loadVLP <- function(model) {
     modelU <- toupper(model)
     # if (grepl("HAGBR", modelU))    source("HAGBR.R")

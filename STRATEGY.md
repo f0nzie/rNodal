@@ -35,7 +35,7 @@
     
 
 ## TODO
-* add z factor for sour gases. now using a temporariry weak function.
+* add z factor for sour gases. now using a temporary weak function.
 * convert VLP control to object-oriented with S4
 * Move Duns-Ros functions to its own script
 * finish Fancher-Brown
@@ -46,3 +46,4 @@
 * continue with PVT correlations
 * perform comparison with PVT correlations
 * start Aziz mechanistic
+* consider adding different tubing sizes along the well
