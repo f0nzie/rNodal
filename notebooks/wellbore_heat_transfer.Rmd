@@ -9,11 +9,14 @@ output: html_notebook
 theta <-  pi /2
 diam.in <- 1.995
 diam.ft <- diam.in / 12
-area <- pi / 4 * diam.ft^2
+A <- area <- pi / 4 * diam.ft^2
 tht <- 180
-bhp <- 180
+bht <- 180
 depth <- 9700
-ge <- (bhp - tht) / depth
+ge <- (bht - tht) / depth
+m <- 228145
+U <-  8
+Cp <- 0.5
 
 well <- "
 depth	dL	pres	temp
@@ -56,14 +59,46 @@ well_table
 ```
 
 ```{r}
+k <- U * pi * diam.ft / m / Cp
+Ti <- bht
+
+for (i in nrow(well_table):1) {
+    L <- depth - well_table[i, "depth"]
+    dL <- well_table[i, "dL"]
+    Tei <- well_table[i, "temp"]
+    
+    dT.dx <- k * (Ti - Tei + ge * L * sin(theta))
+    
+    Ti <- Ti - dT.dx * dL
+    
+    cat(sprintf("%3d %10.0f %10.2f %12.6f %12.3f \n", i, L, Tei, dT.dx, Ti))
+    # well_table[i, "L"]  <- L
+    # well_table[i, "Ti"] <- Ti
+}
+
+```
+
+
+
+
+
+
+```{r}
 library(data.table)
 
-df <- data.frame()
-row <- vector("list", 30)
+# row <- vector("list", 30)
+Ti <- bht
 for (i in nrow(well_table):1) {
-    cat(i, depth - well_table[i, "depth"], "\n")
-    # row[[i]] <- list(L = (depth - well_table[i, "depth"]))
-    well_table[i, "L"] <- depth - well_table[i, "depth"]
+    L <- depth - well_table[i, "depth"]
+    Tei <- well_table[i, "temp"]
+    Ti <- (Tei - ge * L * sin(theta)) +
+          (Ti - Tei) * exp(-L/A) +
+        ge * A * sin(theta) * (1 - exp(-L/A))
+    
+    cat(sprintf("%3d %10.0f %10.2f \n", i, L, Ti))
+    # well_table[i, c("L", "Ti")] <- c(L, Ti)
+    well_table[i, "L"]  <- L
+    well_table[i, "Ti"] <- Ti
 }
 ```
 
