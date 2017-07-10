@@ -239,18 +239,19 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
             } else {
                 depth.prev = depths[i-1]   # otherwise, use the previous depth
             }
-            dL  <- depths[i] - depth.prev        # calculate dL
-            p1  <- p0 + dp.dz * dL               # calculate outlet pressure
-            t1  <-  t0 + dt.dz * dL              # calculat outlet temperature
-            eps <-  1                            # initial value for epsilon
+            dL  <- depths[i] - depth.prev       # calculate dL
+            p1  <- p0 + dp.dz * dL              # calculate outlet pressure
+            t1  <- t0 + dt.dz * dL              # calculate outlet temperature
+            eps <-  1                           # initial value for epsilon
 
             # here we start iterating for the pressure gradient
             iter_dpdz <- 1                      # AE: absolute error
             while (eps > tol) {           # loop until AE greater than tolerance
-                p.avg  <- (p0 + p1) / 2    # try with an initial pressure
+                p.avg <- (p0 + p1) / 2    # try with an initial pressure
+                t.avg <- (t0 + t1) / 2
 
                 # calculate pressure losses using selected correlation
-                corr  <- vlp.function(pres = p1, temp = t1, well.parameters)
+                corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
 
@@ -279,6 +280,8 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                             dL = dL,           # length of pipe increment
                             temp = t1,         # current temperature
                             pres = p1,         # current pressure at depth
+                            p_avg = p.avg,
+                            t_avg = t.avg,
                             segment = i-1,     # segment number
                             corr              # correlation results
                             )
