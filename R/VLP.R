@@ -382,4 +382,5 @@ temp.fluid <- function(well_table, theta, depth, bht, U, cp.avg, diam.ft, mass.r
         well_table[i, "L"]  <- L
         well_table[i, "Ti"] <- Ti
     }
+    well_table
 }
