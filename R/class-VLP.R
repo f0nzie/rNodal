@@ -22,6 +22,11 @@ setMethod("initialize", "VLP", function(.Object, well.parameters, model.paramete
     return(.Object)
 })
 
+setMethod("show", "VLP", function(object) {
+    print(object@wellParameters)
+    print(object@modelParameters)
+})
+
 setGeneric("getState", function(object, ...) standardGeneric("getState"))
 
 setMethod("getState", "VLP", function(object, ...) {
