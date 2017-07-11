@@ -4,12 +4,12 @@
 \alias{VLP}
 \title{VLP constructor}
 \usage{
-VLP(well_input, vlp_model)
+VLP(well.parameters, model.parameters)
 }
 \arguments{
-\item{well_input}{well production input}
+\item{well.parameters}{well production input}
 
-\item{vlp_model}{the VLP model data}
+\item{model.parameters}{the VLP model data}
 }
 \description{
 VLP constructor

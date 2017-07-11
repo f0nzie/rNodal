@@ -5,9 +5,15 @@
 \alias{VLP-class}
 \title{VLP class}
 \arguments{
-\item{well_input}{an ODE object}
+\item{object}{a class object}
 
-\item{vlp_model}{an ODE object}
+\item{well.parameters}{an ODE object}
+
+\item{model.parameters}{an ODE object}
+
+\item{vlpInput}{the VLP input}
+
+\item{vlpModel}{the VLP model input}
 
 \item{...}{additional parameters}
 }
