@@ -3,6 +3,32 @@
 NULL
 
 
+#' VLP class
+#'
+#' @param well_input an ODE object
+#' @param vlp_model an ODE object
+#' @param ... additional parameters
+#' @rdname VLP-class
+#'
+.VLP <- setClass("VLP", slots = c(
+    wellInput = "list",
+    vlpModel = "list"
+    )
+)
+
+
+setMethod("initialize", "VLP", function(.Object, well_input, vlp_model, ...) {
+    # initialized
+    .Object@wellInput <- well_input
+    .Object@vlpModel  <- vlp_model
+    return(.Object)
+})
+
+
+
+
+
+
 
 #  ########################
 #' Globals
@@ -187,7 +213,6 @@ runVLP <- function(well.input, model.parameters) {
 
     return(vlp.output)                              # return dataframe
 }
-
 
 
 
