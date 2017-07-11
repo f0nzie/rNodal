@@ -1,0 +1,14 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rNodal)
+
+well_input <- list()
+vlp_model <- list()
+VLP(well_input, vlp_model)
+
+```
+
