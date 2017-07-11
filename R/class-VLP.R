@@ -5,22 +5,26 @@
 #' @param ... additional parameters
 #' @rdname VLP-class
 #' @export
-setClass("VLP2", slots = c(
-    wellInput = "list",
-    vlpModel = "list")
+setClass("VLP", slots = c(
+    wellParameters = "list",
+    modelParameters = "list")
 )
 
 
-setMethod("initialize", "VLP2", function(.Object, well_input, vlp_model, ...) {
+setMethod("initialize", "VLP", function(.Object, well.parameters, model.parameters, ...) {
     # initialized
-    .Object@wellInput <- well_input
-    .Object@vlpModel  <- vlp_model
+    with(as.list(c(well.parameters, model.parameters)), {
+
+        })
+
+    .Object@wellParameters  <- well.parameters
+    .Object@modelParameters <- model.parameters
     return(.Object)
 })
 
 setGeneric("getState", function(object, ...) standardGeneric("getState"))
 
-setMethod("getState", "VLP2", function(object, ...) {
+setMethod("getState", "VLP", function(object, ...) {
     # Gets the state variables.
     return(object@state)
 })
@@ -32,8 +36,8 @@ setMethod("getState", "VLP2", function(object, ...) {
 #' @param vlp_model the VLP model data
 #' @export
 #' @importFrom methods new
-VLP <- function(well_input, vlp_model) {
-    vlp <- new("VLP2", well_input, vlp_model)
+VLP <- function(well.parameters, model.parameters, verbose = FALSE) {
+    vlp <- new("VLP", well.parameters, model.parameters)
     vlp
 }
 
