@@ -27,6 +27,7 @@ Collate:
     'settings.R'
     'utils.R'
     'VLP.R'
+    'all_generics.R'
     'class-VLP.R'
     'hdf5.R'
     'rNodal-package.r'
