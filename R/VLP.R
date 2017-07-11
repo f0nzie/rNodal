@@ -3,33 +3,6 @@
 NULL
 
 
-#' VLP class
-#'
-#' @param well_input an ODE object
-#' @param vlp_model an ODE object
-#' @param ... additional parameters
-#' @rdname VLP-class
-#'
-.VLP <- setClass("VLP", slots = c(
-    wellInput = "list",
-    vlpModel = "list"
-    )
-)
-
-
-setMethod("initialize", "VLP", function(.Object, well_input, vlp_model, ...) {
-    # initialized
-    .Object@wellInput <- well_input
-    .Object@vlpModel  <- vlp_model
-    return(.Object)
-})
-
-
-
-
-
-
-
 #  ########################
 #' Globals
 #'
@@ -391,8 +364,9 @@ loadVLP <- function(model) {
 
 # U <- 4
 # Cp <- (0.53 + 0.5 + 1) / 3
-temp.fluid <- function(well_table, theta, depth, bht, U, cp.avg, diam.ft, mass.rate) {
-    k <- U * pi * diam.ft / mass.rate / Cp
+temp.fluid <- function(well_table, theta, depth, bht, tht, U, Cp.avg, diam.ft, mass.rate) {
+    ge <- (bht - tht) / depth
+    k <- U * pi * diam.ft / mass.rate / Cp.avg
     A <- 1 / k                   # relaxation distance by Ramey. Shoham, pg 297
     Ti <- bht
 

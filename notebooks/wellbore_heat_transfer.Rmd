@@ -58,7 +58,8 @@ well_table
 
 ```
 
-```{r}
+```{r rows.print=30}
+U <- 4
 mass.rate <- m
 cp.avg <- (0.53 + 0.5 + 1 ) / 3
 
