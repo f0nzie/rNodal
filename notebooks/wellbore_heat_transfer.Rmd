@@ -94,7 +94,6 @@ ggplot(well_table, aes(x = Ti, y = depth)) +
 ```{r rows.print=30}
 U <- 4
 Cp <- (0.53 + 0.5 + 1) / 3
-# Cp <- 0.53
 k <- U * pi * diam.ft / m / Cp
 A <- 1 / k                      # relaxation distance by Ramey. Shoham, pg 297
 
