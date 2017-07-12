@@ -10,7 +10,7 @@ output: html_notebook
 ```{r}
 library(rNodal)
 
-vlp_input <-  set_vlp_input(field.name = "HAGBR.MOD", 
+vlp_input <-  set_vlp_input(VLP, field.name = "HAGBR.MOD", 
                             well.name = "Oilwell_01_Dry", 
                             depth.wh = 0, depth.bh = 9275, 
                             diam.in = 4.052, 
