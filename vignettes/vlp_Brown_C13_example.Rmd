@@ -64,25 +64,21 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
         
 ## Heat transfer calculations
 
-```{r}
-well_table <- df[, c("depth", "dL", "pres", "temp")]
-well_table
-```
 
-
-```{r}
+```{r rows.print=30}
+# calculate the fluid temperature in the well
+# input: deviation survey and well calculated parameters
 library(rNodal)
 
+well_table <- df[, c("depth", "dL", "pres", "temp")]
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
                                     depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
                                     GLR = 500, liq.rt = 1000, wcut = 0.6, 
                                     thp = 500, tht = 120, bht = 150, 
                                     API = 22, gas.sg = 0.65, wat.sg = 1.07)
-# input.example.C13
-# getBasicCalcs(input.example.C13)
-well_parameters <- get_well_parameters(input.example.C13)
 
+well_parameters <- get_well_parameters(input.example.C13)
 rNodal:::temp.gradient(well_table, well_parameters)
 ```
 
