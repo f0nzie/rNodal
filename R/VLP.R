@@ -252,15 +252,15 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
         # Consider that in R for length.out parameter. index starts at 1 not 0
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
-
         depth.top <- depths[1]                # take the the first depth
+
         dp.dz     <- dp.dz.ini                # 1st approximation of the gradient
         p0        <- thp                      # the initial pressure
         t0        <- tht                      # initial temperature
         dt.dz     <- temp.grad                # temperature gradient at inlet
 
         segment_row_vector <- vector("list", n)
-        iter_row_vector <- vector("list")
+        iter_row_vector    <- vector("list")
 
         cum_iter <- 1                      # counter for all iterations
         for (i in seq_len(n)) {            # n is the number of depths = # rows
@@ -270,10 +270,11 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                 depth.prev = depths[i-1]   # otherwise, use the previous depth
             }
             dL  <- depths[i] - depth.prev       # calculate dL
+
             p1  <- p0 + dp.dz * dL              # calculate outlet pressure
             t1  <- t0 + dt.dz * dL              # calculate outlet temperature
-            eps <-  1                           # initial value for epsilon
 
+            eps <-  1                           # initial value for epsilon
             # here we start iterating for the pressure gradient
             iter_dpdz <- 1                      # AE: absolute error
             while (eps > tol) {           # loop until AE greater than tolerance
