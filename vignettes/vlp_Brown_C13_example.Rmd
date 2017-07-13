@@ -62,3 +62,28 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
         2670.0	2670.0	1255.9	150.0
         
         
+## Heat transfer calculations
+
+```{r}
+well_table <- df[, c("depth", "dL", "pres", "temp")]
+well_table
+```
+
+```{r}
+# parameters necessary to calculate the fluid temperature
+theta   <-  pi /2
+diam.in <- 1.995
+diam.ft <- diam.in / 12
+tht     <- 120
+bht     <- 150
+depth   <- 2670
+ge      <- (bht - tht) / depth
+mass.rate <- 228145
+U <-  2
+# U <- 4
+cp.avg <- (0.53 + 0.5 + 1 ) / 3
+
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)
+```
+
