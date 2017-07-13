@@ -145,6 +145,9 @@ getBasicCalcs <- function(well.input) {
 
         # TODO: calculate fluid properties at P, T conditions
 
+        # 4. calculate the mass flow rate w = m * q
+        mass.rt = mass.total * liq.rt
+
         # calculated
         out.calc <- named.list( temp.grad,
                                 diam, area,
@@ -152,7 +155,8 @@ getBasicCalcs <- function(well.input) {
                                 oil.fraction, wat.fraction, WOR,
                                 oil.rt, gas.rt, wat.rt,
                                 mass.total,
-                                GOR
+                                GOR,
+                                mass.rt
         )
         return(out.calc)
     })
