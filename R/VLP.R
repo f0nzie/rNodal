@@ -80,7 +80,11 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             oil.visc  = 5,
                             ed        = 0.0006,      # relative roughness
                             if.tens   = 30,
-                            salinity  = 0
+                            salinity  = 0,
+                            U         = 8.0,         # heat transfer coefficient
+                            oil.cp    = 0.53,        # heat capacity
+                            gas.cp    = 0.5,
+                            wat.cp    = 1.0
                         ) {
 
     # well input parameters
@@ -92,8 +96,11 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             thp, liq.rt, wcut,
                             API, oil.visc,
                             gas.sg, GLR,
-                            wat.sg, salinity,
-                            if.tens
+                            wat.sg,
+                            salinity,
+                            if.tens,
+                            U,
+                            oil.cp, gas.cp, wat.cp
     )
     return(out)
 }
