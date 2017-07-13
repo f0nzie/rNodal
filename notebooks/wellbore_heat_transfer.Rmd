@@ -46,29 +46,26 @@ well_table
 
 ```
 
-```{r}
-theta <-  pi /2
+```{r rows.print=30}
+# parameters necessary to calculate the fluid temperature
+theta   <-  pi /2
 diam.in <- 1.995
 diam.ft <- diam.in / 12
-area.ft2 <- pi / 4 * diam.ft^2
-tht <- 180
-bht <- 180
-depth <- 9700
-ge <- (bht - tht) / depth
-m <- 228145
-U <-  8
-
-U <- 4
-mass.rate <- m
+tht     <- 80
+bht     <- 200
+depth   <- 9700
+ge      <- (bht - tht) / depth
+mass.rate <- 228145
+U <-  2
+# U <- 4
 cp.avg <- (0.53 + 0.5 + 1 ) / 3
-```
 
-
-
-```{r rows.print=30}
 # calculate dT/dx for the well
 rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)
 ```
+
+
+
 
 
 
