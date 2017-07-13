@@ -155,6 +155,9 @@ getBasicCalcs <- function(well.input) {
         # 4. calculate the mass flow rate w = m * q
         mass.rt = mass.total * liq.rt
 
+        # heat capacity
+        cp.avg <- (oil.cp + gas.cp + wat.cp) /3
+
         # calculated
         out.calc <- named.list( temp.grad,
                                 diam, area,
@@ -163,7 +166,8 @@ getBasicCalcs <- function(well.input) {
                                 oil.rt, gas.rt, wat.rt,
                                 mass.total,
                                 GOR,
-                                mass.rt
+                                mass.rt,
+                                cp.avg
         )
         return(out.calc)
     })
