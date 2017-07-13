@@ -65,6 +65,7 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
 #' @param gas.cp    heat capacity of gas
 #' @param wat.cp    heat capacity of water
 #' @param U         overall heat transfer coefficient
+#' @param angle     angle of the well to the horizontal
 #' @rdname setWellInput-VLP
 #' @export
 setWellInput <- function( field.name = "HAGBR.GUO",
@@ -105,7 +106,8 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             salinity,
                             if.tens,
                             U,
-                            oil.cp, gas.cp, wat.cp
+                            oil.cp, gas.cp, wat.cp,
+                            angle
     )
     return(out)
 }

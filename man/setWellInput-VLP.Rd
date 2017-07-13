@@ -47,6 +47,16 @@ setWellInput(field.name = "HAGBR.GUO", well.name = "ExampleGuo",
 \item{if.tens}{interfacial tension between ...}
 
 \item{salinity}{water salinity}
+
+\item{U}{overall heat transfer coefficient}
+
+\item{oil.cp}{heat capacity of oil}
+
+\item{gas.cp}{heat capacity of gas}
+
+\item{wat.cp}{heat capacity of water}
+
+\item{angle}{angle of the well to the horizontal}
 }
 \description{
 Set the most common well inputs
