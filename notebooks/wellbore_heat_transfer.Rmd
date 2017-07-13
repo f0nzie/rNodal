@@ -6,18 +6,6 @@ output: html_notebook
 
 
 ```{r rows.print=30}
-theta <-  pi /2
-diam.in <- 1.995
-diam.ft <- diam.in / 12
-area.ft2 <- pi / 4 * diam.ft^2
-tht <- 180
-bht <- 180
-depth <- 9700
-ge <- (bht - tht) / depth
-m <- 228145
-U <-  8
-
-
 well <- "
 depth	dL	pres	temp
 0	0	200	80.0
@@ -58,12 +46,28 @@ well_table
 
 ```
 
-```{r rows.print=30}
+```{r}
+theta <-  pi /2
+diam.in <- 1.995
+diam.ft <- diam.in / 12
+area.ft2 <- pi / 4 * diam.ft^2
+tht <- 180
+bht <- 180
+depth <- 9700
+ge <- (bht - tht) / depth
+m <- 228145
+U <-  8
+
 U <- 4
 mass.rate <- m
 cp.avg <- (0.53 + 0.5 + 1 ) / 3
+```
 
-rNodal:::temp.fluid(well_table, theta, depth, bht, U, cp.avg, diam.ft, mass.rate)
+
+
+```{r rows.print=30}
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)
 ```
 
 

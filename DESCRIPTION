@@ -16,6 +16,7 @@ Suggests: knitr,
     rmarkdown, testthat
 VignetteBuilder: knitr
 Collate: 
+    'heat_transfer.R'
     'Duns-Ros.R'
     'Fancher-Brown.R'
     'friction.R'
