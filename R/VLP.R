@@ -61,6 +61,10 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
 #' @param ed        relative rougness
 #' @param if.tens   interfacial tension between ...
 #' @param salinity  water salinity
+#' @param oil.cp    heat capacity of oil
+#' @param gas.cp    heat capacity of gas
+#' @param wat.cp    heat capacity of water
+#' @param U         overall heat transfer coefficient
 #' @rdname setWellInput-VLP
 #' @export
 setWellInput <- function( field.name = "HAGBR.GUO",
@@ -84,7 +88,8 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             U         = 8.0,         # heat transfer coefficient
                             oil.cp    = 0.53,        # heat capacity
                             gas.cp    = 0.5,
-                            wat.cp    = 1.0
+                            wat.cp    = 1.0,
+                            angle     = pi/2
                         ) {
 
     # well input parameters
@@ -174,6 +179,16 @@ getBasicCalcs <- function(well.input) {
 }
 
 
+#' Get the well input and the basic calculations
+#'
+#' @param well.input the well input
+#' @export
+get_well_parameters <- function(well.input) {
+    # perform basic calculations on the well input
+    basic.calcs <-  getBasicCalcs(well.input)
+    well.parameters <- c(well.input, basic.calcs)
+    well.parameters
+}
 
 
 

@@ -8,7 +8,8 @@ setWellInput(field.name = "HAGBR.GUO", well.name = "ExampleGuo",
   depth.wh = 0, depth.bh = 9700, diam.in = 1.995, GLR = 75,
   liq.rt = 758, wcut = 0.1, thp = 200, tht = 80, bht = 180,
   API = 40, gas.sg = 0.7, wat.sg = 1.05, oil.visc = 5, ed = 6e-04,
-  if.tens = 30, salinity = 0)
+  if.tens = 30, salinity = 0, U = 8, oil.cp = 0.53, gas.cp = 0.5,
+  wat.cp = 1, angle = pi/2)
 }
 \arguments{
 \item{field.name}{field name. Usually comprises several wells}
