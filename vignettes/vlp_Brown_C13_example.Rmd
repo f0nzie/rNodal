@@ -9,6 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## Calculate VLP using Hagedorn-Brown (no heat transfer)
 
 
 ```{r rows.print=30}
@@ -18,7 +19,6 @@ library(rNodal)
 # P2 (pressure at end point is given). 
 # The question is: what is the length of the tubing.
 # P2 = 1000 psia
-
 
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
@@ -34,11 +34,16 @@ df <- runVLP(well.input = input.example.C13, well.model)
 df
 ```
 
+### previous data (unit testing)
+
 p30 = 1043.8745
 p30 = 1043.8793
 p30 = 1045.1834
 p30 = 1043.1091 (after using p.avg and t.avg)
 p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
+
+
+### where the HDF5 file is
 
 [link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 
@@ -46,7 +51,7 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
 
 [h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
 
-
+### results for unit testing
 
         0	    0   	500.0	135.8
         242.7	242.7	563.1	137.9
@@ -63,6 +68,7 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
         
         
 ## Heat transfer calculations
+Grab only few variables from the VLP final table above.
 
 ```{r rows.print=30}
 # calculate the fluid temperature in the well
@@ -84,7 +90,10 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     API = 22, gas.sg = 0.65, wat.sg = 1.07)
 
 well_parameters <- get_well_parameters(input.example.C13)
-rNodal:::temp.gradient(well_table, well_parameters)
+
+# temp.gradient calculates the fluid temperature coming from the wellbore
+rNodal:::temp.gradient(well_table, well_parameters)         
+
 ```
 
 
