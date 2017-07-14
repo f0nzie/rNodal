@@ -1,5 +1,5 @@
-# U <- 4
-# Cp <- (0.53 + 0.5 + 1) / 3
+
+
 temp.fluid <- function(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate) {
     ge <- (bht - tht) / depth
     k <- U * pi * diam.ft / mass.rate / cp.avg
