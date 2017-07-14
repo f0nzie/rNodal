@@ -183,7 +183,7 @@ getBasicCalcs <- function(well.input) {
 }
 
 
-#' Get the well input and the basic calculations
+#' Get the well input together with the basic calculations
 #'
 #' @param well.input the well input
 #' @export
