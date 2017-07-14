@@ -129,6 +129,7 @@ getBasicCalcs <- function(well.input) {
 
         # convert tubing diameter to ft
         diam <- diam.in /12
+        diam.ft <- diam.in / 12
 
         # calculate area in ft^2
         area <- pi / 4 * diam^2
@@ -167,7 +168,7 @@ getBasicCalcs <- function(well.input) {
 
         # calculated
         out.calc <- named.list( temp.grad,
-                                diam, area,
+                                diam, area, diam.ft,
                                 oil.sg,
                                 oil.fraction, wat.fraction, WOR,
                                 oil.rt, gas.rt, wat.rt,
