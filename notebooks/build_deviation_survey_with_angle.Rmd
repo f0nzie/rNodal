@@ -42,7 +42,7 @@ output: html_notebook
    
         
 
-```{r rows.print=30}
+```{r chunk2}
 well <- "
 MD	TVD
 0	    0
@@ -56,6 +56,7 @@ MD	TVD
 # read string text to dataframe
 well_table <- read.table(header = TRUE, text = well)
 well_table
+# cat("called from another chunk")
 ```
 
 
@@ -69,7 +70,7 @@ md2 <- well_table[, "MD"]
 md2
 ```
 
-```{r}
+```{r chunk3}
 shift <- function(x, n, invert=FALSE, default=NA){
   stopifnot(length(x)>=n)
   if(n==0){
@@ -112,7 +113,8 @@ shift(1:10, -5, default = 999)
         df['angle_degrees'] = df.angle_radians * 180 / math.pi
         df['disp'] = df.md2 * np.sin(df.angle_radians )
 
-```{r}
+```{r chunk1, ref.label="chunk2"}
+# fill NAs with zeroes
 sh <- 1
 .md2 <- well_table[, "MD"]
 md2 <- shift(.md2, sh, default = 0)
