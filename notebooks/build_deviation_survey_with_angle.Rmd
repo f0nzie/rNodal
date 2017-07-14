@@ -1,15 +1,26 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Find well angles given MD and TVD"
+output:
+  html_document: default
+  html_notebook: default
 ---
 
-    0	0
-    600	600
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
+
+
+# Challenge
+Given this MD, TVD data, build a new table with angles in radians and degrees.
+
+    0	    0
+    600	    600
     1005	1000
     4075	4000
     7700	7500
     9275	9000
 
+### Routine in Python that calculates angle and displacement
 
     def get_full_deviation_survey(self):
         """
@@ -27,11 +38,9 @@ output: html_notebook
         df.fillna(0, inplace=True)
         return df
      
-                	     	   True	       	     	
-           	 Measured	 Vertical	  Cumulative	     	
-         Point	  Depth	  Depth	 Displacement	   Angle	
-           	  (feet)	  (feet)	    (feet)	 (degrees)
-           	  
+
+### Example of table after calculations
+
            	  MD    TVD      CumDisp     Angle
          1	 0	     0	     0	         0	
          2	 600	 600	 0	         0	
@@ -40,7 +49,14 @@ output: html_notebook
          5	 7700	 7500	 1659.02	 15.0902	
          6	 9275	 9000	 2139.25	 17.7528	
    
-        
+\   
+\   
+\   
+
+# <u>Solution</u>
+
+
+## Read the MD, TVD table into a dataframe
 
 ```{r chunk2}
 well <- "
@@ -56,21 +72,20 @@ MD	TVD
 # read string text to dataframe
 well_table <- read.table(header = TRUE, text = well)
 well_table
-# cat("called from another chunk")
 ```
 
 
 ```{r}
-well_table[, "md2"] <- well_table[, "MD"]
-well_table
-```
-
-```{r}
+# a dataframe column is a vector
 md2 <- well_table[, "MD"]
 md2
 ```
 
+## Building functions to subtract $TVD_{i+1}$ from $TVD_i$  
+
 ```{r chunk3}
+# function required to move a row up or down
+
 shift <- function(x, n, invert=FALSE, default=NA){
   stopifnot(length(x)>=n)
   if(n==0){
@@ -91,7 +106,7 @@ shift <- function(x, n, invert=FALSE, default=NA){
   }
 }
 
-
+# function to fill NAs with zeroes
 na.zero <- function (x) {
     x[is.na(x)] <- 0
     return(x)
@@ -101,40 +116,44 @@ na.zero <- function (x) {
 
 
 ```{r}
+# Example
 shift(1:10, 5)
 ```
 
 ```{r}
+# Example
 shift(1:10, -5, default = 999)
 ```
 
+## Finally, find the angle
 
         df['angle_radians'] = np.arccos(df.tvd2/df.md2)
         df['angle_degrees'] = df.angle_radians * 180 / math.pi
         df['disp'] = df.md2 * np.sin(df.angle_radians )
 
-```{r chunk1, ref.label="chunk2"}
-# fill NAs with zeroes
+```{r}
+# create table with delta MD, TVD, radian, degrees
+
+# calculate delta MD
 sh <- 1
 .md2 <- well_table[, "MD"]
 md2 <- shift(.md2, sh, default = 0)
 well_table[, "delta.md"] <- well_table[, "MD"] - md2
 
+# calculate delta TVD
 .tvd2 <- well_table[, "TVD"]
 tvd2 <- shift(.tvd2, sh, default = 0)
 well_table[, "delta.tvd"] <- well_table[, "TVD"] - tvd2
 
+# calculate the angle for each of the segments
 well_table[, "radians"] <- acos(well_table[, "delta.tvd"] / well_table[, "delta.md"])
 well_table[, "degrees"] <- well_table[, "radians"] * 180 / pi
 
+# fill NAs with zeroes
 well_table[, "radians"] <- na.zero(well_table[, "radians"])
 well_table[, "degrees"] <- na.zero(well_table[, "degrees"])
 
 well_table
 ```
 
-```{r}
-
-
-```
 
