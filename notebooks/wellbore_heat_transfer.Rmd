@@ -5,9 +5,16 @@ output:
   html_notebook: default
 ---
 
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
 
+
+## Enter table as text with depth, dL, pres and temp
 
 ```{r rows.print=30}
+library(tibble)
+
 well <- "
 depth	dL	pres	temp
 0	0	200	80.0
@@ -44,10 +51,12 @@ depth	dL	pres	temp
 
 # read string text to dataframe
 well_table <- read.table(header = TRUE, text = well)
-well_table
+as.tibble(well_table)
 
 ```
 
+
+## Fluid temperature calculation using old `temp.fluid` function
 ```{r rows.print=30}
 # parameters necessary to calculate the fluid temperature
 theta   <-  pi /2
@@ -68,42 +77,49 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
 
 
 
+## Equation in Prosper manual
 
-
+<div style="width:400px; height=400px">
+![Prosper Rough Approximation](prosper_rough_approximation_temp_model.jpg)
+</div>
+    
 
 ```{r rows.print=30}
 # using Prosper equation
-# U = 8
-# Cp <- (0.53 + 0.5 + 1 ) / 3
-# k <- U * pi * diam.ft / m / Cp
-# Ti <- bht
-# 
-# for (i in nrow(well_table):1) {
-#     L  <- depth - well_table[i, "depth"]
-#     dL <- well_table[i, "dL"]
-#     Tei <- well_table[i, "temp"]
-#     dT.dx <- k * (Ti - Tei + ge * L * sin(theta))
-#     Ti <- Ti - dT.dx * dL
-#     
-#     # cat(sprintf("%3d %10.0f %10.2f %12.6f %12.3f \n", i, L, Tei, dT.dx, Ti))
-#     well_table[i, "L"]  <- L
-#     well_table[i, "dT.dx"]  <- dT.dx
-#     well_table[i, "Ti"] <- Ti
-# }
-# print(well_table)
-# 
-# library(ggplot2)
-# 
-# ggplot(well_table, aes(x = Ti, y = depth)) +
-#     geom_point() + scale_y_continuous(trans = "reverse") +
-#     scale_x_continuous(lim = c(0, 200))
+U = 8
+Cp <- (0.53 + 0.5 + 1 ) / 3
+k <- U * pi * diam.ft / m / Cp
+Ti <- bht
+
+for (i in nrow(well_table):1) {
+    L  <- depth - well_table[i, "depth"]
+    dL <- well_table[i, "dL"]
+    Tei <- well_table[i, "temp"]
+    dT.dx <- k * (Ti - Tei + ge * L * sin(theta))
+    Ti <- Ti - dT.dx * dL
+
+    # cat(sprintf("%3d %10.0f %10.2f %12.6f %12.3f \n", i, L, Tei, dT.dx, Ti))
+    well_table[i, "L"]  <- L
+    well_table[i, "dT.dx"]  <- dT.dx
+    well_table[i, "Ti"] <- Ti
+}
+print(well_table)
+
+library(ggplot2)
+
+ggplot(well_table, aes(x = Ti, y = depth)) +
+    geom_point() + scale_y_continuous(trans = "reverse") +
+    scale_x_continuous(lim = c(0, 200))
 
 ```
 
 
+## Ramey's derivation from Alves equation
+    
 
-
-
+```{r, out.width = "500px", out.height="500px", echo=FALSE}
+knitr::include_graphics("ramey_expression_incompressible_fluid.jpg")
+```
 
 ```{r rows.print=30}
 # using Ramey's equation
