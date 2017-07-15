@@ -34,8 +34,7 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
 
-df <- runVLP(well.input = input.example.C13, well.model)
-df
+runVLP(well.input = input.example.C13, well.model)
 ```
 
         
@@ -55,7 +54,8 @@ library(rNodal)
 
 # get only the variable we need for heat transfer. But what we really want 
 # is the deviation survey: MD, TVD
-well_table <- df[, c("depth", "dL", "pres", "temp")]    
+well_table <- runVLP(well.input = input.example.C13, 
+                     well.model)[, c("depth", "dL", "pres", "temp")]    
 
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
@@ -87,11 +87,12 @@ Added new calculated objects:
     .  cp.avg = double 1= 0.67667
 
 
-```{r}
+```{r rows.print=30}
 # this tests if new function get_well_parameters() returns all what's needed for heat transfer
 library(rNodal)
-# library(Hmisc)
 
+well_table <- runVLP(well.input = input.example.C13, 
+                     well.model)[, c("depth", "dL", "pres", "temp")]    
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
                                     depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
@@ -109,9 +110,11 @@ rNodal:::temp.gradient(well_table, well_parameters)
 
 ## old version using spelled-out parameters
 
-```{r}
-# rhis in an old version where all well parameters had to be spelled out
+```{r rows.print=30}
+# this in an old version where all well parameters had to be spelled out
 # parameters necessary to calculate the fluid temperature
+well_table <- df[, c("depth", "dL", "pres", "temp")]    
+
 theta   <-  pi /2
 diam.in <- 1.995
 diam.ft <- diam.in / 12
