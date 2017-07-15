@@ -173,3 +173,35 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
         2184.5	2184.5	1109.3	149.3
         2427.3	2427.3	1182.2	149.8
         2670.0	2670.0	1255.9	150.0
+        
+        
+        
+        
+```{r}
+library(rNodal)
+
+well_as_text <- "
+MD      TVD    
+0	    0   
+242.7	242.7
+485.5	485.5
+728.2	728.2
+970.9	970.9
+1213.6	1213.6
+1456.4	1456.4
+1699.1	1699.1
+1941.8	1941.8
+2184.5	2184.5
+2427.3	2427.3
+2670.0	2670.0
+"
+
+deviation_survey <- set_deviation_survey(well_as_text)
+
+
+```
+
+```{r}
+rNodal:::calc_angle_deviation_survey(deviation_survey)
+```
+
