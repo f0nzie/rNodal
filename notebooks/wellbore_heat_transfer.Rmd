@@ -57,7 +57,7 @@ tht     <- 80
 bht     <- 200
 depth   <- 9700
 ge      <- (bht - tht) / depth
-mass.rate <- 228145
+m <- mass.rate <- 228145
 U <-  2
 # U <- 4
 cp.avg <- (0.53 + 0.5 + 1 ) / 3
