@@ -17,9 +17,9 @@ saveToProjectEnv("PRES.ATM", 14.7)
 saveToProjectEnv("TEMP.STD", 60)
 saveToProjectEnv("TEMP.RANKINE", 460)
 
-# project.env$PRES.ATM <- 14.7
-# project.env$TEMP.STD <- 60
-# project.env$TEMP.RANKINE <- 460
+
+
+
 
 #' Set model parameters such as tolerance for iterations, initial value of dp/dz
 #' the HDF5 data file
