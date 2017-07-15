@@ -8,6 +8,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
 
 ## Calculate VLP using Hagedorn-Brown (no heat transfer)
 
@@ -18,6 +21,7 @@ vignette: >
 
 ```{r rows.print=30}
 library(rNodal)
+library(tibble)
 
 # Example Problem from Guo book
 
@@ -31,7 +35,7 @@ input.example.P44 <- setWellInput(field.name = "HAGBR.MOD",
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.000001)
 
-runVLP(well.input = input.example.P44, well.model)
+as.tibble(runVLP(well.input = input.example.P44, well.model))
 ```
 
 
