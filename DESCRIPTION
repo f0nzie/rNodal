@@ -6,7 +6,7 @@ Maintainer: Alfonso R. Reyes <alfonso.reyes@oilgainsanalytics.com>
 Description: Vertical Lift Performance calculations for oil and gas wells.
 Depends: R (>= 3.2), methods,
 Imports: rootSolve,
-    dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13),
+    dplyr, rhdf5, data.table, S4Vectors (>= 0.13.13), tibble,
     rprojroot, R.utils, Hmisc, zFactor
 License: GPL-2
 Encoding: UTF-8
