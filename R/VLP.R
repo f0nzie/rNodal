@@ -239,14 +239,11 @@ runVLP <- function(well.input, model.parameters) {
 VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
     # called by runVLP()
     with(as.list(c(well.parameters, model.parameters)),
-    {
-        .saveSlot(field.name, well.name)    # get datetime slot for saving
-                                             # /field/well/dataset to HDF5
+    {   # get datetime slot for saving /field/well/dataset to HDF5
+        .saveSlot(field.name, well.name)
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
-
         # load the VLP function that is needed
         vlp.function = loadVLP(vlp.model)
-
         # Calculate the well segments and depths
         # Depth counts have to be greater than segments to allocate the zero or
         # initial depth value.
