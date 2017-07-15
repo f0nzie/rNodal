@@ -19,6 +19,15 @@ saveToProjectEnv("TEMP.RANKINE", 460)
 
 
 
+#' Build the deviation survey table given MD and TVD
+#'
+#' @param well_as_string well deviation survey as two columns text
+#' @export
+set_deviation_survey <- function(well_as_string) {
+    # read string text to dataframe
+    well_table <- utils::read.table(header = TRUE, text = well_as_string)
+    well_table
+}
 
 
 #' Set model parameters such as tolerance for iterations, initial value of dp/dz
