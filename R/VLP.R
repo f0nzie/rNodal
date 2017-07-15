@@ -30,6 +30,31 @@ set_deviation_survey <- function(well_as_string) {
 }
 
 
+calc_angle_deviation_survey <- function(well_table) {
+    # create table with delta MD, TVD, radian, degrees
+    # calculate delta MD
+    sh <- 1
+    .md2 <- well_table[, "MD"]
+    md2 <- shift(.md2, sh, default = 0)
+    well_table[, "delta.md"] <- well_table[, "MD"] - md2
+
+    # calculate delta TVD
+    .tvd2 <- well_table[, "TVD"]
+    tvd2 <- shift(.tvd2, sh, default = 0)
+    well_table[, "delta.tvd"] <- well_table[, "TVD"] - tvd2
+
+    # calculate the angle for each of the segments
+    well_table[, "radians"] <- acos(well_table[, "delta.tvd"] / well_table[, "delta.md"])
+    well_table[, "degrees"] <- well_table[, "radians"] * 180 / pi
+
+    # fill NAs with zeroes
+    well_table[, "radians"] <- na.zero(well_table[, "radians"])
+    well_table[, "degrees"] <- na.zero(well_table[, "degrees"])
+
+    well_table
+}
+
+
 #' Set model parameters such as tolerance for iterations, initial value of dp/dz
 #' the HDF5 data file
 #' @param vlp.model     the name of the VLP model or correlation
