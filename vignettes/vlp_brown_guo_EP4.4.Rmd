@@ -24,13 +24,84 @@ library(rNodal)
 input.example.P44 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Guo_P44", 
                                     depth.wh = 0, depth.bh = 9700, diam.in = 1.995, 
-                                    GLR = 360.7, liq.rt = 758, wcut = 0.1, 
+                                    GLR = 362.7, liq.rt = 758, wcut = 0.1, 
                                     thp = 100, tht = 80, bht = 180, 
                                     API = 40, gas.sg = 0.70, wat.sg = 1.05, if.tens = 30)
 
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.000001)
 
-df <- runVLP(well.input = input.example.P44, well.model)
-df
+runVLP(well.input = input.example.P44, well.model)
 ```
+
+
+## Calculate only fluid temperature
+
+```{r rows.print=30}
+# Example Problem from Guo book
+library(rNodal)
+# get only the variable we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+well_table <- runVLP(well.input = input.example.P44,
+                     well.model)[, c("depth", "dL", "pres", "temp")]    
+
+input.example.guo.44 <- setWellInput(field.name = "HAGBR.MOD",
+                                    well.name = "Guo_P44", 
+                                    depth.wh = 0, depth.bh = 9700, diam.in = 1.995, 
+                                    GLR = 362.7, liq.rt = 758, wcut = 0.1, 
+                                    thp = 100, tht = 80, bht = 180, 
+                                    API = 40, gas.sg = 0.70, wat.sg = 1.05, if.tens = 30,
+                                    U = 3)   # decreasing the U
+
+
+well_parameters <- get_well_parameters(input.example.guo.44)
+
+# temp.gradient calculates the fluid temperature coming from the wellbore
+rNodal:::temp.gradient(well_table, well_parameters)  
+```
+
+
+## Data for unit testing
+
+
+    MD      TVD     Pres    Temp
+    0	    0	    100.0	92.7	
+    248.7	248.7	129.5	95.2	
+    497.4	497.4	160.3	97.8	
+    746.2	746.2	192.3	100.4	
+    994.9	994.9	225.6	102.9	
+    1243.6	1243.6	260.0	105.5	
+    1492.3	1492.3	295.6	108.1	
+    1741.0	1741.0	332.2	110.6	
+    1989.7	1989.7	370.0	113.2	
+    2238.5	2238.5	408.7	115.7	
+    2487.2	2487.2	448.5	118.3	
+    2735.9	2735.9	489.4	120.8	
+    2984.6	2984.6	532.8	123.4	
+    3233.3	3233.3	578.7	125.9	
+    3482.1	3482.1	627.1	128.5	
+    3730.8	3730.8	678.2	131.0	
+    3979.5	3979.5	731.8	133.6	
+    4228.2	4228.2	788.0	136.1	
+    4476.9	4476.9	846.7	138.7	
+    4725.6	4725.6	907.8	141.2	
+    4974.4	4974.4	971.3	143.7	
+    5223.1	5223.1	1037.2	146.2	
+    5471.8	5471.8	1105.3	148.7	
+    5720.5	5720.5	1175.5	151.2	
+    5969.2	5969.2	1247.7	153.6	
+    6217.9	6217.9	1323.9	156.0	
+    6466.7	6466.7	1401.5	158.4	
+    6715.4	6715.4	1480.3	160.8	
+    6964.1	6964.1	1560.3	163.1	
+    7212.8	7212.8	1641.3	165.4	
+    7461.5	7461.5	1723.0	167.5	
+    7710.3	7710.3	1804.6	169.7	
+    7959.0	7959.0	1886.3	171.7	
+    8207.7	8207.7	1968.0	173.5	
+    8456.4	8456.4	2049.8	175.2	
+    8705.1	8705.1	2131.6	176.8	
+    8953.8	8953.8	2213.3	178.1	
+    9202.6	9202.6	2295.2	179.1	
+    9451.3	9451.3	2377.0	179.8	
+    9700.0	9700.0	2458.9	180.0	
