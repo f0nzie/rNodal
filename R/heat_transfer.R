@@ -1,6 +1,8 @@
 
 
 temp.fluid <- function(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate) {
+    # old function
+    # DO NOT USE
     ge <- (bht - tht) / depth
     k <- U * pi * diam.ft / mass.rate / cp.avg
     A <- 1 / k                   # relaxation distance by Ramey. Shoham, pg 297

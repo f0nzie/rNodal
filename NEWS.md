@@ -1,4 +1,6 @@
 ## 20170714 0.0.2.9002
+*
+
 
 ## 20170710 0.0.2.9001
 * add Hmisc to Imports to use list.tree in vignette C13
