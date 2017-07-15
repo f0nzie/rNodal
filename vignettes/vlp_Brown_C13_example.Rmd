@@ -9,7 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
 
+## Calculate VLP using Hagedorn-Brown (no heat transfer)
 
 ```{r rows.print=30}
 library(rNodal)
@@ -18,7 +22,6 @@ library(rNodal)
 # P2 (pressure at end point is given). 
 # The question is: what is the length of the tubing.
 # P2 = 1000 psia
-
 
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
@@ -34,11 +37,16 @@ df <- runVLP(well.input = input.example.C13, well.model)
 df
 ```
 
-p30 = 1043.8745
-p30 = 1043.8793
-p30 = 1045.1834
-p30 = 1043.1091 (after using p.avg and t.avg)
-p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
+### previous data (unit testing)
+
+    p30 = 1043.8745
+    p30 = 1043.8793
+    p30 = 1045.1834
+    p30 = 1043.1091 (after using p.avg and t.avg)
+    p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
+
+
+### where the HDF5 file is
 
 [link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 
@@ -46,7 +54,7 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
 
 [h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
 
-
+### results for unit testing
 
         0	    0   	500.0	135.8
         242.7	242.7	563.1	137.9
@@ -62,3 +70,82 @@ p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
         2670.0	2670.0	1255.9	150.0
         
         
+## Heat transfer calculations
+Grab only few variables from the VLP final table above.
+
+```{r rows.print=30}
+# calculate the fluid temperature in the well
+# input: deviation survey and well calculated parameters: uses new functions: 
+#        get_well_parameters
+#        rNodal:::temp.gradient
+
+library(rNodal)
+
+# get only the variable we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+well_table <- df[, c("depth", "dL", "pres", "temp")]    
+
+input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
+                                    well.name = "Brown_C13", 
+                                    depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+                                    GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                                    thp = 500, tht = 120, bht = 150, 
+                                    API = 22, gas.sg = 0.65, wat.sg = 1.07)
+
+well_parameters <- get_well_parameters(input.example.C13)
+
+# temp.gradient calculates the fluid temperature coming from the wellbore
+rNodal:::temp.gradient(well_table, well_parameters)         
+
+```
+
+
+
+
+```{r}
+# this tests if new function get_well_parameters() returns all what's needed for heat transfer
+library(rNodal)
+# library(Hmisc)
+
+input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
+                                    well.name = "Brown_C13", 
+                                    depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+                                    GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                                    thp = 500, tht = 120, bht = 150, 
+                                    API = 22, gas.sg = 0.65, wat.sg = 1.07)
+# input.example.C13
+# getBasicCalcs(input.example.C13)
+well_params <- get_well_parameters(input.example.C13)
+Hmisc::list.tree(well_params, maxcomp = 40)
+```
+
+
+```{r}
+# rhis in an old version where all well parameters had to be spelled out
+# parameters necessary to calculate the fluid temperature
+theta   <-  pi /2
+diam.in <- 1.995
+diam.ft <- diam.in / 12
+tht     <- 120
+bht     <- 150
+depth   <- 2670
+ge      <- (bht - tht) / depth
+mass.rate <- 228145
+U <-  2
+# U <- 4
+cp.avg <- (0.53 + 0.5 + 1 ) / 3
+
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)
+# we don't want all parameters spelled out      ^   ^      ^     ^      ^      ^     
+```
+
+
+
+```{r}
+# library(Hmisc)
+X <- list(a=ordered(c(1:30,30:1)),b=c("Rick","John","Allan"),
+          c=diag(300),e=cbind(p=1008:1019,q=4))
+Hmisc::list.tree(X)
+```
+

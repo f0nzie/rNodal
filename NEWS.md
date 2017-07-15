@@ -1,5 +1,6 @@
 ## 20170710 0.0.2.9001
 * use pres. average instead of pres at the end
+* add Hmisc to Imports to use list.tree in vignette C13
 * 
 
 

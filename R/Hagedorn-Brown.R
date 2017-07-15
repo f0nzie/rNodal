@@ -18,7 +18,7 @@ hagbr.mod <- function(pres, temp, well.params) {
         # mass = mass.total
 
         # 4. calculate the mass flow rate w = m * q
-        mass.rt = mass.total * liq.rt
+        # mass.rt = mass.total * liq.rt
 
         #out <- named.list(dp.dz, mass, mass.rt)
 

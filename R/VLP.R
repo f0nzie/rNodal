@@ -61,6 +61,11 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
 #' @param ed        relative rougness
 #' @param if.tens   interfacial tension between ...
 #' @param salinity  water salinity
+#' @param oil.cp    heat capacity of oil
+#' @param gas.cp    heat capacity of gas
+#' @param wat.cp    heat capacity of water
+#' @param U         overall heat transfer coefficient
+#' @param angle     angle of the well to the horizontal
 #' @rdname setWellInput-VLP
 #' @export
 setWellInput <- function( field.name = "HAGBR.GUO",
@@ -80,7 +85,12 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             oil.visc  = 5,
                             ed        = 0.0006,      # relative roughness
                             if.tens   = 30,
-                            salinity  = 0
+                            salinity  = 0,
+                            U         = 8.0,         # heat transfer coefficient
+                            oil.cp    = 0.53,        # heat capacity
+                            gas.cp    = 0.5,
+                            wat.cp    = 1.0,
+                            angle     = pi/2
                         ) {
 
     # well input parameters
@@ -92,8 +102,12 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             thp, liq.rt, wcut,
                             API, oil.visc,
                             gas.sg, GLR,
-                            wat.sg, salinity,
-                            if.tens
+                            wat.sg,
+                            salinity,
+                            if.tens,
+                            U,
+                            oil.cp, gas.cp, wat.cp,
+                            angle
     )
     return(out)
 }
@@ -115,6 +129,7 @@ getBasicCalcs <- function(well.input) {
 
         # convert tubing diameter to ft
         diam <- diam.in /12
+        diam.ft <- diam.in / 12
 
         # calculate area in ft^2
         area <- pi / 4 * diam^2
@@ -145,20 +160,39 @@ getBasicCalcs <- function(well.input) {
 
         # TODO: calculate fluid properties at P, T conditions
 
+        # 4. calculate the mass flow rate w = m * q
+        mass.rt  <-  mass.total * liq.rt
+        mass.rate <- mass.rt
+
+        # heat capacity
+        cp.avg <- (oil.cp + gas.cp + wat.cp) /3
+
         # calculated
         out.calc <- named.list( temp.grad,
-                                diam, area,
+                                diam, area, diam.ft,         # added diam.ft
                                 oil.sg,
                                 oil.fraction, wat.fraction, WOR,
                                 oil.rt, gas.rt, wat.rt,
                                 mass.total,
-                                GOR
+                                GOR,
+                                mass.rt, mass.rate,
+                                cp.avg
         )
         return(out.calc)
     })
 }
 
 
+#' Get the well input together with the basic calculations
+#'
+#' @param well.input the well input
+#' @export
+get_well_parameters <- function(well.input) {
+    # perform basic calculations on the well input
+    basic.calcs <-  getBasicCalcs(well.input)
+    well.parameters <- c(well.input, basic.calcs)
+    well.parameters
+}
 
 
 
@@ -220,15 +254,15 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
         # Consider that in R for length.out parameter. index starts at 1 not 0
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
-
         depth.top <- depths[1]                # take the the first depth
+
         dp.dz     <- dp.dz.ini                # 1st approximation of the gradient
         p0        <- thp                      # the initial pressure
         t0        <- tht                      # initial temperature
         dt.dz     <- temp.grad                # temperature gradient at inlet
 
         segment_row_vector <- vector("list", n)
-        iter_row_vector <- vector("list")
+        iter_row_vector    <- vector("list")
 
         cum_iter <- 1                      # counter for all iterations
         for (i in seq_len(n)) {            # n is the number of depths = # rows
@@ -238,10 +272,11 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                 depth.prev = depths[i-1]   # otherwise, use the previous depth
             }
             dL  <- depths[i] - depth.prev       # calculate dL
+
             p1  <- p0 + dp.dz * dL              # calculate outlet pressure
             t1  <- t0 + dt.dz * dL              # calculate outlet temperature
-            eps <-  1                           # initial value for epsilon
 
+            eps <-  1                           # initial value for epsilon
             # here we start iterating for the pressure gradient
             iter_dpdz <- 1                      # AE: absolute error
             while (eps > tol) {           # loop until AE greater than tolerance
