@@ -160,6 +160,7 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
 
 ### results for unit testing
 
+        MD      TVD     Pres    Temp
         0	    0   	500.0	135.8
         242.7	242.7	563.1	137.9
         485.5	485.5	627.5	139.8
