@@ -266,24 +266,20 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
 
         cum_iter <- 1                      # counter for all iterations
         for (i in seq_len(n)) {            # n is the number of depths = # rows
-            if (i == 1) {                  # make the previous depth the top
-                depth.prev = depth.top     # but do this only for the 1st row
-            } else {
-                depth.prev = depths[i-1]   # otherwise, use the previous depth
-            }
+            # make the previous depth the top but do this only for the 1st row
+            # otherwise, use the previous depth
+            if (i == 1) depth.prev = depth.top else depth.prev = depths[i-1]
             dL  <- depths[i] - depth.prev       # calculate dL
-
+            # prepare p1, t1 for iteration
             p1  <- p0 + dp.dz * dL              # calculate outlet pressure
             t1  <- t0 + dt.dz * dL              # calculate outlet temperature
-
             eps <-  1                           # initial value for epsilon
-            # here we start iterating for the pressure gradient
             iter_dpdz <- 1                      # AE: absolute error
+            # here we start iterating for the pressure gradient
             while (eps > tol) {           # loop until AE greater than tolerance
                 p.avg <- (p0 + p1) / 2    # try with an initial pressure
                 t.avg <- (t0 + t1) / 2
-
-                # calculate pressure losses using selected correlation
+                # calculate pressure losses using correlation VLP.function()
                 corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
