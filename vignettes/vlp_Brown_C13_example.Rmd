@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.a
 
 ```{r rows.print=30}
 library(rNodal)
+library(tibble)
 
 # Example from C.13 in Brown
 # P2 (pressure at end point is given). 
@@ -34,7 +35,7 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
 
-runVLP(well.input = input.example.C13, well.model)
+as.tibble(runVLP(well.input = input.example.C13, well.model))
 ```
 
         
@@ -62,7 +63,8 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
                                     GLR = 500, liq.rt = 1000, wcut = 0.6, 
                                     thp = 500, tht = 120, bht = 150, 
-                                    API = 22, gas.sg = 0.65, wat.sg = 1.07)
+                                    API = 22, gas.sg = 0.65, wat.sg = 1.07,
+                                  U = 17)
 
 well_parameters <- get_well_parameters(input.example.C13)
 
@@ -92,13 +94,15 @@ Added new calculated objects:
 library(rNodal)
 
 well_table <- runVLP(well.input = input.example.C13, 
-                     well.model)[, c("depth", "dL", "pres", "temp")]    
+                     well.model)[, c("depth", "dL", "pres", "temp")]   
+
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
                                     depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
                                     GLR = 500, liq.rt = 1000, wcut = 0.6, 
                                     thp = 500, tht = 120, bht = 150, 
-                                    API = 22, gas.sg = 0.65, wat.sg = 1.07)
+                                    API = 22, gas.sg = 0.65, wat.sg = 1.07,
+                                  U = 17)
 # input.example.C13
 # getBasicCalcs(input.example.C13)
 well_params <- get_well_parameters(input.example.C13)
@@ -113,7 +117,8 @@ rNodal:::temp.gradient(well_table, well_parameters)
 ```{r rows.print=30}
 # this in an old version where all well parameters had to be spelled out
 # parameters necessary to calculate the fluid temperature
-well_table <- df[, c("depth", "dL", "pres", "temp")]    
+well_table <- runVLP(well.input = input.example.C13, 
+                     well.model)[, c("depth", "dL", "pres", "temp")] 
 
 theta   <-  pi /2
 diam.in <- 1.995
@@ -123,7 +128,7 @@ bht     <- 150
 depth   <- 2670
 ge      <- (bht - tht) / depth
 mass.rate <- 228145
-U <-  2
+U <-  17
 # U <- 4
 cp.avg <- (0.53 + 0.5 + 1 ) / 3
 
