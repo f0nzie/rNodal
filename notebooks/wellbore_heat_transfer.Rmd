@@ -1,0 +1,136 @@
+---
+title: "Wellbore heat transfer"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+
+
+```{r rows.print=30}
+well <- "
+depth	dL	pres	temp
+0	0	200	80.0
+334	334	267	83.4
+669	334	339	86.9
+1003	334	415	90.3
+1338	334	495	93.8
+1672	334	580	97.2
+2007	334	667	100.7
+2341	334	756	104.1
+2676	334	849	107.6
+3010	334	944	111.0
+3345	334	1042	114.5
+3679	334	1141	117.9
+4014	334	1242	121.4
+4348	334	1344	124.8
+4683	334	1449	128.3
+5017	334	1554	131.7
+5352	334	1661	135.2
+5686	334	1769	138.6
+6021	334	1878	142.1
+6355	334	1988	145.5
+6690	334	2099	149.0
+7024	334	2210	152.4
+7359	334	2323	155.9
+7693	334	2436	159.3
+8028	334	2549	162.8
+8362	334	2664	166.2
+8697	334	2778	169.7
+9031	334	2894	173.1
+9366	334	3009	176.6
+9700	334	3125	180.0
+"
+
+# read string text to dataframe
+well_table <- read.table(header = TRUE, text = well)
+well_table
+
+```
+
+```{r rows.print=30}
+# parameters necessary to calculate the fluid temperature
+theta   <-  pi /2
+diam.in <- 1.995
+diam.ft <- diam.in / 12
+tht     <- 80
+bht     <- 200
+depth   <- 9700
+ge      <- (bht - tht) / depth
+mass.rate <- 228145
+U <-  2
+# U <- 4
+cp.avg <- (0.53 + 0.5 + 1 ) / 3
+
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)
+```
+
+
+
+
+
+
+```{r rows.print=30}
+# using Prosper equation
+# U = 8
+# Cp <- (0.53 + 0.5 + 1 ) / 3
+# k <- U * pi * diam.ft / m / Cp
+# Ti <- bht
+# 
+# for (i in nrow(well_table):1) {
+#     L  <- depth - well_table[i, "depth"]
+#     dL <- well_table[i, "dL"]
+#     Tei <- well_table[i, "temp"]
+#     dT.dx <- k * (Ti - Tei + ge * L * sin(theta))
+#     Ti <- Ti - dT.dx * dL
+#     
+#     # cat(sprintf("%3d %10.0f %10.2f %12.6f %12.3f \n", i, L, Tei, dT.dx, Ti))
+#     well_table[i, "L"]  <- L
+#     well_table[i, "dT.dx"]  <- dT.dx
+#     well_table[i, "Ti"] <- Ti
+# }
+# print(well_table)
+# 
+# library(ggplot2)
+# 
+# ggplot(well_table, aes(x = Ti, y = depth)) +
+#     geom_point() + scale_y_continuous(trans = "reverse") +
+#     scale_x_continuous(lim = c(0, 200))
+
+```
+
+
+
+
+
+
+```{r rows.print=30}
+# using Ramey's equation
+U <- 4
+Cp <- (0.53 + 0.5 + 1) / 3
+k <- U * pi * diam.ft / m / Cp
+A <- 1 / k                      # relaxation distance by Ramey. Shoham, pg 297
+
+Ti <- bht
+for (i in nrow(well_table):1) {
+    L <- depth - well_table[i, "depth"]
+    Tei <- well_table[i, "temp"]
+    Ti <- (Tei - ge * L * sin(theta)) +
+          (Ti - Tei) * exp(-L/A) +
+        ge * A * sin(theta) * (1 - exp(-L/A))
+    
+    # cat(sprintf("%3d %10.0f %10.2f \n", i, L, Ti))
+    well_table[i, "L"]  <- L
+    well_table[i, "Ti"] <- Ti
+}
+print(well_table)
+
+library(ggplot2)
+
+ggplot(well_table, aes(x = Ti, y = depth)) +
+    geom_point() + scale_y_continuous(trans = "reverse") +
+    scale_x_continuous(lim = c(0, 200))
+```
+
+

@@ -8,7 +8,7 @@ Note: it doesn't unload the functions sourced yet}
 loadVLP(model)
 }
 \arguments{
-\item{model}{the model name}
+\item{model}{the model name       string}
 }
 \description{
 Load only the source necessary for model or correlation

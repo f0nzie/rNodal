@@ -88,7 +88,7 @@ test_that("VLP Oilwell_01 output is the same as check rda file", {
     well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
     result <- runVLP(well.input = input_example, well_model)
 
-    rda_file <- "oilwell_01.rda"
+    rda_file <- "brown_oilwell01.rda"
     ds_name <- tools::file_path_sans_ext(rda_file)
     if (!file.exists(rda_file)) {
         assign(ds_name, result)
