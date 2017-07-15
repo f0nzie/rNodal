@@ -1,8 +1,22 @@
 ## 20170710 0.0.2.9001
-* use pres. average instead of pres at the end
 * add Hmisc to Imports to use list.tree in vignette C13
-* 
-
+* use pres. average instead of pres at the end
+* change name of test dataset to brown_oilwell01.rda
+* add function temp.fluid to calculate fluid temperaturem to heat_transger.R
+* add VLP class to class-VLP.R. But not used yet
+* add notebook to test VLP class
+* add new script all_generics.R
+* calculate the mass flow rate w = m * q
+* move mass.rate object from Hagedorn-Brown.R to VLP.R
+* copy example from heat_transfer notebook to vignette C13
+* add U, oil.cp, gas.cp, wat.cp to well input
+* add calculation of Cp average
+* add new function get_well_parameters that combines the well input and the basic calculations
+* add functions shift and na.zero to calculate the angle of a deviation survey.
+* finding angle from MD, TVD working
+* add diam.organize notebook on "build deviation survey with angles". add sections.ft object because causes vignette C13 to crash
+* Merge branch 'mass.rate_to_well_params' into feature/0.0.2.9001
+* Merge branch 'feature/0.0.2.9001' into develop
 
 ## 20170709 0.0.2.9000
 * rename VLP scripts to author names separated by dashes.
