@@ -238,7 +238,6 @@ runVLP <- function(well.input, model.parameters) {
 #' @export
 VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
     # called by runVLP()
-
     with(as.list(c(well.parameters, model.parameters)),
     {
         .saveSlot(field.name, well.name)    # get datetime slot for saving
@@ -283,10 +282,10 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                 corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
-
+                # calculate new pressure
                 p.calc <- p0 - (-dp.dz) * dL # negative, we are going down
                 eps    <- abs( (p1 - p.calc) / p.calc )  # absolute error
-
+                # build iteration vector
                 iter_row_vector[[cum_iter]] <- list(segment = i,
                                   iter_dpdz = as.integer(iter_dpdz),
                                   epsilon = eps,
@@ -295,14 +294,12 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                                   depth = depths[i], dL = dL,
                                   dp.dz = dp.dz, temp = t1
                                   )
-
                 if (eps >= tol) p1 = p.calc   # if error too big, iterate again
                 iter_dpdz <- iter_dpdz + 1           # with a a new p1
                 cum_iter <- cum_iter + 1           # number of total iterations
             } # end of while
-
-            # build a row-vector out of:
-            #     depth, dL, temperature, pressure, segment, correlation results
+            # build a row-vector out of: depth, dL, temperature, pressure,
+            # segment, correlation results
             segment_row_vector[[i]] <- c(
                             i = i,             # row
                             depth = depths[i], # depth
@@ -314,10 +311,8 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
                             segment = i-1,     # segment number
                             corr               # correlation results
                             )
-
             p0 = p.calc   # assign p1 to the inlet pressure of new segment, p0
             t0 = t1       # do the same with the temperature
-
     } # end for
         iter.tbl <- data.table::rbindlist(iter_row_vector) # build iterations DF
         # print(iter.tbl)                        # show the dataframe
