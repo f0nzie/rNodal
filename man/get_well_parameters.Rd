@@ -2,7 +2,7 @@
 % Please edit documentation in R/VLP.R
 \name{get_well_parameters}
 \alias{get_well_parameters}
-\title{Get the well input and the basic calculations}
+\title{Get the well input together with the basic calculations}
 \usage{
 get_well_parameters(well.input)
 }
@@ -10,5 +10,5 @@ get_well_parameters(well.input)
 \item{well.input}{the well input}
 }
 \description{
-Get the well input and the basic calculations
+Get the well input together with the basic calculations
 }

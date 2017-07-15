@@ -105,7 +105,7 @@ rNodal:::temp.gradient(well_table, well_parameters)
 ```{r}
 # this tests if new function get_well_parameters() returns all what's needed for heat transfer
 library(rNodal)
-library(Hmisc)
+# library(Hmisc)
 
 input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                     well.name = "Brown_C13", 
@@ -116,7 +116,7 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
 # input.example.C13
 # getBasicCalcs(input.example.C13)
 well_params <- get_well_parameters(input.example.C13)
-list.tree(well_params, maxcomp = 40)
+Hmisc::list.tree(well_params, maxcomp = 40)
 ```
 
 
@@ -143,9 +143,9 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
 
 
 ```{r}
-library(Hmisc)
+# library(Hmisc)
 X <- list(a=ordered(c(1:30,30:1)),b=c("Rick","John","Allan"),
           c=diag(300),e=cbind(p=1008:1019,q=4))
-list.tree(X)
+Hmisc::list.tree(X)
 ```
 
