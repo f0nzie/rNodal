@@ -8,6 +8,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
 
 ## Example C44 by Hagendorn-Brown
 This notebook runs the modified Hagedorn-Brown correlation calculated according
@@ -21,6 +24,7 @@ The pressures at both ends of the tubing: P1 is 500 psia and P2 1000 psia.
 
 ```{r rows.print=30}
 library(rNodal)
+library(tibble)
 
 # Example from C.44 in Brown's book
 # P2 (pressure at end point is given in the original example). 
@@ -48,14 +52,13 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
 
 
-df <- runVLP(well.input = input_example, well_model)
-df
+as.tibble(runVLP(well.input = input_example, well_model))
 ```
 
-p30 = 906.7220
-p30 = 906.7217 (with zFactor)
-p30 = 908.1580
-p30-9 = 958.1
+    p30 = 906.7220
+    p30 = 906.7217 (with zFactor)
+    p30 = 908.1580
+    p30-9 = 958.1
 
 [h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
 
