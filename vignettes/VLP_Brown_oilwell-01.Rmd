@@ -118,3 +118,38 @@ as.tibble(runVLP(well.input = input_example, well_model))
      2	 05/21/2011	 Test 2	    521	 134.2	 0.5    7915.3	 6250	 1623.8	 3910.16	 800	 0	
      3	 10/07/2011	 Test 3	    765	 118	 1.9	5636.9	 6250	 1962.6	 3778.13	 800	 0	
 
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+
+md_tvd_01 <- "
+MD      TVD 
+0	     0	 
+600	    600
+1005	 1000
+4075	 4000
+7700	 7500
+9275	 9000
+"
+
+deviation_survey <- set_deviation_survey(md_tvd_01)
+rNodal:::calc_angle_deviation_survey(deviation_survey)
+```
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+# we obtain the agle but the reference is set as the horizontal
+
+md_tvd_01 <- "
+MD      TVD 
+0	     0	 
+600	    600
+1005	 1000
+4075	 4000
+7700	 7500
+9275	 9000
+"
+
+deviation_survey <- set_deviation_survey(md_tvd_01)
+rNodal:::calc_angle_deviation_survey(deviation_survey, reference = "horizontal")
+```

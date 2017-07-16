@@ -30,8 +30,9 @@ set_deviation_survey <- function(well_as_string) {
 }
 
 
-calc_angle_deviation_survey <- function(well_table) {
+calc_angle_deviation_survey <- function(well_table, reference = "vertical") {
     # create table with delta MD, TVD, radian, degrees
+    # also includes the reference: vertical or horizontal
     # calculate delta MD
     sh <- 1
     .md2 <- well_table[, "MD"]
@@ -44,7 +45,11 @@ calc_angle_deviation_survey <- function(well_table) {
     well_table[, "delta.tvd"] <- well_table[, "TVD"] - tvd2
 
     # calculate the angle for each of the segments
-    well_table[, "radians"] <- acos(well_table[, "delta.tvd"] / well_table[, "delta.md"])
+    if (reference == "vertical")
+        well_table[, "radians"] <- acos(well_table[, "delta.tvd"] / well_table[, "delta.md"])
+    if (reference == "horizontal")
+        well_table[, "radians"] <- asin(well_table[, "delta.tvd"] / well_table[, "delta.md"])
+
     well_table[, "degrees"] <- well_table[, "radians"] * 180 / pi
 
     # fill NAs with zeroes

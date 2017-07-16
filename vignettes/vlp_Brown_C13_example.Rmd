@@ -197,8 +197,6 @@ MD      TVD
 "
 
 deviation_survey <- set_deviation_survey(well_as_text)
-
-
 ```
 
 ```{r}
