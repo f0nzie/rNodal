@@ -135,8 +135,53 @@ MD      TVD
 "
 
 deviation_survey <- set_deviation_survey(md_tvd_01)
-rNodal:::calc_angle_deviation_survey(deviation_survey)
+angle_deviation_survey <- rNodal:::calc_angle_deviation_survey(deviation_survey)
+dataFrame <- angle_deviation_survey
 ```
+
+```{r}
+# split the MD of the well in equal parts but a total of "n" segments
+split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(angle_deviation_survey), "MD"], length.out = 40)
+
+# add the known MD values to the sequence. Now the length is little bit longer
+md <- angle_deviation_survey[["MD"]]
+add_md <- sort(unique(c(md, split)))
+add_md
+```
+
+
+```{r}
+# iterate through dataframe
+ for (index in 1:nrow(dataFrame)) { 
+     row = dataFrame[index, ] 
+     # do stuff with the row 
+     # print(row[["MD"]])
+     cat(row[["MD"]], "\n")
+ } 
+```
+
+
+```{r}
+for (index in 1:nrow(dataFrame)) { 
+    row = dataFrame[index, ] 
+    cat(row, "\n")
+    for (j in split) {
+        if (j < row[["MD"]]) 
+    }
+}
+```
+
+
+
+```{r}
+# split the tubing in dx pieces
+apply(angle_deviation_survey, 1, function(x) x["MD"] 
+)
+```
+
+
+
+
 
 ```{r}
 # in Prosper the angle is measured againt the vertical
