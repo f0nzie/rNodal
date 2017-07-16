@@ -137,6 +137,7 @@ MD      TVD
 deviation_survey <- set_deviation_survey(md_tvd_01)
 angle_deviation_survey <- rNodal:::calc_angle_deviation_survey(deviation_survey)
 dataFrame <- angle_deviation_survey
+dataFrame
 ```
 
 ```{r}
@@ -161,12 +162,43 @@ add_md
 ```
 
 
+
+```{r}
+df <- data.frame()     # new long dataframe
+index <- 1             # index the small dataframe
+tvd <- 0 
+for (j in 1:length(add_md)) {  # iterate through the sequence
+    row = dataFrame[index, ]   # get a row of the deviation survey
+    cat(index)
+    df[j, "md"]  <- add_md[j]  # assign MD in sequence to md in long dataframe
+    df[j, "seg"] <- index      # assign 
+    if (j == 1)                 # if it is the first row
+        df[j, "delta.md"] <- add_md[j]
+    else
+        df[j, "delta.md"] <- add_md[j] - df[j-1, "md"]
+    
+    df[j, "radians"] <- row[["radians"]]
+    df[j, "degrees"] <- row[["degrees"]]
+    df[j, "delta.tvd"] <- cos(row[["radians"]]) * df[j, "delta.md"] # calculate delta TVD
+    tvd <- tvd + df[j, "delta.tvd"]        # add delta.tvd
+    df[j, "tvd"] <- tvd                    # tvd column
+    if (add_md[j] >= row[["MD"]]) {        # switch to next deviation branch
+        index <- index + 1
+    }
+    
+}
+```
+
+
 ```{r}
 for (index in 1:nrow(dataFrame)) { 
     row = dataFrame[index, ] 
-    cat(row, "\n")
-    for (j in split) {
-        if (j < row[["MD"]]) 
+    # cat(row, "\n")
+    for (j in add_md) {
+        if (j <= row[["MD"]]) {
+            cat(sprintf("%12f %12f \n", j, row[["MD"]]))
+            # print(row[["MD"]][index] * sin(row[["radians"]][index]))
+        }
     }
 }
 ```
