@@ -18,6 +18,46 @@ saveToProjectEnv("TEMP.STD", 60)
 saveToProjectEnv("TEMP.RANKINE", 460)
 
 
+split_well_in_deltas <- function(md_vector, by, length.out) {
+    stopifnot(is.numeric(md_vector))
+    stopifnot(!all(missing(by) && missing(length.out)))
+
+    # split the MD of the well in equal parts but a total of "n" segments
+    if (missing(by)) split <- seq.int(min(md_vector), max(md_vector), length.out = length.out)
+    if (missing(length.out)) split <- seq.int(min(md_vector), max(md_vector), by = by)
+
+    # add the known MD values to the sequence. Now the length is little bit longer
+    add_md <- sort(unique(c(md_vector, split)))
+    add_md
+}
+
+
+build_survey_with_deltas <- function(dataFrame, add_md) {
+    # reconstruct MD v TVD but for the partitioned well in delta-x
+    df <- data.frame()     # new long dataframe
+    index <- 1             # index the small dataframe
+    tvd <- 0
+    for (j in 1:length(add_md)) {  # iterate through the sequence
+        row = dataFrame[index, ]   # get a row of the deviation survey
+        df[j, "md"]  <- add_md[j]  # assign MD in sequence to md in long dataframe
+        df[j, "seg"] <- index      # assign
+        if (j == 1)                 # if it is the first row
+            df[j, "delta.md"] <- add_md[j]
+        else
+            df[j, "delta.md"] <- add_md[j] - df[j-1, "md"]
+
+        df[j, "radians"] <- row[["radians"]]
+        df[j, "degrees"] <- row[["degrees"]]
+        df[j, "delta.tvd"] <- cos(row[["radians"]]) * df[j, "delta.md"] # calculate delta TVD
+        tvd <- tvd + df[j, "delta.tvd"]        # add delta.tvd
+        df[j, "tvd"] <- tvd                    # tvd column
+        if (add_md[j] >= row[["MD"]]) {        # switch to next deviation branch
+            index <- index + 1
+        }
+    }
+    df
+}
+
 
 #' Build the deviation survey table given MD and TVD
 #'

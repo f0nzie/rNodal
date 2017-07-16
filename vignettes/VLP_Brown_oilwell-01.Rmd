@@ -140,9 +140,25 @@ dataFrame <- angle_deviation_survey
 dataFrame
 ```
 
+
+```{r}
+# split deviated well in two ways: by and length.out
+library(rNodal)
+md <- angle_deviation_survey[["MD"]]
+add_md_by <- rNodal:::split_well_in_deltas(md, by = 200)
+add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 20)
+```
+
+
+```{r}
+
+```
+
+
+
 ```{r}
 # split the MD of the well in equal parts but a total of "n" segments
-split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(angle_deviation_survey), "MD"], length.out = 40)
+split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(angle_deviation_survey), "MD"], length.out = 100)
 
 # add the known MD values to the sequence. Now the length is little bit longer
 md <- angle_deviation_survey[["MD"]]
@@ -151,25 +167,17 @@ add_md
 ```
 
 
-```{r}
-# iterate through dataframe
- for (index in 1:nrow(dataFrame)) { 
-     row = dataFrame[index, ] 
-     # do stuff with the row 
-     # print(row[["MD"]])
-     cat(row[["MD"]], "\n")
- } 
-```
 
 
 
 ```{r}
+# reconstruct MD v TVD but for the partitioned well in delta-x
 df <- data.frame()     # new long dataframe
 index <- 1             # index the small dataframe
 tvd <- 0 
 for (j in 1:length(add_md)) {  # iterate through the sequence
     row = dataFrame[index, ]   # get a row of the deviation survey
-    cat(index)
+    # cat(index)
     df[j, "md"]  <- add_md[j]  # assign MD in sequence to md in long dataframe
     df[j, "seg"] <- index      # assign 
     if (j == 1)                 # if it is the first row
@@ -185,10 +193,21 @@ for (j in 1:length(add_md)) {  # iterate through the sequence
     if (add_md[j] >= row[["MD"]]) {        # switch to next deviation branch
         index <- index + 1
     }
-    
 }
+df
 ```
 
+
+
+```{r}
+# iterate through dataframe
+ for (index in 1:nrow(dataFrame)) { 
+     row = dataFrame[index, ] 
+     # do stuff with the row 
+     # print(row[["MD"]])
+     cat(row[["MD"]], "\n")
+ } 
+```
 
 ```{r}
 for (index in 1:nrow(dataFrame)) { 
