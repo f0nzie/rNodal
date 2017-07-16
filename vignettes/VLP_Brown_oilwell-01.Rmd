@@ -86,15 +86,6 @@ as.tibble(runVLP(well.input = input_example, well_model))
 
 [3 runs inst/extdata](I:\src\rNodal\inst\extdata\brown_20170709.h5)
 
-   	     MD      TVD     CumDisp(ft) Angle(deg)
-     1	 0	     0	     0	         0	
-     2	 600	 600	 0	         0	
-     3	 1005	 1000	 63.4429	 9.01245	
-     4	 4075	 4000	 715.286	 12.2587	
-     5	 7700	 7500	 1659.02	 15.0902	
-     6	 9275	 9000	 2139.25	 17.7528	
-     
-
      
 
     Type        MD      ID(in)  Roughness(in) 
@@ -119,8 +110,19 @@ as.tibble(runVLP(well.input = input_example, well_model))
      3	 10/07/2011	 Test 3	    765	 118	 1.9	5636.9	 6250	 1962.6	 3778.13	 800	 0	
 
 
+## Calculate the angle for the original deviation survey
+
+   	     MD      TVD     CumDisp(ft) Angle(deg)
+     1	 0	     0	     0	         0	
+     2	 600	 600	 0	         0	
+     3	 1005	 1000	 63.4429	 9.01245	
+     4	 4075	 4000	 715.286	 12.2587	
+     5	 7700	 7500	 1659.02	 15.0902	
+     6	 9275	 9000	 2139.25	 17.7528
+
 ```{r}
 # in Prosper the angle is measured againt the vertical
+library(rNodal)
 
 md_tvd_01 <- "
 MD      TVD 
@@ -139,6 +141,7 @@ rNodal:::calc_angle_deviation_survey(deviation_survey)
 ```{r}
 # in Prosper the angle is measured againt the vertical
 # we obtain the agle but the reference is set as the horizontal
+library(rNodal)
 
 md_tvd_01 <- "
 MD      TVD 
