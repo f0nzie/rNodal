@@ -219,3 +219,16 @@ named.list <- function(...) {
     # nl <- setNames( list(...) , as.character( match.call()[-1]) )
     nl
 }
+
+
+
+get_list_examples <- function(folder = "examples", aPackage, ...) {
+    # this is where examples live
+    examples_dir <- system.file("examples", package = aPackage)
+
+    # get all the scripts that `App` in them
+    list.files(path = examples_dir, pattern = "*App", all.files = FALSE,
+               full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
+               include.dirs = FALSE, no.. = FALSE)
+
+}
