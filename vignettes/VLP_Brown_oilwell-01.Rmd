@@ -145,13 +145,13 @@ dataFrame
 # split deviated well in two ways: by and length.out
 library(rNodal)
 md <- angle_deviation_survey[["MD"]]
-add_md_by <- rNodal:::split_well_in_deltas(md, by = 200)
-add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 20)
-```
+add_md_by <- rNodal:::split_well_in_deltas(md, by = 50)
+add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
+add_md_by
+add_md_lo
 
-
-```{r}
-
+rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_by)
+rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_lo)
 ```
 
 
@@ -164,13 +164,8 @@ split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(an
 md <- angle_deviation_survey[["MD"]]
 add_md <- sort(unique(c(md, split)))
 add_md
-```
 
 
-
-
-
-```{r}
 # reconstruct MD v TVD but for the partitioned well in delta-x
 df <- data.frame()     # new long dataframe
 index <- 1             # index the small dataframe
