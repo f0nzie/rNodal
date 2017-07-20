@@ -14,7 +14,7 @@ library(tibble)
 # The final results are very close to those of Brown.
 
 
-vlp_brown_c44_App <- function(vars, verbose = FALSE) {
+.vlp_brown_c44_App <- function(...) {
 
     input_example <- setWellInput(field.name = "HAGBR.MOD",
                                   well.name = "Brown_C44",
@@ -25,9 +25,10 @@ vlp_brown_c44_App <- function(vars, verbose = FALSE) {
                                   API = 42, oil.visc = 1.0,
                                   gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
     )
-
     well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
-    as.tibble(runVLP(well.input = input_example, well_model))[, vars]
-
+    as.tibble(runVLP(well.input = input_example, well_model))
 }
 
+vlp_brown_c44_App <- function(vars, verbose = FALSE) {
+    .vlp_brown_c44_App(verbose)[, vars]
+}

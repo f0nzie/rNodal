@@ -7,7 +7,7 @@ library(tibble)
 # P2 = 1000 psia
 
 
-vlp_brown_c13_App <- function(vars, verbose = FALSE) {
+.vlp_brown_c13_App <- function(...) {
 
     input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
                                       well.name = "Brown_C13",
@@ -17,9 +17,12 @@ vlp_brown_c13_App <- function(vars, verbose = FALSE) {
                                       API = 22, gas.sg = 0.65, wat.sg = 1.07, if.tens = 30)
 
     well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
+    as.tibble(runVLP(well.input = input.example.C13, well.model))
 
-    as.tibble(runVLP(well.input = input.example.C13, well.model))[, vars]
+}
 
+vlp_brown_c13_App <- function(vars, verbose = FALSE) {
+    .vlp_brown_c13_App(verbose)[, vars]
 }
 
 # df <- vlp_brown_c13_App(vars = c("depth", "dL"))

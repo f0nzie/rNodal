@@ -25,6 +25,11 @@ expected <- list(
         vlp_brown_ow01_App = list(
             vars = c("depth", "dL", "pres", "z"),
             row_vector = list(depth =  9275, dL = 319.8276, pres = 769.3803, z = 0.9235756),
+            tolerance  = 1e-6),
+
+        vlp_brown_guo_ep44_App = list(
+            vars = c("depth", "dL", "pres", "z"),
+            row_vector = list(depth =  9700, dL = 334.4828, pres = 1909.763, z = 0.8529847),
             tolerance  = 1e-6)
 
 ) # end of list for expected values
@@ -34,11 +39,10 @@ expected <- list(
 loop_on_examples <- function(aPackage, goDebug = FALSE) {
     examples <- rNodal:::get_list_examples(aPackage = aPackage)
     # loop to open each file
-    # goDebug <- FALSE
     nmax <- 0
     if (goDebug) {
         nmax <- 6
-        rng <- 3:3
+        rng <- 1:5
         examples <- examples[rng]          # reduce the list for debugging
     }
     i <- 1
@@ -61,7 +65,7 @@ loop_on_examples <- function(aPackage, goDebug = FALSE) {
     }
 }
 
-loop_on_examples(aPackage = "rNodal", goDebug = TRUE)
+loop_on_examples(aPackage = "rNodal", goDebug = FALSE)
 
 
 

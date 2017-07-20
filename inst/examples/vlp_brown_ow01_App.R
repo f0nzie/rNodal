@@ -3,7 +3,7 @@ library(tibble)
 
 # Example from Prosper oil well 01. Dry version
 
-vlp_brown_ow01_App <- function(vars, verbose = FALSE) {
+.vlp_brown_ow01_App <- function(...) {
 
     input_example <-  setWellInput(field.name = "HAGBR.MOD",
                                    well.name = "Oilwell_01_Dry",
@@ -15,8 +15,10 @@ vlp_brown_ow01_App <- function(vars, verbose = FALSE) {
                                    gas.sg = 0.76, wat.sg = 1.07, if.tens = 30,
                                    salinity = 23000
     )
-
     well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
-    as.tibble(runVLP(well.input = input_example, well_model))[, vars]
+    as.tibble(runVLP(well.input = input_example, well_model))
 }
 
+vlp_brown_ow01_App <- function(vars, verbose = FALSE) {
+    .vlp_brown_ow01_App(verbose)[, vars]
+}
