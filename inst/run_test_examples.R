@@ -20,7 +20,13 @@ expected <- list(
         vlp_brown_c44_App = list(
             vars = c("depth", "dL", "pres", "z"),
             row_vector = list(depth = 3590, dL = 239.3333, pres = 905.1789, z = 0.9109475),
+            tolerance  = 1e-6),
+
+        vlp_brown_ow01_App = list(
+            vars = c("depth", "dL", "pres", "z"),
+            row_vector = list(depth =  9275, dL = 319.8276, pres = 769.3803, z = 0.9235756),
             tolerance  = 1e-6)
+
 ) # end of list for expected values
 
 
@@ -32,14 +38,14 @@ loop_on_examples <- function(aPackage, goDebug = FALSE) {
     nmax <- 0
     if (goDebug) {
         nmax <- 6
-        examples <- examples[1:nmax]          # reduce the list for debugging
+        rng <- 3:3
+        examples <- examples[rng]          # reduce the list for debugging
     }
     i <- 1
     for (app in examples) {
         application <- sub("\\.R$", '', app)
         cat(sprintf("\n %3d testing ... %30s", i, app))
         source(paste(system.file("examples", package = aPackage), app, sep ="/"))
-        # result  <- do.call(application, list(vars = c("depth", "dL"), verbose = FALSE))
         vars    <- expected[[application]]$vars
         result  <- do.call(application, list(vars, verbose = TRUE))
         .result <- as.list(result[nrow(result), ]);
@@ -50,13 +56,12 @@ loop_on_examples <- function(aPackage, goDebug = FALSE) {
             print(.result)}
         last_row <- expected[[application]]$row_vector
         expect_equal(.result, last_row, tolerance = expected[[application]]$tolerance)
-        # cat(expected[[application]]$tolerance)
         cat("\t tested")
         i <- i + 1
     }
 }
 
-loop_on_examples(aPackage = "rNodal", goDebug = FALSE)
+loop_on_examples(aPackage = "rNodal", goDebug = TRUE)
 
 
 
