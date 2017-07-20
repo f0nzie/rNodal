@@ -19,3 +19,8 @@ setGeneric("run_vlp_wellhead", function(object, ...) standardGeneric("run_vlp_we
 #' @rdname WellDeviationSurvey-class
 #' @export
 setGeneric("WellDeviationSurvey", function(md_tvd, ...) standardGeneric("WellDeviationSurvey"))
+
+#' @rdname WellDeviationSurvey-methods
+#' @export
+setGeneric("computeAngle", function(object, ...) standardGeneric("computeAngle"))
+

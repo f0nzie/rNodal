@@ -1,0 +1,52 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rNodal)
+
+well <- "
+    MD	TVD
+    0	    0
+    600	    600
+    1005	1000
+    4075	4000
+    7700	7500
+    9275	9000
+"
+
+# read string text to dataframe
+well_table <- WellDeviationSurvey(well)
+# well_table
+```
+
+```{r}
+well_table@md_tvd
+```
+
+```{r}
+well_table@wds_table
+```
+
+
+
+
+
+```{r}
+library(rNodal)
+
+well <- "
+    MD	
+    0	
+    600	
+    1005
+    4075
+    7700
+    9275
+"
+
+# read string text to dataframe
+well_table <- WellDeviationSurvey(well)
+```
+
