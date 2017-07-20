@@ -4,12 +4,12 @@
 # Gets the list of all applications by filtering those ending with `App`.
 # Removes the extension `.R` from each app and starts looping to call each of the
 # applications with `do.call`.
+#
 # A list contains the `expected` results that are compared against the result
 # coming out from the call to the R application.
 
 
 library(testthat)
-
 
 expected <- list(
         vlp_brown_c13_App = list(
@@ -39,9 +39,7 @@ expected <- list(
 loop_on_examples <- function(aPackage, goDebug = FALSE) {
     examples <- rNodal:::get_list_examples(aPackage = aPackage)
     # loop to open each file
-    nmax <- 0
     if (goDebug) {
-        nmax <- 6
         rng <- 1:5
         examples <- examples[rng]          # reduce the list for debugging
     }
@@ -54,7 +52,6 @@ loop_on_examples <- function(aPackage, goDebug = FALSE) {
         result  <- do.call(application, list(vars, verbose = TRUE))
         .result <- as.list(result[nrow(result), ]);
         cat(sprintf("%30s", names(expected[application])))
-        # if ((goDebug) && (names(expected[application]) == "VanderpolMuTimeControlApp")) {
         if (goDebug) {
             cat("\n");
             print(.result)}
