@@ -15,3 +15,7 @@ setGeneric("set_vlp_input",    function(object, ...) standardGeneric("set_vlp_in
 setGeneric("set_vlp_model",    function(object, ...) standardGeneric("set_vlp_model"))
 
 setGeneric("run_vlp_wellhead", function(object, ...) standardGeneric("run_vlp_wellhead"))
+
+#' @rdname WellDeviationSurvey-class
+#' @export
+setGeneric("WellDeviationSurvey", function(md_tvd, ...) standardGeneric("WellDeviationSurvey"))

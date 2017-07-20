@@ -29,6 +29,7 @@ Collate:
     'VLP.R'
     'all_generics.R'
     'class-VLP.R'
+    'class-well_deviation_survey.R'
     'hdf5.R'
     'heat_transfer.R'
     'rNodal-package.r'
