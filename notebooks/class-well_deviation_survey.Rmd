@@ -17,18 +17,9 @@ well <- "
 "
 
 # read string text to dataframe
-well_table <- WellDeviationSurvey(well)
-# well_table
-```
-
-```{r}
-well_table@md_tvd
-```
-
-```{r}
+well_table <- WellDeviationSurvey(well, reference = "vertical")
 well_table@wds_table
 ```
-
 
 
 
@@ -37,16 +28,50 @@ well_table@wds_table
 library(rNodal)
 
 well <- "
-    MD	
-    0	
-    600	
-    1005
-    4075
-    7700
-    9275
+    MD	TVD
+    0	    0
+    600	    600
+    1005	1000
+    4075	4000
+    7700	7500
+    9275	9000
 "
 
 # read string text to dataframe
-well_table <- WellDeviationSurvey(well)
+well_table <- WellDeviationSurvey(well, reference = "horizontal")
+well_table@wds_table
+```
+
+
+
+
+
+```{r}
+# split the tubing in dx pieces
+apply(angle_deviation_survey, 1, function(x) x["MD"] 
+)
+```
+
+
+
+
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+# we obtain the agle but the reference is set as the horizontal
+library(rNodal)
+
+md_tvd_01 <- "
+MD      TVD 
+0	     0	 
+600	    600
+1005	 1000
+4075	 4000
+7700	 7500
+9275	 9000
+"
+
+deviation_survey <- set_deviation_survey(md_tvd_01)
+rNodal:::calc_angle_deviation_survey(deviation_survey, reference = "horizontal")
 ```
 

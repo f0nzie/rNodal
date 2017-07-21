@@ -8,10 +8,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Example 01
+## Example 01. Get the VLP calculations
 This notebook runs the modified Hagedorn-Brown correlation calculated according
 to Brown's book and procedure in Appendix C. 
-
 
 ```{r rows.print=30}
 library(rNodal)
@@ -120,6 +119,8 @@ as.tibble(runVLP(well.input = input_example, well_model))
      5	 7700	 7500	 1659.02	 15.0902	
      6	 9275	 9000	 2139.25	 17.7528
 
+## Set deviation survey and compute angle
+
 ```{r}
 # in Prosper the angle is measured againt the vertical
 library(rNodal)
@@ -135,11 +136,12 @@ MD      TVD
 "
 
 deviation_survey <- set_deviation_survey(md_tvd_01)
-angle_deviation_survey <- rNodal:::calc_angle_deviation_survey(deviation_survey)
+angle_deviation_survey <- rNodal:::compute_angle_deviation_survey(deviation_survey)
 dataFrame <- angle_deviation_survey
 dataFrame
 ```
 
+## Split the well in deltas
 
 ```{r}
 # split deviated well in two ways: by and length.out
@@ -245,5 +247,5 @@ MD      TVD
 "
 
 deviation_survey <- set_deviation_survey(md_tvd_01)
-rNodal:::calc_angle_deviation_survey(deviation_survey, reference = "horizontal")
+rNodal:::compute_angle_deviation_survey(deviation_survey, reference = "horizontal")
 ```

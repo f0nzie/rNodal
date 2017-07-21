@@ -3,22 +3,32 @@
 \docType{class}
 \name{WellDeviationSurvey}
 \alias{WellDeviationSurvey}
+\alias{computeAngle}
 \alias{WellDeviationSurvey-class}
 \alias{.WellDeviationSurvey}
+\alias{computeAngle,WellDeviationSurvey-method}
 \alias{WellDeviationSurvey,character-method}
 \alias{WellDeviationSurvey,missing-method}
 \title{WellDeviationSurvey structure}
 \usage{
 WellDeviationSurvey(md_tvd, ...)
 
-\S4method{WellDeviationSurvey}{character}(md_tvd, ...)
+computeAngle(object, ...)
 
-\S4method{WellDeviationSurvey}{missing}(md_tvd, ...)
+\S4method{computeAngle}{WellDeviationSurvey}(object, reference, ...)
+
+\S4method{WellDeviationSurvey}{character}(md_tvd, reference = "vertical", ...)
+
+\S4method{WellDeviationSurvey}{missing}(md_tvd, reference = "vertical", ...)
 }
 \arguments{
 \item{md_tvd}{MD and TVD}
 
 \item{...}{additional parameters}
+
+\item{object}{a class object}
+
+\item{reference}{angle measured against the vertical or horizontal}
 }
 \description{
 WellDeviationSurvey structure
