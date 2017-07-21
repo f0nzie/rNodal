@@ -24,3 +24,10 @@ setGeneric("WellDeviationSurvey", function(md_tvd, ...) standardGeneric("WellDev
 #' @export
 setGeneric("computeAngle", function(object, ...) standardGeneric("computeAngle"))
 
+#' @rdname WellDeviationSurvey-class
+#' @export
+setGeneric("getMD", function(object, ...) standardGeneric("getMD"))
+
+#' @rdname WellDeviationSurvey-class
+#' @export
+setGeneric("getTVD", function(object, ...) standardGeneric("getTVD"))

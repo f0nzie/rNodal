@@ -4,9 +4,13 @@
 \name{WellDeviationSurvey}
 \alias{WellDeviationSurvey}
 \alias{computeAngle}
+\alias{getMD}
+\alias{getTVD}
 \alias{WellDeviationSurvey-class}
 \alias{.WellDeviationSurvey}
 \alias{computeAngle,WellDeviationSurvey-method}
+\alias{getMD,WellDeviationSurvey-method}
+\alias{getTVD,WellDeviationSurvey-method}
 \alias{WellDeviationSurvey,character-method}
 \alias{WellDeviationSurvey,missing-method}
 \title{WellDeviationSurvey structure}
@@ -15,7 +19,15 @@ WellDeviationSurvey(md_tvd, ...)
 
 computeAngle(object, ...)
 
+getMD(object, ...)
+
+getTVD(object, ...)
+
 \S4method{computeAngle}{WellDeviationSurvey}(object, reference, ...)
+
+\S4method{getMD}{WellDeviationSurvey}(object, ...)
+
+\S4method{getTVD}{WellDeviationSurvey}(object, ...)
 
 \S4method{WellDeviationSurvey}{character}(md_tvd, reference = "vertical", ...)
 

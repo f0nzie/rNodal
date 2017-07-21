@@ -19,6 +19,8 @@ well <- "
 # read string text to dataframe
 well_table <- WellDeviationSurvey(well, reference = "vertical")
 well_table@wds_table
+getMD(well_table)
+getTVD(well_table)
 ```
 
 

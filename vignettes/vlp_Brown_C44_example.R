@@ -1,5 +1,9 @@
+## ----setup, include=F, error=T, message=F, warning=F---------------------
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+
 ## ----rows.print=30-------------------------------------------------------
 library(rNodal)
+library(tibble)
 
 # Example from C.44 in Brown's book
 # P2 (pressure at end point is given in the original example). 
@@ -24,9 +28,8 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
                                  gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
                                  )
 
-well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
 
 
-df <- runVLP(well.input = input_example, well_model)
-df
+as.tibble(runVLP(well.input = input_example, well_model))
 

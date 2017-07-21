@@ -32,6 +32,20 @@ setMethod("computeAngle", "WellDeviationSurvey", function(object, reference, ...
 })
 
 
+#' @rdname WellDeviationSurvey-class
+#' @export
+setMethod("getMD", "WellDeviationSurvey", function(object, ...) {
+    object@wds_table[["MD"]]
+
+})
+
+#' @rdname WellDeviationSurvey-class
+#' @export
+setMethod("getTVD", "WellDeviationSurvey", function(object, ...) {
+    object@wds_table[["TVD"]]
+
+})
+
 
 #' @rdname WellDeviationSurvey-class
 #' @export
@@ -62,6 +76,9 @@ setMethod("WellDeviationSurvey", signature(md_tvd = "missing"),
     .wds <- .WellDeviationSurvey(md_tvd = md_tvd, reference)
     return(.wds)
 })
+
+
+
 
 
 #' Compute the angle of a deviated well and cumulative displacement
