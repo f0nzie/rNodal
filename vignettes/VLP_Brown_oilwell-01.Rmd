@@ -119,6 +119,7 @@ as.tibble(runVLP(well.input = input_example, well_model))
      5	 7700	 7500	 1659.02	 15.0902	
      6	 9275	 9000	 2139.25	 17.7528
 
+
 ## Set deviation survey and compute angle
 
 ```{r}
@@ -135,27 +136,46 @@ MD      TVD
 9275	 9000
 "
 
-deviation_survey <- set_deviation_survey(md_tvd_01)
-angle_deviation_survey <- rNodal:::compute_angle_deviation_survey(deviation_survey)
-dataFrame <- angle_deviation_survey
+md_tvd <- set_deviation_survey(md_tvd_01)
+md_tvd
+deviation_survey <- compute_angle_deviation_survey(md_tvd, reference = "vertical")
+dataFrame <- deviation_survey
 dataFrame
 ```
 
+
 ## Split the well in deltas
+
+### by interval steps
 
 ```{r}
 # split deviated well in two ways: by and length.out
 library(rNodal)
-md <- angle_deviation_survey[["MD"]]
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
 add_md_by <- rNodal:::split_well_in_deltas(md, by = 50)
-add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
 add_md_by
+```
+
+### by size of the sample
+
+```{r}
+# split deviated well in two ways: by and length.out
+library(rNodal)
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
+add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
 add_md_lo
+
+```
+
+```{r}
 
 rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_by)
 rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_lo)
 ```
-
 
 
 ```{r}
@@ -231,21 +251,4 @@ apply(angle_deviation_survey, 1, function(x) x["MD"]
 
 
 
-```{r}
-# in Prosper the angle is measured againt the vertical
-# we obtain the agle but the reference is set as the horizontal
-library(rNodal)
 
-md_tvd_01 <- "
-MD      TVD 
-0	     0	 
-600	    600
-1005	 1000
-4075	 4000
-7700	 7500
-9275	 9000
-"
-
-deviation_survey <- set_deviation_survey(md_tvd_01)
-rNodal:::compute_angle_deviation_survey(deviation_survey, reference = "horizontal")
-```
