@@ -1,0 +1,10 @@
+urls:
+  reference: https://github.com/f0nzie/rNodal/reference
+  article: https://github.com/f0nzie/rNodal/articles
+articles:
+  calculating_z_factor: calculating_z_factor.html
+  vlp_Brown_C13_example: vlp_Brown_C13_example.html
+  vlp_Brown_C44_example: vlp_Brown_C44_example.html
+  vlp_brown_guo_EP4.4: vlp_brown_guo_EP4.4.html
+  VLP_Brown_oilwell-01: VLP_Brown_oilwell-01.html
+
