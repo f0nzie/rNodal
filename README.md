@@ -41,4 +41,6 @@ z.BeggsBrill(pres.pr = 4.5, temp.pr = 1.4)
 #> [1] 0.7343367
 z.Ann10(pres.pr = 4.5, temp.pr = 1.4)
 #> [1] 0.736032
+z.Papp(pres.pr = 4.5, temp.pr = 1.4)
+#> [1] 0.7299354
 ```

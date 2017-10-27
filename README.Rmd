@@ -46,4 +46,5 @@ z.HallYarborough(pres.pr = 4.5, temp.pr = 1.4)
 z.DranchukAbuKassem(pres.pr = 4.5, temp.pr = 1.4)
 z.BeggsBrill(pres.pr = 4.5, temp.pr = 1.4)
 z.Ann10(pres.pr = 4.5, temp.pr = 1.4)
+z.Papp(pres.pr = 4.5, temp.pr = 1.4)
 ```
