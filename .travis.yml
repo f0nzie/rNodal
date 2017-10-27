@@ -6,7 +6,7 @@ cache: packages
 
 ## Use patched devtools
 r_github_packages:
-  - hadley/devtools@efa894ffa
+  - hadley/devtools
 
 after_success:
   - Rscript -e 'covr::codecov()'
