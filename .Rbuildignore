@@ -9,5 +9,5 @@ notebooks
 ^cran-comments\.md$
 ^\.travis\.yml$
 ^codecov\.yml$
-^R:\github\.oilgains\rNodal\docs$
+docs
 ^_pkgdown\.yml$
