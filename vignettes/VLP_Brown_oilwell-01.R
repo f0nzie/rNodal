@@ -33,29 +33,43 @@ MD      TVD
 9275	 9000
 "
 
-deviation_survey <- set_deviation_survey(md_tvd_01)
-angle_deviation_survey <- rNodal:::compute_angle_deviation_survey(deviation_survey)
-dataFrame <- angle_deviation_survey
+md_tvd <- set_deviation_survey(md_tvd_01)
+md_tvd
+deviation_survey <- compute_angle_deviation_survey(md_tvd, reference = "vertical")
+dataFrame <- deviation_survey
 dataFrame
 
 ## ------------------------------------------------------------------------
 # split deviated well in two ways: by and length.out
 library(rNodal)
-md <- angle_deviation_survey[["MD"]]
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
 add_md_by <- rNodal:::split_well_in_deltas(md, by = 50)
-add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
 add_md_by
+
+## ------------------------------------------------------------------------
+# split deviated well in two ways: by and length.out
+library(rNodal)
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
+add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
 add_md_lo
 
-rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_by)
-rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_lo)
+
+## ------------------------------------------------------------------------
+
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_by)
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_lo)
 
 ## ------------------------------------------------------------------------
 # split the MD of the well in equal parts but a total of "n" segments
-split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(angle_deviation_survey), "MD"], length.out = 100)
+split <- seq.int(deviation_survey[1, "MD"], deviation_survey[nrow(deviation_survey), "MD"], 
+                 length.out = 100)
 
 # add the known MD values to the sequence. Now the length is little bit longer
-md <- angle_deviation_survey[["MD"]]
+md <- deviation_survey[["MD"]]
 add_md <- sort(unique(c(md, split)))
 add_md
 
@@ -108,24 +122,6 @@ for (index in 1:nrow(dataFrame)) {
 
 ## ------------------------------------------------------------------------
 # split the tubing in dx pieces
-apply(angle_deviation_survey, 1, function(x) x["MD"] 
+apply(deviation_survey, 1, function(x) x["MD"] 
 )
-
-## ------------------------------------------------------------------------
-# in Prosper the angle is measured againt the vertical
-# we obtain the agle but the reference is set as the horizontal
-library(rNodal)
-
-md_tvd_01 <- "
-MD      TVD 
-0	     0	 
-600	    600
-1005	 1000
-4075	 4000
-7700	 7500
-9275	 9000
-"
-
-deviation_survey <- set_deviation_survey(md_tvd_01)
-rNodal:::compute_angle_deviation_survey(deviation_survey, reference = "horizontal")
 

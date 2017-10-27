@@ -158,7 +158,7 @@ add_md_by <- rNodal:::split_well_in_deltas(md, by = 50)
 add_md_by
 ```
 
-### by size of the sample
+### by total size of the sample or rows
 
 ```{r}
 # split deviated well in two ways: by and length.out
@@ -173,17 +173,18 @@ add_md_lo
 
 ```{r}
 
-rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_by)
-rNodal:::build_survey_with_deltas(angle_deviation_survey, add_md_lo)
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_by)
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_lo)
 ```
 
 
 ```{r}
 # split the MD of the well in equal parts but a total of "n" segments
-split <- seq.int(angle_deviation_survey[1, "MD"], angle_deviation_survey[nrow(angle_deviation_survey), "MD"], length.out = 100)
+split <- seq.int(deviation_survey[1, "MD"], deviation_survey[nrow(deviation_survey), "MD"], 
+                 length.out = 100)
 
 # add the known MD values to the sequence. Now the length is little bit longer
-md <- angle_deviation_survey[["MD"]]
+md <- deviation_survey[["MD"]]
 add_md <- sort(unique(c(md, split)))
 add_md
 
@@ -243,7 +244,7 @@ for (index in 1:nrow(dataFrame)) {
 
 ```{r}
 # split the tubing in dx pieces
-apply(angle_deviation_survey, 1, function(x) x["MD"] 
+apply(deviation_survey, 1, function(x) x["MD"] 
 )
 ```
 

@@ -94,9 +94,6 @@ input_example &lt;-<span class="st">  </span><span class="kw">setWellInput</span
 well_model &lt;-<span class="st"> </span><span class="kw">setVLPmodel</span>(<span class="dt">vlp.model =</span> <span class="st">&quot;hagbr.mod&quot;</span>, <span class="dt">segments =</span> <span class="dv">29</span>, <span class="dt">tol =</span> <span class="fl">0.00001</span>)
 
 <span class="kw">as.tibble</span>(<span class="kw">runVLP</span>(<span class="dt">well.input =</span> input_example, well_model))</code></pre></div>
-<pre><code>## Warning in h5checktypeOrOpenLoc(file, readonly = TRUE): An open HDF5 file
-## handle exists. If the file has changed on disk meanwhile, the function may
-## not work properly. Run 'H5close()' to close all open HDF5 object handles.</code></pre>
 <pre><code>## # A tibble: 30 x 45
 ##        i     depth       dL      temp     pres    p_avg     t_avg segment
 ##    &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
@@ -212,9 +209,17 @@ md_tvd_01 &lt;-<span class="st"> &quot;</span>
 <span class="st">9275     9000</span>
 <span class="st">&quot;</span>
 
-deviation_survey &lt;-<span class="st"> </span><span class="kw">set_deviation_survey</span>(md_tvd_01)
-angle_deviation_survey &lt;-<span class="st"> </span>rNodal:::<span class="kw">compute_angle_deviation_survey</span>(deviation_survey)
-dataFrame &lt;-<span class="st"> </span>angle_deviation_survey
+md_tvd &lt;-<span class="st"> </span><span class="kw">set_deviation_survey</span>(md_tvd_01)
+md_tvd</code></pre></div>
+<pre><code>##     MD  TVD
+## 1    0    0
+## 2  600  600
+## 3 1005 1000
+## 4 4075 4000
+## 5 7700 7500
+## 6 9275 9000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">deviation_survey &lt;-<span class="st"> </span><span class="kw">compute_angle_deviation_survey</span>(md_tvd, <span class="dt">reference =</span> <span class="st">&quot;vertical&quot;</span>)
+dataFrame &lt;-<span class="st"> </span>deviation_survey
 dataFrame</code></pre></div>
 <pre><code>##     MD  TVD delta.md delta.tvd   radians    disp cum_disp   degrees
 ## 1    0    0        0         0 0.0000000   0.000    0.000  0.000000
@@ -226,11 +231,14 @@ dataFrame</code></pre></div>
 </div>
 <div id="split-the-well-in-deltas" class="section level2">
 <h2>Split the well in deltas</h2>
+<div id="by-interval-steps" class="section level3">
+<h3>by interval steps</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># split deviated well in two ways: by and length.out</span>
 <span class="kw">library</span>(rNodal)
-md &lt;-<span class="st"> </span>angle_deviation_survey[[<span class="st">&quot;MD&quot;</span>]]
+
+md &lt;-<span class="st"> </span>deviation_survey[[<span class="st">&quot;MD&quot;</span>]]   <span class="co"># get MD vector</span>
+
 add_md_by &lt;-<span class="st"> </span>rNodal:::<span class="kw">split_well_in_deltas</span>(md, <span class="dt">by =</span> <span class="dv">50</span>)
-add_md_lo &lt;-<span class="st"> </span>rNodal:::<span class="kw">split_well_in_deltas</span>(md, <span class="dt">length.out =</span> <span class="dv">40</span>)
 add_md_by</code></pre></div>
 <pre><code>##   [1]    0   50  100  150  200  250  300  350  400  450  500  550  600  650
 ##  [15]  700  750  800  850  900  950 1000 1005 1050 1100 1150 1200 1250 1300
@@ -246,7 +254,16 @@ add_md_by</code></pre></div>
 ## [155] 7600 7650 7700 7750 7800 7850 7900 7950 8000 8050 8100 8150 8200 8250
 ## [169] 8300 8350 8400 8450 8500 8550 8600 8650 8700 8750 8800 8850 8900 8950
 ## [183] 9000 9050 9100 9150 9200 9250 9275</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">add_md_lo</code></pre></div>
+</div>
+<div id="by-total-size-of-the-sample-or-rows" class="section level3">
+<h3>by total size of the sample or rows</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># split deviated well in two ways: by and length.out</span>
+<span class="kw">library</span>(rNodal)
+
+md &lt;-<span class="st"> </span>deviation_survey[[<span class="st">&quot;MD&quot;</span>]]   <span class="co"># get MD vector</span>
+
+add_md_lo &lt;-<span class="st"> </span>rNodal:::<span class="kw">split_well_in_deltas</span>(md, <span class="dt">length.out =</span> <span class="dv">40</span>)
+add_md_lo</code></pre></div>
 <pre><code>##  [1]    0.0000  237.8205  475.6410  600.0000  713.4615  951.2821 1005.0000
 ##  [8] 1189.1026 1426.9231 1664.7436 1902.5641 2140.3846 2378.2051 2616.0256
 ## [15] 2853.8462 3091.6667 3329.4872 3567.3077 3805.1282 4042.9487 4075.0000
@@ -254,7 +271,7 @@ add_md_by</code></pre></div>
 ## [29] 5945.5128 6183.3333 6421.1538 6658.9744 6896.7949 7134.6154 7372.4359
 ## [36] 7610.2564 7700.0000 7848.0769 8085.8974 8323.7179 8561.5385 8799.3590
 ## [43] 9037.1795 9275.0000</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rNodal:::<span class="kw">build_survey_with_deltas</span>(angle_deviation_survey, add_md_by)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rNodal:::<span class="kw">build_survey_with_deltas</span>(deviation_survey, add_md_by)</code></pre></div>
 <pre><code>##       md seg delta.md   radians   degrees delta.tvd       tvd
 ## 1      0   1        0 0.0000000  0.000000  0.000000    0.0000
 ## 2     50   2       50 0.0000000  0.000000 50.000000   50.0000
@@ -445,7 +462,7 @@ add_md_by</code></pre></div>
 ## 187 9200   6       50 0.3098446 17.752790 47.619048 8928.5714
 ## 188 9250   6       50 0.3098446 17.752790 47.619048 8976.1905
 ## 189 9275   6       25 0.3098446 17.752790 23.809524 9000.0000</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rNodal:::<span class="kw">build_survey_with_deltas</span>(angle_deviation_survey, add_md_lo)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rNodal:::<span class="kw">build_survey_with_deltas</span>(deviation_survey, add_md_lo)</code></pre></div>
 <pre><code>##           md seg  delta.md   radians   degrees delta.tvd       tvd
 ## 1     0.0000   1   0.00000 0.0000000  0.000000   0.00000    0.0000
 ## 2   237.8205   2 237.82051 0.0000000  0.000000 237.82051  237.8205
@@ -492,10 +509,11 @@ add_md_by</code></pre></div>
 ## 43 9037.1795   6 237.82051 0.3098446 17.752790 226.49573 8773.5043
 ## 44 9275.0000   6 237.82051 0.3098446 17.752790 226.49573 9000.0000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># split the MD of the well in equal parts but a total of &quot;n&quot; segments</span>
-split &lt;-<span class="st"> </span><span class="kw">seq.int</span>(angle_deviation_survey[<span class="dv">1</span>, <span class="st">&quot;MD&quot;</span>], angle_deviation_survey[<span class="kw">nrow</span>(angle_deviation_survey), <span class="st">&quot;MD&quot;</span>], <span class="dt">length.out =</span> <span class="dv">100</span>)
+split &lt;-<span class="st"> </span><span class="kw">seq.int</span>(deviation_survey[<span class="dv">1</span>, <span class="st">&quot;MD&quot;</span>], deviation_survey[<span class="kw">nrow</span>(deviation_survey), <span class="st">&quot;MD&quot;</span>], 
+                 <span class="dt">length.out =</span> <span class="dv">100</span>)
 
 <span class="co"># add the known MD values to the sequence. Now the length is little bit longer</span>
-md &lt;-<span class="st"> </span>angle_deviation_survey[[<span class="st">&quot;MD&quot;</span>]]
+md &lt;-<span class="st"> </span>deviation_survey[[<span class="st">&quot;MD&quot;</span>]]
 add_md &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">unique</span>(<span class="kw">c</span>(md, split)))
 add_md</code></pre></div>
 <pre><code>##   [1]    0.00000   93.68687  187.37374  281.06061  374.74747  468.43434
@@ -929,32 +947,10 @@ df</code></pre></div>
 ##  9181.313131  9275.000000 
 ##  9275.000000  9275.000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># split the tubing in dx pieces</span>
-<span class="kw">apply</span>(angle_deviation_survey, <span class="dv">1</span>, function(x) x[<span class="st">&quot;MD&quot;</span>] 
+<span class="kw">apply</span>(deviation_survey, <span class="dv">1</span>, function(x) x[<span class="st">&quot;MD&quot;</span>] 
 )</code></pre></div>
 <pre><code>## [1]    0  600 1005 4075 7700 9275</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># in Prosper the angle is measured againt the vertical</span>
-<span class="co"># we obtain the agle but the reference is set as the horizontal</span>
-<span class="kw">library</span>(rNodal)
-
-md_tvd_01 &lt;-<span class="st"> &quot;</span>
-<span class="st">MD      TVD </span>
-<span class="st">0        0   </span>
-<span class="st">600     600</span>
-<span class="st">1005     1000</span>
-<span class="st">4075     4000</span>
-<span class="st">7700     7500</span>
-<span class="st">9275     9000</span>
-<span class="st">&quot;</span>
-
-deviation_survey &lt;-<span class="st"> </span><span class="kw">set_deviation_survey</span>(md_tvd_01)
-rNodal:::<span class="kw">compute_angle_deviation_survey</span>(deviation_survey, <span class="dt">reference =</span> <span class="st">&quot;horizontal&quot;</span>)</code></pre></div>
-<pre><code>##     MD  TVD delta.md delta.tvd  radians    disp cum_disp  degrees
-## 1    0    0        0         0 0.000000   0.000    0.000  0.00000
-## 2  600  600      600       600 1.570796   0.000    0.000 90.00000
-## 3 1005 1000      405       400 1.413499  63.443   63.443 80.98755
-## 4 4075 4000     3070      3000 1.356841 651.844  715.287 77.74125
-## 5 7700 7500     3625      3500 1.307423 943.729 1659.016 74.90981
-## 6 9275 9000     1575      1500 1.260952 480.234 2139.250 72.24721</code></pre>
+</div>
 </div>
 
 

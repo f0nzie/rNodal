@@ -57,7 +57,6 @@ apply(angle_deviation_survey, 1, function(x) x["MD"]
 
 
 
-
 ```{r}
 # in Prosper the angle is measured againt the vertical
 # we obtain the agle but the reference is set as the horizontal
@@ -74,6 +73,6 @@ MD      TVD
 "
 
 deviation_survey <- set_deviation_survey(md_tvd_01)
-rNodal:::calc_angle_deviation_survey(deviation_survey, reference = "horizontal")
+compute_angle_deviation_survey(deviation_survey, reference = "horizontal")
 ```
 
