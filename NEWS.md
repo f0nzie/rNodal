@@ -1,5 +1,6 @@
+
 ## 20170714 0.0.2.9002
-*
+* remove two unit tests in test_nodal_status.R. They were too explicit to the source folders and making the pkg crash.
 
 
 ## 20170710 0.0.2.9001
