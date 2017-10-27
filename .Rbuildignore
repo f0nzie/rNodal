@@ -11,3 +11,4 @@ notebooks
 ^codecov\.yml$
 docs
 ^_pkgdown\.yml$
+^docs$
