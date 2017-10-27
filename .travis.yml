@@ -5,8 +5,8 @@ sudo: false
 cache: packages
 
 ## Use patched devtools
-r_github_packages:
-  - hadley/devtools@2fc8895
+# r_github_packages:
+#  - hadley/devtools@2fc8895
 
 after_success:
   - Rscript -e 'covr::codecov()'
