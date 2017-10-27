@@ -1,7 +1,27 @@
 
 ## 20170714 0.0.2.9002
 * remove two unit tests in test_nodal_status.R. They were too explicit to the source folders and making the pkg crash.
-
+* running coverage results. Had to remove two test functions in test_LL_paths.R
+        > covr::package_coverage()
+        rNodal Coverage: 52.18%
+        R/all_generics.R: 0.00%
+        R/class-VLP.R: 0.00%
+        R/Fancher-Brown.R: 0.00%
+        R/heat_transfer.R: 0.00%
+        R/interpolation.R: 0.00%
+        R/Poettmann-Carpenter.R: 0.00%
+        R/zzz.R: 0.00%
+        R/friction.R: 1.79%
+        R/settings.R: 7.41%
+        R/class-well_deviation_survey.R: 30.67%
+        R/Duns-Ros.R: 35.56%
+        R/utils.R: 42.70%
+        R/gas_correlations.R: 57.66%
+        R/hdf5.R: 73.33%
+        R/Hagedorn-Brown.R: 74.70%
+        R/oil_correlations.R: 78.05%
+        R/VLP.R: 94.79%
+        
 
 ## 20170710 0.0.2.9001
 * add Hmisc to Imports to use list.tree in vignette C13
