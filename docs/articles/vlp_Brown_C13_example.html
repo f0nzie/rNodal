@@ -65,7 +65,14 @@
   <a href="../news/index.html">News</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/f0nzie/rNodal">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -192,9 +199,9 @@ rNodal<span class="op">:::</span><span class="kw">temp.gradient</span>(well_tabl
 <span class="kw">library</span>(rNodal)
 
 well_table &lt;-<span class="st"> </span><span class="kw"><a href="../reference/runVLP.html">runVLP</a></span>(<span class="dt">well.input =</span> input.example.C13, 
-                     well.model)[, <span class="kw">c</span>(<span class="st">"depth"</span>, <span class="st">"dL"</span>, <span class="st">"pres"</span>, <span class="st">"temp"</span>)]   
-
-input.example.C13 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/setWellInput-VLP.html">setWellInput</a></span>(<span class="dt">field.name =</span> <span class="st">"HAGBR.MOD"</span>,
+                     well.model)[, <span class="kw">c</span>(<span class="st">"depth"</span>, <span class="st">"dL"</span>, <span class="st">"pres"</span>, <span class="st">"temp"</span>)]   </code></pre></div>
+<pre><code>Error in ans[!test &amp; ok] &lt;- rep(no, length.out = length(ans))[!test &amp; : replacement has length zero</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">input.example.C13 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/setWellInput-VLP.html">setWellInput</a></span>(<span class="dt">field.name =</span> <span class="st">"HAGBR.MOD"</span>,
                                     <span class="dt">well.name =</span> <span class="st">"Brown_C13"</span>, 
                                     <span class="dt">depth.wh =</span> <span class="dv">0</span>, <span class="dt">depth.bh =</span> <span class="dv">2670</span>, <span class="dt">diam.in =</span> <span class="fl">1.995</span>, 
                                     <span class="dt">GLR =</span> <span class="dv">500</span>, <span class="dt">liq.rt =</span> <span class="dv">1000</span>, <span class="dt">wcut =</span> <span class="fl">0.6</span>, 
