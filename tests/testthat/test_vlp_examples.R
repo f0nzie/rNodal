@@ -25,7 +25,7 @@ test_that("VLP C44 output is the same as check rda file", {
                                   API = 42, oil.visc = 1.0,
                                   gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
     )
-
+    H5close()
     well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
     result <- runVLP(well.input = input_example, well_model)
 
