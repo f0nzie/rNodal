@@ -6,3 +6,6 @@
 ^README\.Rmd$
 ^README-.*\.png$
 notebooks
+^cran-comments\.md$
+^\.travis\.yml$
+^codecov\.yml$
