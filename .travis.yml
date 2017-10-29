@@ -5,13 +5,6 @@ r: bioc-release
 sudo: false
 cache: packages
 
-#install:
-#  # Installs all packages in the DESCRIPTION file.
-#  - ./travis-tool.sh install_bioc_deps
-
-## Use patched devtools
-# r_github_packages:
-#  - hadley/devtools@2fc8895
 
 after_success:
   - Rscript -e 'covr::codecov()'
