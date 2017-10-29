@@ -232,7 +232,7 @@ runVLP <- function(well.input, model.parameters) {
     writeHdf5(vlp.output,  "vlp.output")
     writeHdf5(vlp.model,   "vlp.model")
 
-    return(vlp.output)                              # return dataframe
+    return(tibble::as.tibble(vlp.output))                              # return dataframe
 }
 
 
