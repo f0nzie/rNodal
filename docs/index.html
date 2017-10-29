@@ -111,19 +111,71 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <h2 class="hasAnchor">
 <a href="#using-zfactor" class="anchor"></a>Using <code>zFactor</code>
 </h2>
+<p><code>zFactor</code> is a R package. Calling from CRAN.</p>
+<p>We will use zFactor for gas compressibility calculations.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># use the new library zFactor</span>
 <span class="kw">library</span>(zFactor)
 
-<span class="kw"><a href="http://www.rdocumentation.org/packages/zFactor/topics/Hall-Yarborough">z.HallYarborough</a></span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
+<span class="kw">z.HallYarborough</span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
 <span class="co">#&gt; [1] 0.7373812</span>
-<span class="kw"><a href="http://www.rdocumentation.org/packages/zFactor/topics/Dranchuk-AbouKassem">z.DranchukAbuKassem</a></span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
+<span class="kw">z.DranchukAbuKassem</span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
 <span class="co">#&gt; [1] 0.7396345</span>
-<span class="kw"><a href="http://www.rdocumentation.org/packages/zFactor/topics/Beggs-Brill">z.BeggsBrill</a></span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
+<span class="kw">z.BeggsBrill</span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
 <span class="co">#&gt; [1] 0.7343367</span>
-<span class="kw"><a href="http://www.rdocumentation.org/packages/zFactor/topics/Ann10">z.Ann10</a></span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
+<span class="kw">z.Ann10</span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
 <span class="co">#&gt; [1] 0.736032</span>
-<span class="kw"><a href="http://www.rdocumentation.org/packages/zFactor/topics/Papp">z.Papp</a></span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
+<span class="kw">z.Papp</span>(<span class="dt">pres.pr =</span> <span class="fl">4.5</span>, <span class="dt">temp.pr =</span> <span class="fl">1.4</span>)
 <span class="co">#&gt; [1] 0.7299354</span></code></pre></div>
+</div>
+<div id="how-rnodal-works" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-rnodal-works" class="anchor"></a>How rNodal works</h2>
+<p>Start by looking at the examples in the vignettes. We will use in this example <code>VLP Brown - Example C13</code>.</p>
+<p>This is example C.13 in the Kermit Brown book.</p>
+<div id="input-well-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#input-well-data" class="anchor"></a>Input well data</h3>
+<p>We enter the well data with the function <code>setWellInput</code>:</p>
+<pre><code>input.example.C13 &lt;- setWellInput(field.name = "HAGBR.MOD",
+                                    well.name = "Brown_C13", 
+                                    depth.wh = 0, depth.bh = 2670, 
+                                    diam.in = 1.995, 
+                                    GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                                    thp = 500, tht = 120, bht = 150, 
+                                    API = 22, gas.sg = 0.65, 
+                                    wat.sg = 1.07, if.tens = 30)
+                                    
+                                    </code></pre>
+<p>The field name and well name are used for archival purposes.</p>
+</div>
+<div id="enter-the-parameters-of-the-vlp-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#enter-the-parameters-of-the-vlp-model" class="anchor"></a>Enter the parameters of the VLP model</h3>
+<p>The parameters of the model consist of:</p>
+<p><code>vlp.model</code>: the correlation or mechanistical model</p>
+<p><code>segments</code>: the number of segments to split the well</p>
+<p><code>tol</code>: the tolerance of the delta-P iterations</p>
+<pre><code>well.model &lt;- setVLPmodel(vlp.model = "hagbr.mod", 
+                           segments = 11, 
+                                tol = 0.000001)
+                                
+                                
+                                </code></pre>
+</div>
+<div id="run-the-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#run-the-model" class="anchor"></a>Run the model</h3>
+<p>To run the model is necessary to provide:</p>
+<p><code>well.input</code>: all the well parameters as entered in the first step</p>
+<p><code>well.model</code>: the VLP model as entered in the second step</p>
+<pre><code>runVLP(well.input = input.example.C13, well.model))</code></pre>
+</div>
+<div id="results" class="section level3">
+<h3 class="hasAnchor">
+<a href="#results" class="anchor"></a>Results</h3>
+<p>The results are given in the form of a dataframe where the rows represent the number of segment plus one and the columns are the calculations or variables.</p>
+<p><img src="./images/results_df.jpg" width="800px"></p>
+</div>
 </div>
 </div>
 </div>

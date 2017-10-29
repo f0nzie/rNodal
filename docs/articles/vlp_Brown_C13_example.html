@@ -87,7 +87,7 @@
       <h1>VLP Brown - Example C13</h1>
                         <h4 class="author">Vignette Author</h4>
             
-            <h4 class="date">2017-10-27</h4>
+            <h4 class="date">2017-10-29</h4>
           </div>
 
     
@@ -97,7 +97,6 @@
 <h2 class="hasAnchor">
 <a href="#calculate-vlp-using-hagedorn-brown-no-heat-transfer" class="anchor"></a>Calculate VLP using Hagedorn-Brown (no heat transfer)</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rNodal)
-<span class="kw">library</span>(tibble)
 
 <span class="co"># Example from C.13 in Brown</span>
 <span class="co"># P2 (pressure at end point is given). </span>
@@ -114,7 +113,7 @@ input.example.C13 &lt;-<span class="st"> </span><span class="kw"><a href="../ref
 
 well.model &lt;-<span class="st"> </span><span class="kw"><a href="../reference/setVLPmodel.html">setVLPmodel</a></span>(<span class="dt">vlp.model =</span> <span class="st">"hagbr.mod"</span>, <span class="dt">segments =</span> <span class="dv">11</span>, <span class="dt">tol =</span> <span class="fl">0.000001</span>)
 
-<span class="kw"><a href="http://www.rdocumentation.org/packages/tibble/topics/as_tibble">as.tibble</a></span>(<span class="kw"><a href="../reference/runVLP.html">runVLP</a></span>(<span class="dt">well.input =</span> input.example.C13, well.model))</code></pre></div>
+<span class="kw"><a href="../reference/runVLP.html">runVLP</a></span>(<span class="dt">well.input =</span> input.example.C13, well.model)</code></pre></div>
 <pre><code># A tibble: 12 x 45
        i     depth       dL     temp      pres     p_avg    t_avg segment
    &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
@@ -169,19 +168,21 @@ well_parameters &lt;-<span class="st"> </span><span class="kw"><a href="../refer
 
 <span class="co"># temp.gradient calculates the fluid temperature coming from the wellbore</span>
 rNodal<span class="op">:::</span><span class="kw">temp.gradient</span>(well_table, well_parameters)         </code></pre></div>
-<pre><code>        depth       dL      pres     temp         L       Ti
- 1:    0.0000   0.0000  500.0000 120.0000 2670.0000 135.8614
- 2:  242.7273 242.7273  547.8516 122.7273 2427.2727 138.8760
- 3:  485.4545 242.7273  595.9096 125.4545 2184.5455 141.5070
- 4:  728.1818 242.7273  644.2142 128.1818 1941.8182 143.7471
- 5:  970.9091 242.7273  692.8010 130.9091 1699.0909 145.5987
- 6: 1213.6364 242.7273  741.7021 133.6364 1456.3636 147.0745
- 7: 1456.3636 242.7273  790.9463 136.3636 1213.6364 148.1974
- 8: 1699.0909 242.7273  840.5592 139.0909  970.9091 149.0007
- 9: 1941.8182 242.7273  890.5634 141.8182  728.1818 149.5276
-10: 2184.5455 242.7273  940.9788 144.5455  485.4545 149.8296
-11: 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9657
-12: 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
+<pre><code># A tibble: 12 x 6
+       depth       dL      pres     temp         L       Ti
+       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+ 1    0.0000   0.0000  500.0000 120.0000 2670.0000 135.8614
+ 2  242.7273 242.7273  547.8516 122.7273 2427.2727 138.8760
+ 3  485.4545 242.7273  595.9096 125.4545 2184.5455 141.5070
+ 4  728.1818 242.7273  644.2142 128.1818 1941.8182 143.7471
+ 5  970.9091 242.7273  692.8010 130.9091 1699.0909 145.5987
+ 6 1213.6364 242.7273  741.7021 133.6364 1456.3636 147.0745
+ 7 1456.3636 242.7273  790.9463 136.3636 1213.6364 148.1974
+ 8 1699.0909 242.7273  840.5592 139.0909  970.9091 149.0007
+ 9 1941.8182 242.7273  890.5634 141.8182  728.1818 149.5276
+10 2184.5455 242.7273  940.9788 144.5455  485.4545 149.8296
+11 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9657
+12 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
 </div>
 <div id="same-as-above-but-calculating-fluid-temperature--angle-constant" class="section level2">
 <h2 class="hasAnchor">
@@ -199,9 +200,9 @@ rNodal<span class="op">:::</span><span class="kw">temp.gradient</span>(well_tabl
 <span class="kw">library</span>(rNodal)
 
 well_table &lt;-<span class="st"> </span><span class="kw"><a href="../reference/runVLP.html">runVLP</a></span>(<span class="dt">well.input =</span> input.example.C13, 
-                     well.model)[, <span class="kw">c</span>(<span class="st">"depth"</span>, <span class="st">"dL"</span>, <span class="st">"pres"</span>, <span class="st">"temp"</span>)]   
-
-input.example.C13 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/setWellInput-VLP.html">setWellInput</a></span>(<span class="dt">field.name =</span> <span class="st">"HAGBR.MOD"</span>,
+                     well.model)[, <span class="kw">c</span>(<span class="st">"depth"</span>, <span class="st">"dL"</span>, <span class="st">"pres"</span>, <span class="st">"temp"</span>)]   </code></pre></div>
+<pre><code>Error in ans[!test &amp; ok] &lt;- rep(no, length.out = length(ans))[!test &amp; : replacement has length zero</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">input.example.C13 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/setWellInput-VLP.html">setWellInput</a></span>(<span class="dt">field.name =</span> <span class="st">"HAGBR.MOD"</span>,
                                     <span class="dt">well.name =</span> <span class="st">"Brown_C13"</span>, 
                                     <span class="dt">depth.wh =</span> <span class="dv">0</span>, <span class="dt">depth.bh =</span> <span class="dv">2670</span>, <span class="dt">diam.in =</span> <span class="fl">1.995</span>, 
                                     <span class="dt">GLR =</span> <span class="dv">500</span>, <span class="dt">liq.rt =</span> <span class="dv">1000</span>, <span class="dt">wcut =</span> <span class="fl">0.6</span>, 
@@ -254,19 +255,21 @@ Hmisc<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
 .  cp.avg = double 1= 0.67667</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># temp.gradient calculates the fluid temperature coming from the wellbore</span>
 rNodal<span class="op">:::</span><span class="kw">temp.gradient</span>(well_table, well_parameters)    </code></pre></div>
-<pre><code>        depth       dL      pres     temp         L       Ti
- 1:    0.0000   0.0000  500.0000 120.0000 2670.0000 135.8614
- 2:  242.7273 242.7273  547.8516 122.7273 2427.2727 138.8760
- 3:  485.4545 242.7273  595.9096 125.4545 2184.5455 141.5070
- 4:  728.1818 242.7273  644.2142 128.1818 1941.8182 143.7471
- 5:  970.9091 242.7273  692.8010 130.9091 1699.0909 145.5987
- 6: 1213.6364 242.7273  741.7021 133.6364 1456.3636 147.0745
- 7: 1456.3636 242.7273  790.9463 136.3636 1213.6364 148.1974
- 8: 1699.0909 242.7273  840.5592 139.0909  970.9091 149.0007
- 9: 1941.8182 242.7273  890.5634 141.8182  728.1818 149.5276
-10: 2184.5455 242.7273  940.9788 144.5455  485.4545 149.8296
-11: 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9657
-12: 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
+<pre><code># A tibble: 12 x 6
+       depth       dL      pres     temp         L       Ti
+       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+ 1    0.0000   0.0000  500.0000 120.0000 2670.0000 135.8614
+ 2  242.7273 242.7273  547.8516 122.7273 2427.2727 138.8760
+ 3  485.4545 242.7273  595.9096 125.4545 2184.5455 141.5070
+ 4  728.1818 242.7273  644.2142 128.1818 1941.8182 143.7471
+ 5  970.9091 242.7273  692.8010 130.9091 1699.0909 145.5987
+ 6 1213.6364 242.7273  741.7021 133.6364 1456.3636 147.0745
+ 7 1456.3636 242.7273  790.9463 136.3636 1213.6364 148.1974
+ 8 1699.0909 242.7273  840.5592 139.0909  970.9091 149.0007
+ 9 1941.8182 242.7273  890.5634 141.8182  728.1818 149.5276
+10 2184.5455 242.7273  940.9788 144.5455  485.4545 149.8296
+11 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9657
+12 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
 </div>
 <div id="old-version-using-spelled-out-parameters" class="section level2">
 <h2 class="hasAnchor">
@@ -290,19 +293,21 @@ cp.avg &lt;-<span class="st"> </span>(<span class="fl">0.53</span> <span class="
 
 <span class="co"># calculate dT/dx for the well</span>
 rNodal<span class="op">:::</span><span class="kw">temp.fluid</span>(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass.rate)</code></pre></div>
-<pre><code>        depth       dL      pres     temp         L       Ti
- 1:    0.0000   0.0000  500.0000 120.0000 2670.0000 129.3220
- 2:  242.7273 242.7273  547.8516 122.7273 2427.2727 133.4227
- 3:  485.4545 242.7273  595.9096 125.4545 2184.5455 137.1156
- 4:  728.1818 242.7273  644.2142 128.1818 1941.8182 140.3541
- 5:  970.9091 242.7273  692.8010 130.9091 1699.0909 143.1053
- 6: 1213.6364 242.7273  741.7021 133.6364 1456.3636 145.3532
- 7: 1456.3636 242.7273  790.9463 136.3636 1213.6364 147.1017
- 8: 1699.0909 242.7273  840.5592 139.0909  970.9091 148.3767
- 9: 1941.8182 242.7273  890.5634 141.8182  728.1818 149.2261
-10: 2184.5455 242.7273  940.9788 144.5455  485.4545 149.7192
-11: 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9432
-12: 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
+<pre><code># A tibble: 12 x 6
+       depth       dL      pres     temp         L       Ti
+       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+ 1    0.0000   0.0000  500.0000 120.0000 2670.0000 129.3220
+ 2  242.7273 242.7273  547.8516 122.7273 2427.2727 133.4227
+ 3  485.4545 242.7273  595.9096 125.4545 2184.5455 137.1156
+ 4  728.1818 242.7273  644.2142 128.1818 1941.8182 140.3541
+ 5  970.9091 242.7273  692.8010 130.9091 1699.0909 143.1053
+ 6 1213.6364 242.7273  741.7021 133.6364 1456.3636 145.3532
+ 7 1456.3636 242.7273  790.9463 136.3636 1213.6364 147.1017
+ 8 1699.0909 242.7273  840.5592 139.0909  970.9091 148.3767
+ 9 1941.8182 242.7273  890.5634 141.8182  728.1818 149.2261
+10 2184.5455 242.7273  940.9788 144.5455  485.4545 149.7192
+11 2427.2727 242.7273  991.8226 147.2727  242.7273 149.9432
+12 2670.0000 242.7273 1043.1094 150.0000    0.0000 150.0000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># we don't want all parameters spelled out      ^   ^      ^     ^      ^      ^     </span></code></pre></div>
 </div>
 <div id="appendix" class="section level2">
