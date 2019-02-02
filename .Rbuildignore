@@ -12,3 +12,7 @@ notebooks
 docs
 ^_pkgdown\.yml$
 ^docs$
+^.*\.dll$
+^.*\.o$
+images
+vignettes
