@@ -2,7 +2,7 @@
 .Rhistory
 .RData
 # inst/doc
-# man/
+man
 # *.html
 # vignettes/*.R
 inst/doc
