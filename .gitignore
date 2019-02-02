@@ -7,3 +7,5 @@ man
 # vignettes/*.R
 inst/doc
 inst/extdata/default.hdf5
+
+*.html
