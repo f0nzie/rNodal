@@ -29,9 +29,11 @@ getTVD(object, ...)
 
 \S4method{getTVD}{WellDeviationSurvey}(object, ...)
 
-\S4method{WellDeviationSurvey}{character}(md_tvd, reference = "vertical", ...)
+\S4method{WellDeviationSurvey}{character}(md_tvd, reference = "vertical",
+  ...)
 
-\S4method{WellDeviationSurvey}{missing}(md_tvd, reference = "vertical", ...)
+\S4method{WellDeviationSurvey}{missing}(md_tvd, reference = "vertical",
+  ...)
 }
 \arguments{
 \item{md_tvd}{MD and TVD}

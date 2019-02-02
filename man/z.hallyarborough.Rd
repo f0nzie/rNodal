@@ -33,3 +33,4 @@ NA
 Other Z factor correlations: \code{\link{z.brillbeggs}},
   \code{\link{zcorr}}
 }
+\concept{Z factor correlations}

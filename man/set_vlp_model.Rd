@@ -25,7 +25,5 @@ set_vlp_model(object, ...)
 \item{dp.dz.ini}{initial gradient}
 }
 \description{
-Set the VLP model definition
-
 such as tolerance for iterations, initial value of dp/dz, the HDF5 data file
 }

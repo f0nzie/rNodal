@@ -31,3 +31,4 @@ NA
 Other Z factor correlations: \code{\link{z.hallyarborough}},
   \code{\link{zcorr}}
 }
+\concept{Z factor correlations}

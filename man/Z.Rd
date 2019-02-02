@@ -34,3 +34,4 @@ Calculate Z factors. Generic function
 Other Z factor correlations: \code{\link{z.brillbeggs}},
   \code{\link{z.hallyarborough}}
 }
+\concept{Z factor correlations}
