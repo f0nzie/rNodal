@@ -55,6 +55,8 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
                )
 }
 
+
+
 #' Set the most common well inputs
 #'
 #' @param field.name field name. Usually comprises several wells
