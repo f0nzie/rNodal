@@ -52,7 +52,7 @@ input_example <- setWellInput(field.name = "HAGBR.MOD",
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
 
 
-as.tibble(runVLP(well.input = input_example, well_model))
+runVLP(well.input = input_example, well_model)
 ```
 
     p30 = 906.7220
