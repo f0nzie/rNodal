@@ -29,7 +29,9 @@ input_example <-  setWellInput(field.name = "HAGBR.MOD",
                                salinity = 23000
                                  )
 
-well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 29, 
+                          tol = 0.00001)
 
 as.tibble(runVLP(well.input = input_example, well_model))
 ```
