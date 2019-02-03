@@ -1,9 +1,13 @@
+Meta
+doc
 .Rproj.user
 .Rhistory
 .RData
 # inst/doc
-# man/
+man
 # *.html
 # vignettes/*.R
 inst/doc
 inst/extdata/default.hdf5
+
+*.html

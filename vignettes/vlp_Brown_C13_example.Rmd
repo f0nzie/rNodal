@@ -18,7 +18,6 @@ knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.a
 
 ```{r rows.print=30}
 library(rNodal)
-library(tibble)
 
 # Example from C.13 in Brown
 # P2 (pressure at end point is given). 
@@ -35,7 +34,7 @@ input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
 
-as.tibble(runVLP(well.input = input.example.C13, well.model))
+runVLP(well.input = input.example.C13, well.model)
 ```
 
         
@@ -200,6 +199,6 @@ deviation_survey <- set_deviation_survey(well_as_text)
 ```
 
 ```{r}
-rNodal:::calc_angle_deviation_survey(deviation_survey)
+# rNodal:::calc_angle_deviation_survey(deviation_survey)
 ```
 

@@ -1,3 +1,5 @@
+^Meta$
+^doc$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md
@@ -12,3 +14,7 @@ notebooks
 docs
 ^_pkgdown\.yml$
 ^docs$
+^.*\.dll$
+^.*\.o$
+images
+

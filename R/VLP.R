@@ -55,6 +55,8 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
                )
 }
 
+
+
 #' Set the most common well inputs
 #'
 #' @param field.name field name. Usually comprises several wells
@@ -232,7 +234,7 @@ runVLP <- function(well.input, model.parameters) {
     writeHdf5(vlp.output,  "vlp.output")
     writeHdf5(vlp.model,   "vlp.model")
 
-    return(vlp.output)                              # return dataframe
+    return(tibble::as_tibble(vlp.output))                              # return dataframe
 }
 
 
