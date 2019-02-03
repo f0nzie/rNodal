@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="date" content="2019-02-02" />
+
+<title>VLP Brown. Guo Example Problem 4.4</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">VLP Brown. Guo Example Problem 4.4</h1>
+<h4 class="date"><em>2019-02-02</em></h4>
+
+
+
+<div id="calculate-vlp-using-hagedorn-brown-no-heat-transfer" class="section level2">
+<h2>Calculate VLP using Hagedorn-Brown (no heat transfer)</h2>
+<blockquote>
+<p>NOTE. There is a problem with the GLR. Program crashes at GLR =&lt; 362.6. Why?</p>
+</blockquote>
+<pre><code>Error in if (eps &gt;= tol) p1 = p.calc : missing value where TRUE/FALSE needed</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(rNodal)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">library</span>(tibble)</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co"># Example Problem from Guo book</span></a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6">input.example.P44 &lt;-<span class="st"> </span><span class="kw">setWellInput</span>(<span class="dt">field.name =</span> <span class="st">&quot;HAGBR.MOD&quot;</span>,</a>
+<a class="sourceLine" id="cb2-7" title="7">                                    <span class="dt">well.name =</span> <span class="st">&quot;Guo_P44&quot;</span>, </a>
+<a class="sourceLine" id="cb2-8" title="8">                                    <span class="dt">depth.wh =</span> <span class="dv">0</span>, <span class="dt">depth.bh =</span> <span class="dv">9700</span>, <span class="dt">diam.in =</span> <span class="fl">1.995</span>, </a>
+<a class="sourceLine" id="cb2-9" title="9">                                    <span class="dt">GLR =</span> <span class="fl">362.7</span>, <span class="dt">liq.rt =</span> <span class="dv">758</span>, <span class="dt">wcut =</span> <span class="fl">0.1</span>, </a>
+<a class="sourceLine" id="cb2-10" title="10">                                    <span class="dt">thp =</span> <span class="dv">100</span>, <span class="dt">tht =</span> <span class="dv">80</span>, <span class="dt">bht =</span> <span class="dv">180</span>, </a>
+<a class="sourceLine" id="cb2-11" title="11">                                    <span class="dt">API =</span> <span class="dv">40</span>, <span class="dt">gas.sg =</span> <span class="fl">0.70</span>, <span class="dt">wat.sg =</span> <span class="fl">1.05</span>, <span class="dt">if.tens =</span> <span class="dv">30</span>)</a>
+<a class="sourceLine" id="cb2-12" title="12"></a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14">well.model &lt;-<span class="st"> </span><span class="kw">setVLPmodel</span>(<span class="dt">vlp.model =</span> <span class="st">&quot;hagbr.mod&quot;</span>, <span class="dt">segments =</span> <span class="dv">29</span>, <span class="dt">tol =</span> <span class="fl">0.000001</span>)</a>
+<a class="sourceLine" id="cb2-15" title="15"></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="kw">as.tibble</span>(<span class="kw">runVLP</span>(<span class="dt">well.input =</span> input.example.P44, well.model))</a></code></pre></div>
+<pre><code># A tibble: 30 x 45
+       i depth    dL  temp  pres p_avg t_avg segment   GOR    Rs gas.fvf
+   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+ 1     1    0     0   80    100   100   80         0  403.  35.8  0.150 
+ 2     2  334.  334.  83.4  138.  119.  81.7       1  403.  40.5  0.126 
+ 3     3  669.  334.  86.9  176.  157.  85.2       2  403.  49.6  0.0953
+ 4     4 1003.  334.  90.3  217.  197.  88.6       3  403.  58.6  0.0760
+ 5     5 1338.  334.  93.8  259.  238.  92.1       4  403.  67.7  0.0628
+ 6     6 1672.  334.  97.2  302.  281.  95.5       5  403.  76.9  0.0532
+ 7     7 2007.  334. 101.   348.  325.  99.0       6  403.  86.1  0.0459
+ 8     8 2341.  334. 104.   394.  371. 102.        7  403.  95.6  0.0402
+ 9     9 2676.  334. 108.   442.  418. 106.        8  403. 105.   0.0356
+10    10 3010.  334. 111.   492.  467. 109.        9  403. 115.   0.0319
+# ... with 20 more rows, and 34 more variables: gas.free &lt;dbl&gt;,
+#   liq.dens &lt;dbl&gt;, z &lt;dbl&gt;, gas.dens &lt;dbl&gt;, oil.visc &lt;dbl&gt;,
+#   wat.visc &lt;dbl&gt;, mixL.visc &lt;dbl&gt;, oil.fvf &lt;dbl&gt;, wat.fvf &lt;dbl&gt;,
+#   liq.svel &lt;dbl&gt;, gas.svel &lt;dbl&gt;, NL &lt;dbl&gt;, CNL &lt;dbl&gt;, NLV &lt;dbl&gt;,
+#   NGV &lt;dbl&gt;, A &lt;dbl&gt;, B &lt;dbl&gt;, BA &lt;dbl&gt;, ND &lt;dbl&gt;, X2 &lt;dbl&gt;,
+#   HL.psi &lt;dbl&gt;, X2.mod &lt;dbl&gt;, psi &lt;dbl&gt;, HL &lt;dbl&gt;, Re.TP &lt;dbl&gt;,
+#   ff &lt;dbl&gt;, mix.dens &lt;dbl&gt;, mixL.volume &lt;dbl&gt;, mixL.dens &lt;dbl&gt;,
+#   mixTP.dens &lt;dbl&gt;, mixTP.svel &lt;dbl&gt;, elev.grad &lt;dbl&gt;, fric.grad &lt;dbl&gt;,
+#   dp.dz &lt;dbl&gt;</code></pre>
+</div>
+<div id="calculate-only-fluid-temperature" class="section level2">
+<h2>Calculate only fluid temperature</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># Example Problem from Guo book</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">library</span>(rNodal)</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># get only the variable we need for heat transfer. But what we really want </span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co"># is the deviation survey: MD, TVD</span></a>
+<a class="sourceLine" id="cb4-5" title="5">well_table &lt;-<span class="st"> </span><span class="kw">runVLP</span>(<span class="dt">well.input =</span> input.example.P44,</a>
+<a class="sourceLine" id="cb4-6" title="6">                     well.model)[, <span class="kw">c</span>(<span class="st">&quot;depth&quot;</span>, <span class="st">&quot;dL&quot;</span>, <span class="st">&quot;pres&quot;</span>, <span class="st">&quot;temp&quot;</span>)]    </a></code></pre></div>
+<pre><code>Error in ans[!test &amp; ok] &lt;- rep(no, length.out = length(ans))[!test &amp; : replacement has length zero</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">input.example.guo<span class="fl">.44</span> &lt;-<span class="st"> </span><span class="kw">setWellInput</span>(<span class="dt">field.name =</span> <span class="st">&quot;HAGBR.MOD&quot;</span>,</a>
+<a class="sourceLine" id="cb6-2" title="2">                                    <span class="dt">well.name =</span> <span class="st">&quot;Guo_P44&quot;</span>, </a>
+<a class="sourceLine" id="cb6-3" title="3">                                    <span class="dt">depth.wh =</span> <span class="dv">0</span>, <span class="dt">depth.bh =</span> <span class="dv">9700</span>, <span class="dt">diam.in =</span> <span class="fl">1.995</span>, </a>
+<a class="sourceLine" id="cb6-4" title="4">                                    <span class="dt">GLR =</span> <span class="fl">362.7</span>, <span class="dt">liq.rt =</span> <span class="dv">758</span>, <span class="dt">wcut =</span> <span class="fl">0.1</span>, </a>
+<a class="sourceLine" id="cb6-5" title="5">                                    <span class="dt">thp =</span> <span class="dv">100</span>, <span class="dt">tht =</span> <span class="dv">80</span>, <span class="dt">bht =</span> <span class="dv">180</span>, </a>
+<a class="sourceLine" id="cb6-6" title="6">                                    <span class="dt">API =</span> <span class="dv">40</span>, <span class="dt">gas.sg =</span> <span class="fl">0.70</span>, <span class="dt">wat.sg =</span> <span class="fl">1.05</span>, <span class="dt">if.tens =</span> <span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb6-7" title="7">                                    <span class="dt">U =</span> <span class="dv">3</span>)   <span class="co"># decreasing the U</span></a>
+<a class="sourceLine" id="cb6-8" title="8"></a>
+<a class="sourceLine" id="cb6-9" title="9"></a>
+<a class="sourceLine" id="cb6-10" title="10">well_parameters &lt;-<span class="st"> </span><span class="kw">get_well_parameters</span>(input.example.guo<span class="fl">.44</span>)</a>
+<a class="sourceLine" id="cb6-11" title="11"></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co"># temp.gradient calculates the fluid temperature coming from the wellbore</span></a>
+<a class="sourceLine" id="cb6-13" title="13">rNodal<span class="op">:::</span><span class="kw">temp.gradient</span>(well_table, well_parameters)  </a></code></pre></div>
+<pre><code># A tibble: 12 x 6
+   depth    dL  pres  temp     L    Ti
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1    0     0   500   120  9700   122.
+ 2  243.  243.  548.  123. 9457.  127.
+ 3  485.  243.  596.  125. 9215.  132.
+ 4  728.  243.  644.  128. 8972.  137.
+ 5  971.  243.  693.  131. 8729.  142.
+ 6 1214.  243.  742.  134. 8486.  147.
+ 7 1456.  243.  791.  136. 8244.  152.
+ 8 1699.  243.  841.  139. 8001.  157.
+ 9 1942.  243.  891.  142. 7758.  162.
+10 2185.  243.  941.  145. 7515.  167.
+11 2427.  243.  992.  147. 7273.  171.
+12 2670   243. 1043.  150. 7030   176.</code></pre>
+</div>
+<div id="data-for-unit-testing" class="section level2">
+<h2>Data for unit testing</h2>
+<pre><code>MD      TVD     Pres    Temp
+0       0       100.0   92.7    
+248.7   248.7   129.5   95.2    
+497.4   497.4   160.3   97.8    
+746.2   746.2   192.3   100.4   
+994.9   994.9   225.6   102.9   
+1243.6  1243.6  260.0   105.5   
+1492.3  1492.3  295.6   108.1   
+1741.0  1741.0  332.2   110.6   
+1989.7  1989.7  370.0   113.2   
+2238.5  2238.5  408.7   115.7   
+2487.2  2487.2  448.5   118.3   
+2735.9  2735.9  489.4   120.8   
+2984.6  2984.6  532.8   123.4   
+3233.3  3233.3  578.7   125.9   
+3482.1  3482.1  627.1   128.5   
+3730.8  3730.8  678.2   131.0   
+3979.5  3979.5  731.8   133.6   
+4228.2  4228.2  788.0   136.1   
+4476.9  4476.9  846.7   138.7   
+4725.6  4725.6  907.8   141.2   
+4974.4  4974.4  971.3   143.7   
+5223.1  5223.1  1037.2  146.2   
+5471.8  5471.8  1105.3  148.7   
+5720.5  5720.5  1175.5  151.2   
+5969.2  5969.2  1247.7  153.6   
+6217.9  6217.9  1323.9  156.0   
+6466.7  6466.7  1401.5  158.4   
+6715.4  6715.4  1480.3  160.8   
+6964.1  6964.1  1560.3  163.1   
+7212.8  7212.8  1641.3  165.4   
+7461.5  7461.5  1723.0  167.5   
+7710.3  7710.3  1804.6  169.7   
+7959.0  7959.0  1886.3  171.7   
+8207.7  8207.7  1968.0  173.5   
+8456.4  8456.4  2049.8  175.2   
+8705.1  8705.1  2131.6  176.8   
+8953.8  8953.8  2213.3  178.1   
+9202.6  9202.6  2295.2  179.1   
+9451.3  9451.3  2377.0  179.8   
+9700.0  9700.0  2458.9  180.0   </code></pre>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
