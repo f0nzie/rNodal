@@ -6,7 +6,7 @@ doc
 # inst/doc
 man
 # *.html
-# vignettes/*.R
+vignettes/*.R
 inst/doc
 inst/extdata/default.hdf5
 
