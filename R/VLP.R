@@ -21,7 +21,9 @@ saveToProjectEnv("TEMP.RANKINE", 460)
 
 
 
-#' Build the deviation survey table given MD and TVD
+#' Build a deviation survey table given MD and TVD
+#'
+#' The table should be two columns of text
 #'
 #' @param well_as_string well deviation survey as two columns text
 #' @export
@@ -35,8 +37,12 @@ set_deviation_survey <- function(well_as_string) {
 
 
 
-#' Set model parameters such as tolerance for iterations, initial value of dp/dz
-#' the HDF5 data file
+#' Set the high level model parameters for VLP calculations
+#'
+#' Prepare high level model inputs such as type of model, number of tubing segments,
+#' tolerance for iterations, initial value of dp/dz putting them as a list.
+#' Default VLP model is Hagendorn-Brown-Guo
+#'
 #' @param vlp.model     the name of the VLP model or correlation
 #' @param segments      number of segments for the tubing string
 #' @param tol           tolerance for error during interations
@@ -58,6 +64,9 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
 
 
 #' Set the most common well inputs
+#'
+#' Prepare all the well inputs to be entered into the VLP model by putting all
+#' the inputs in a list.
 #'
 #' @param field.name field name. Usually comprises several wells
 #' @param well.name  well name
@@ -133,7 +142,7 @@ setWellInput <- function( field.name = "HAGBR.GUO",
 Gwell.input <- setWellInput()
 
 
-#' High level function that calls any VLP model
+#' Perform basic calculations based on the well inputs
 #'
 #' @param well.input well input data as a list
 #' @export
@@ -212,7 +221,9 @@ get_well_parameters <- function(well.input) {
 
 
 
-#' Run the VLP calculations
+#' Run the VLP calculations based on well inputs and model parameters
+#'
+#' Calls VLPcontrol() to run the subsusrface calculations
 #'
 #' @param well.input        well input data as a list
 #' @param model.parameters  well model parameters as a list
@@ -221,20 +232,20 @@ runVLP <- function(well.input, model.parameters) {
 
     # perform basic calculations on the well input
     basic.calcs <-  getBasicCalcs(well.input)
-    well.parameters <- c(well.input, basic.calcs)
+    well.parameters <- c(well.input, basic.calcs) # join input and calc output
 
     # pass the well parameters and model parameters
     vlp.output <- VLPcontrol(well.parameters, model.parameters)
 
-    vlp.model <- toupper(model.parameters$vlp.model)
+    vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
 
-    # save input and output
+    # save input and output to HDF5 file
     writeHdf5(well.input,  "well.input")
     writeHdf5(basic.calcs, "core.calcs")
     writeHdf5(vlp.output,  "vlp.output")
     writeHdf5(vlp.model,   "vlp.model")
 
-    return(tibble::as_tibble(vlp.output))                              # return dataframe
+    return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
 
 
@@ -244,26 +255,29 @@ runVLP <- function(well.input, model.parameters) {
 #'
 #' VLP control marching algorithm to calculate bottomhole pressure given the
 #' wellhead pressure and temperature. Fluid properties are calculated at each
-#' of the segment depths
+#' of the segment depths.
 #'
 #' @param well.parameters    well input and core calculations at surface
 #' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
-#' @param verbose FALSE to prevent printing messages
+#' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
 VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
     # called by runVLP()
     with(as.list(c(well.parameters, model.parameters)),
-    {   # get datetime slot for saving /field/well/dataset to HDF5
+    {
+        # get datetime slot for saving /field/well/dataset to HDF5
         .saveSlot(field.name, well.name)
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
+
         # load the VLP function that is needed
         vlp.function = loadVLP(vlp.model)
         # Calculate the well segments and depths
         # Depth counts have to be greater than segments to allocate the zero or
         # initial depth value.
-        # Consider that in R for length.out parameter. index starts at 1 not 0
+        # Consider that in R for length.out parameter.
+        # In R index starts at 1 not 0
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
         depth.top <- depths[1]                # take the the first depth
@@ -273,6 +287,7 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
         t0        <- tht                      # initial temperature
         dt.dz     <- temp.grad                # temperature gradient at inlet
 
+        # initialize vectors of list type to store row calculations
         segment_row_vector <- vector("list", n)
         iter_row_vector    <- vector("list")
 
@@ -288,54 +303,88 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
             eps <-  1                           # initial value for epsilon
             iter_dpdz <- 1                      # AE: absolute error
             # here we start iterating for the pressure gradient
+            # until it is within the specified tolerance
             while (eps > tol) {           # loop until AE greater than tolerance
                 p.avg <- (p0 + p1) / 2    # try with an initial pressure
                 t.avg <- (t0 + t1) / 2
-                # calculate pressure losses using correlation VLP.function()
+                # calculate pressure losses using the selected VLP correlation
+                # passing the current pressure, temperature and other parameters
                 corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
                 # calculate new pressure
                 p.calc <- p0 - (-dp.dz) * dL # negative, we are going down
                 eps    <- abs( (p1 - p.calc) / p.calc )  # absolute error
-                # build iteration vector
-                iter_row_vector[[cum_iter]] <- list(segment = i,
-                                  iter_dpdz = as.integer(iter_dpdz),
-                                  epsilon = eps,
-                                  p0 = p0, p1 = p1, p.calc = p.calc,
-                                  p.avg = p.avg, delta.P = abs(p1-p.calc),
-                                  depth = depths[i], dL = dL,
-                                  dp.dz = dp.dz, temp = t1
-                                  )
+                # build iteration row-vector
+                iter_row_vector[[cum_iter]] <- list(
+                    segment = i,
+                    iter_dpdz = as.integer(iter_dpdz),
+                    epsilon = eps,
+                    p0 = p0, p1 = p1, p.calc = p.calc,
+                    p.avg = p.avg, delta.P = abs(p1-p.calc),
+                    depth = depths[i], dL = dL,
+                    dp.dz = dp.dz, temp = t1
+                    )
                 if (eps >= tol) p1 = p.calc   # if error too big, iterate again
-                iter_dpdz <- iter_dpdz + 1           # with a a new p1
-                cum_iter <- cum_iter + 1           # number of total iterations
+                iter_dpdz <- iter_dpdz + 1    # with a a new p1
+                cum_iter <- cum_iter + 1      # number of total iterations
             } # end of while
+            # at the end of the while-loop we obtain the average pressure
             # build a row-vector out of: depth, dL, temperature, pressure,
             # segment, correlation results
             segment_row_vector[[i]] <- c(
-                            i = i,             # row
-                            depth = depths[i], # depth
-                            dL = dL,           # length of pipe increment
-                            temp = t1,         # current temperature
-                            pres = p1,         # current pressure at depth
-                            p_avg = p.avg,
-                            t_avg = t.avg,
-                            segment = i-1,     # segment number
-                            corr               # correlation results
-                            )
+                i = i,             # row number
+                depth = depths[i], # depth
+                dL = dL,           # length of pipe increment
+                temp = t1,         # current temperature
+                pres = p1,         # current pressure at depth
+                p_avg = p.avg,
+                t_avg = t.avg,
+                segment = i-1,     # segment number
+                corr               # correlation results
+                )
             p0 = p.calc   # assign p1 to the inlet pressure of new segment, p0
             t0 = t1       # do the same with the temperature
-    } # end for
-        iter.tbl <- data.table::rbindlist(iter_row_vector) # build iterations DF
-        # print(iter.tbl)                        # show the dataframe
+    } # end-for
+        # convert row-list to dataframe
+        iter.tbl <- data.table::rbindlist(iter_row_vector)
+        # print(iter.tbl)                     # show the dataframe
+        # TODO: maybe we should make writeHDF5() an option
         writeHdf5(iter.tbl, "iterations")     # write table to HDF5
-
+    # convert row-vector to a dataframe
     segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
     return(segment_tbl)                           # final results
     }) # end with
 }
 
+
+runVLPdefaults <- function() {
+    # FIX: error inside loop with `tol`
+    well.inputs      <- setWellInput()
+    model.parameters <- setVLPmodel()
+
+    runVLP(well.input = well.inputs, model.parameters = model.parameters)
+    #return(well.inputs)
+    #return(c(well.inputs, model.parameters))
+}
+
+
+#' Load only the source necessary for model or correlation
+#' Note: it doesn't unload the functions sourced yet
+#' @param model   the model name       string
+#'
+loadVLP <- function(model) {
+    modelU <- toupper(model)
+    # if (grepl("HAGBR", modelU))    source("HAGBR.R")
+    # if (grepl("DUNSROS", modelU))  source("DUNSROS.R")
+    # if (grepl("FANBR", modelU))    source("FANBR.R")
+
+    if (model == "hagbr.guo")      return(hagbr.guo)
+    if (model == "hagbr.dummy")    return(hagbr.dummy)
+    if (model == "hagbr.mod")      return(hagbr.mod)
+    if (model == "dunsros.0")      return(dunsros.0)
+    if (model == "fanbr.fanbr")    return(fanbr.fanbr)
+}
 
 
 
