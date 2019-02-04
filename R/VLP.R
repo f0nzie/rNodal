@@ -371,33 +371,6 @@ writeHdf5 <- function(dataTable, dataset.name) {
 
 
 
-runVLPdefaults <- function() {
-    # FIX: error inside loop with `tol`
-    well.inputs      <- setWellInput()
-    model.parameters <- setVLPmodel()
-
-    runVLP(well.input = well.inputs, model.parameters = model.parameters)
-    #return(well.inputs)
-    #return(c(well.inputs, model.parameters))
-}
-
-
-
-#' Load only the source necessary for model or correlation
-#' Note: it doesn't unload the functions sourced yet
-#' @param model   the model name       string
-loadVLP <- function(model) {
-    modelU <- toupper(model)
-    # if (grepl("HAGBR", modelU))    source("HAGBR.R")
-    # if (grepl("DUNSROS", modelU))  source("DUNSROS.R")
-    # if (grepl("FANBR", modelU))    source("FANBR.R")
-
-    if (model == "hagbr.guo")      return(hagbr.guo)
-    if (model == "hagbr.dummy")    return(hagbr.dummy)
-    if (model == "hagbr.mod")      return(hagbr.mod)
-    if (model == "dunsros.0")      return(dunsros.0)
-    if (model == "fanbr.fanbr")    return(fanbr.fanbr)
-}
 
 
 
