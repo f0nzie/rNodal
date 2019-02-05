@@ -19,10 +19,13 @@ Gas viscosity OFF from worksheet
 # check function mu.gas()
 # calculate gas viscosity using data from Guo example
 # 
-# library(ggplot2)
-# library(dplyr)
+library(ggplot2)
+library(dplyr)
+library(rNodal)
 
-load("./data/dpt.rda")    # load Guo base data
+# load("./data/dpt.rda")    # load Guo base data
+
+data(dpt)
 # source("gascorrs.R")
 # data(dpt)
 
