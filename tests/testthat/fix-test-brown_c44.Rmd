@@ -60,3 +60,68 @@ identical(brown_c44, result)
 str(brown_c44)
 ```
 
+
+```{r}
+library(rNodal)
+    input_example <- setWellInput(field.name = "HAGBR.MOD",
+                                  well.name = "Brown_C44",
+                                  depth.wh = 0, depth.bh = 3590,
+                                  diam.in = 1.995,
+                                  GLR = 1000, liq.rt = 600, wcut = 0.0,
+                                  thp = 500, tht = 120, bht = 150,
+                                  API = 42, oil.visc = 1.0,
+                                  gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+    )
+    # H5close()  ## add this so there is no complain during tests
+    well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
+    result <- runVLP(well.input = input_example, well_model)
+
+    rda_file <- "brown_c44.rda"
+    ds_name <- tools::file_path_sans_ext(rda_file)
+    if (!file.exists(rda_file)) {
+        assign(ds_name, result)
+        save(list = ds_name, file = rda_file)
+    }
+    load(file = rda_file)
+    expected <- get(ds_name)
+    # expect_equal(result, expected)
+    # same column names
+    # expect_equal(names(expected), names(result))
+    # expect_equal(dim(expected), dim(result))
+    print(all.equal(result, expected, tolerance = 0.01))
+```
+
+```{r rows.print=30}
+library(dplyr)
+
+r3 <- result %>% 
+    select(Rs, gas.free, dp.dz) %>% 
+    .[7:12, ] %>% 
+    print()
+
+e3 <- expected %>% 
+    select(Rs, gas.free, dp.dz) %>% 
+    .[7:12, ] %>% 
+    print()
+
+r3 - e3
+```
+
+```{r}
+Map(`==`, result, expected)
+```
+
+
+```{r}
+library(data.table)
+all.equal(data.table(r3), data.table(e3), tolerance = 1e-8)
+all.equal(data.table(result), 
+          data.table(expected), tolerance = 1e-8)
+```
+
+
+```{r}
+result == expected
+all.equal(result$Rs[11:13], expected$Rs[11:13], tolerance = 0.001)
+```
+
