@@ -8,8 +8,14 @@ output: html_document
 ## Introduction
 Here is my very interesting document.
  
-Chunk 1 is calling chunk 2 here, but you can't see it.
-```{r chunk1, ref.label="chunk2", echo=FALSE}
+Chunk 1 is calling chunk 2 here, but you can't see it if echo=FALSE
+
+```{r chunk1, ref.label="chunk2", echo=TRUE}
+# echo=TRUE
+```
+
+```{r chunk11, ref.label="chunk2", echo=FALSE}
+# echo=FALSE
 ```
  
 ## This chunk is unnamed but can now use code from chunk 2

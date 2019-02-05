@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.a
 
 ## Enter table as text with depth, dL, pres and temp
 
+> Where is this data coming from?
+
 ```{r rows.print=30}
 library(tibble)
 
@@ -51,7 +53,7 @@ depth	dL	pres	temp
 
 # read string text to dataframe
 well_table <- read.table(header = TRUE, text = well)
-as.tibble(well_table)
+as_tibble(well_table)
 
 ```
 

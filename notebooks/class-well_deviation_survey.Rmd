@@ -48,11 +48,7 @@ well_table@wds_table
 
 
 
-```{r}
-# split the tubing in dx pieces
-apply(angle_deviation_survey, 1, function(x) x["MD"] 
-)
-```
+
 
 
 
@@ -76,3 +72,9 @@ deviation_survey <- set_deviation_survey(md_tvd_01)
 compute_angle_deviation_survey(deviation_survey, reference = "horizontal")
 ```
 
+
+```{r}
+# split the tubing in dx pieces
+apply(angle_deviation_survey, 1, function(x) x["MD"] 
+)
+```

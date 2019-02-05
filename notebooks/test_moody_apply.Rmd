@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-source("moody.R")
+source("../R/friction.R")
 
 # calculate `f` for various Reynolds numbers
 re <- c(5000, 10000, 50000, 100000, 500000)
@@ -89,7 +89,7 @@ do.call(df[2, 1], list(4))
 
 ```{r}
 ####################### giving error
-source("moody.R")
+source("../R/friction.R")
 
 ed <- c(0.05, 0.03, 0.01, 0.005, 0.002)
 re <- c(5000, 10000, 50000, 100000, 500000)
