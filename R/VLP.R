@@ -226,24 +226,28 @@ get_well_parameters <- function(well.input) {
 #' Calls VLPcontrol() to run the subsusrface calculations
 #'
 #' @param well.input        well input data as a list
+#' @param hdf5 do we want to write to an HDF5 file
 #' @param model.parameters  well model parameters as a list
 #' @export
-runVLP <- function(well.input, model.parameters) {
+runVLP <- function(well.input, model.parameters, hdf5 = FALSE) {
 
     # perform basic calculations on the well input
     basic.calcs <-  getBasicCalcs(well.input)
     well.parameters <- c(well.input, basic.calcs) # join input and calc output
 
     # pass the well parameters and model parameters
-    vlp.output <- VLPcontrol(well.parameters, model.parameters)
+    vlp.output <- VLPcontrol(well.parameters, model.parameters, hdf5 = hdf5)
 
     vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
 
-    # save input and output to HDF5 file
-    writeHdf5(well.input,  "well.input")
-    writeHdf5(basic.calcs, "core.calcs")
-    writeHdf5(vlp.output,  "vlp.output")
-    writeHdf5(vlp.model,   "vlp.model")
+    if (hdf5) {
+        # save input and output to HDF5 file
+        writeHdf5(well.input,  "well.input")
+        writeHdf5(basic.calcs, "core.calcs")
+        writeHdf5(vlp.output,  "vlp.output")
+        writeHdf5(vlp.model,   "vlp.model")
+    }
+
 
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
@@ -260,15 +264,18 @@ runVLP <- function(well.input, model.parameters) {
 #' @param well.parameters    well input and core calculations at surface
 #' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
+#' @param hdf5 do we want to write to an HDF5 file
 #' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
-VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
+VLPcontrol <- function(well.parameters, model.parameters,
+                       hdf5 = FALSE,
+                       verbose = FALSE) {
     # called by runVLP()
     with(as.list(c(well.parameters, model.parameters)),
     {
         # get datetime slot for saving /field/well/dataset to HDF5
-        .saveSlot(field.name, well.name)
+        if (hdf5) .saveSlot(field.name, well.name)
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the VLP function that is needed
@@ -350,7 +357,7 @@ VLPcontrol <- function(well.parameters, model.parameters, verbose = FALSE) {
         iter.tbl <- data.table::rbindlist(iter_row_vector)
         # print(iter.tbl)                     # show the dataframe
         # TODO: maybe we should make writeHDF5() an option
-        writeHdf5(iter.tbl, "iterations")     # write table to HDF5
+        if (hdf5) writeHdf5(iter.tbl, "iterations")     # write table to HDF5
     # convert row-vector to a dataframe
     segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
     return(segment_tbl)                           # final results
