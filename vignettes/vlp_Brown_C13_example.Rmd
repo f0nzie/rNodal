@@ -24,15 +24,26 @@ library(rNodal)
 # The question is: what is the length of the tubing.
 # P2 = 1000 psia
 
-input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
-                                    well.name = "Brown_C13", 
-                                    depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
-                                    GLR = 500, liq.rt = 1000, wcut = 0.6, 
-                                    thp = 500, tht = 120, bht = 150, 
-                                    API = 22, gas.sg = 0.65, wat.sg = 1.07, if.tens = 30)
+input.example.C13 <- setWellInput(
+  field.name = "HAGBR.MOD", 
+  well.name = "Brown_C13", 
+  depth.wh = 0, depth.bh = 2670, 
+  diam.in = 1.995, 
+  GLR = 500, 
+  liq.rt = 1000, 
+  wcut = 0.6, 
+  thp = 500, 
+  tht = 120, 
+  bht = 150, 
+  API = 22, 
+  gas.sg = 0.65, 
+  wat.sg = 1.07, 
+  if.tens = 30)
 
 
-well.model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 11, tol = 0.000001)
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 11, 
+                          tol = 0.000001)
 
 runVLP(well.input = input.example.C13, well.model)
 ```
@@ -52,22 +63,25 @@ It will grab only few variables from the VLP final table above.
 
 library(rNodal)
 
-# get only the variable we need for heat transfer. But what we really want 
+# get only the variables we need for heat transfer. But what we really want 
 # is the deviation survey: MD, TVD
 well_table <- runVLP(well.input = input.example.C13, 
                      well.model)[, c("depth", "dL", "pres", "temp")]    
 
-input.example.C13 <- setWellInput(field.name = "HAGBR.MOD",
-                                    well.name = "Brown_C13", 
-                                    depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
-                                    GLR = 500, liq.rt = 1000, wcut = 0.6, 
-                                    thp = 500, tht = 120, bht = 150, 
-                                    API = 22, gas.sg = 0.65, wat.sg = 1.07,
-                                  U = 17)
+input.example.C13 <- setWellInput(
+  field.name = "HAGBR.MOD",
+  well.name = "Brown_C13", 
+  depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+  GLR = 500, liq.rt = 1000, wcut = 0.6, 
+  thp = 500, tht = 120, bht = 150, 
+  API = 22, gas.sg = 0.65, wat.sg = 1.07,
+  U = 17)
 
+# get initial well parameters including basic calculations
 well_parameters <- get_well_parameters(input.example.C13)
 
 # temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
 rNodal:::temp.gradient(well_table, well_parameters)         
 
 ```
@@ -89,7 +103,7 @@ Added new calculated objects:
 
 
 ```{r rows.print=30}
-# this tests if new function get_well_parameters() returns all what's needed for heat transfer
+# this tests if the new function get_well_parameters() returns all what's needed for heat transfer
 library(rNodal)
 
 well_table <- runVLP(well.input = input.example.C13, 
@@ -157,45 +171,70 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
 
 [h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
 
+
 ### results for unit testing
 
-        MD      TVD     Pres    Temp
-        0	    0   	500.0	135.8
-        242.7	242.7	563.1	137.9
-        485.5	485.5	627.5	139.8
-        728.2	728.2	693.1	141.6
-        970.9	970.9	759.8	143.4
-        1213.6	1213.6	827.6	144.9
-        1456.4	1456.4	896.5	146.3
-        1699.1	1699.1	966.4	147.6
-        1941.8	1941.8	1037.3	148.6
-        2184.5	2184.5	1109.3	149.3
-        2427.3	2427.3	1182.2	149.8
-        2670.0	2670.0	1255.9	150.0
-        
-        
+      MD      TVD     Pres  Temp
+       0       0     500.0  135.8
+     242.7   242.7   563.1  137.9
+     485.5	 485.5	 627.5  139.8
+     728.2	 728.2	 693.1	141.6
+     970.9	 970.9	 759.8	143.4
+    1213.6	1213.6	 827.6	144.9
+    1456.4	1456.4	 896.5	146.3
+    1699.1	1699.1	 966.4	147.6
+    1941.8	1941.8	1037.3	148.6
+    2184.5	2184.5	1109.3	149.3
+    2427.3	2427.3	1182.2	149.8
+    2670.0	2670.0	1255.9	150.0
+    
+    
+```{r rows.print=20}
+# convert text table to dataframe in preparation for unit test
+results_unit_test <- "
+      MD      TVD     Pres  Temp
+       0       0     500.0  135.8
+     242.7   242.7   563.1  137.9
+     485.5	 485.5	 627.5  139.8
+     728.2	 728.2	 693.1	141.6
+     970.9	 970.9	 759.8	143.4
+    1213.6	1213.6	 827.6	144.9
+    1456.4	1456.4	 896.5	146.3
+    1699.1	1699.1	 966.4	147.6
+    1941.8	1941.8	1037.3	148.6
+    2184.5	2184.5	1109.3	149.3
+    2427.3	2427.3	1182.2	149.8
+    2670.0	2670.0	1255.9	150.0
+"    
+
+library(readr)
+read_table2(results_unit_test, col_names = TRUE)
+```
+    
         
         
 ```{r}
 library(rNodal)
 
+# separate the columns with tabs
 well_as_text <- "
-MD      TVD    
-0	    0   
-242.7	242.7
-485.5	485.5
-728.2	728.2
-970.9	970.9
-1213.6	1213.6
-1456.4	1456.4
-1699.1	1699.1
-1941.8	1941.8
-2184.5	2184.5
-2427.3	2427.3
-2670.0	2670.0
+    MD  TVD    
+       0	     0   
+     242.7   242.7
+     485.5   485.5
+     728.2   728.2
+     970.9   970.9
+    1213.6  1213.6
+    1456.4	1456.4
+    1699.1	1699.1
+    1941.8	1941.8
+    2184.5	2184.5
+    2427.3	2427.3
+    2670.0	2670.0
 "
 
 deviation_survey <- set_deviation_survey(well_as_text)
+deviation_survey
 ```
 
 ```{r}

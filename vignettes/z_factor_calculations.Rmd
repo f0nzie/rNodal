@@ -1,0 +1,95 @@
+---
+title: "Calculating the Z factor"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Calculating the Z factor}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+Given these conditions, calculate the Z factor using the correlation by Hall
+and Yarborough:
+
+
+```{r}
+# inputs
+pres   <- 200  # psia
+temp   <- 180  # deg F
+gas.sg <- 0.65
+n2     <- 0.1
+co2    <- 0.08
+h2s    <- 0.02
+```
+
+
+```{r}
+library(rNodal)
+
+# calculating without considering gas impurities
+z.hallyarborough(pres, temp, gas.sg) # output is a list
+```
+## Hall-Yarborough
+
+```{r}
+z.hallyarborough(pres, temp, gas.sg)
+```
+
+```{r}
+Z(correlation = "HY", pres.a = 5000, temp.f = 180, gas.sg = 0.65, 
+  n2.frac = 0.1, co2.frac = 0.08, h2s.frac = 0.02)
+```
+
+```{r}
+Z(correlation = 1, pres.a = pres, temp.f = temp, gas.sg)
+```
+
+## Brill-Beggs
+
+```{r}
+z.brillbeggs(pres, temp, gas.sg)
+```
+```{r}
+Z(correlation = "BB", pres, temp, gas.sg)
+```
+
+```{r}
+Z(correlation = "2", pres.a = pres, temp.f = temp, gas.sg)
+```
+
+
+![](table2_4_Brill-Beggs_zfactor.jpg)
+
+```{r}
+Z(correlation = "2", pres.a = 5000, temp.f = 180, gas.sg = 0.65, 
+  n2.frac = 0.1, co2.frac = 0.08, h2s.frac = 0.02)
+```
+
+
+```{r}
+# check temp.pr
+# worksheet has a bug in the Farenheit add formula in the book
+rNodal:::.z.brillbeggs(5000, 180, 0.65, 
+                       n2.frac = 0.1, co2.frac = 0.08, h2s.frac = 0.02)
+```
+
+
+```{r}
+# check temp.pr
+# worksheet has a bug in the Farenheit add formula in the book
+rNodal:::.z.brillbeggs(5000, 180, 0.65, 
+                       n2.frac = 0.1, co2.frac = 0.08, h2s.frac = 0.02)
+```
+
+```{r}
+# calculating without considering gas impurities
+# data from paper pg 490
+z.hallyarborough(2000, 150, 0.7) # output is a list
+```
+
+```{r}
+Z(correlation = "BB", 2000, 150, 0.7)
+```
+

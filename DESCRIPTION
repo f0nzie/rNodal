@@ -14,6 +14,7 @@ Imports: rootSolve,
     rprojroot, 
     R.utils, 
     Hmisc, 
+    readr,
     zFactor
 License: GPL-2
 Encoding: UTF-8
