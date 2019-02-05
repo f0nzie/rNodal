@@ -1,0 +1,62 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rNodal)
+
+input_example <- setWellInput(field.name = "HAGBR.MOD",
+                              well.name = "Brown_C44",
+                              depth.wh = 0, depth.bh = 3590,
+                              diam.in = 1.995,
+                              GLR = 1000, liq.rt = 600, wcut = 0.0,
+                              thp = 500, tht = 120, bht = 150,
+                              API = 42, oil.visc = 1.0,
+                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+)
+# H5close()  ## add this so there is no complain during tests
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 29, tol = 0.00001)
+result <- runVLP(well.input = input_example, well_model)
+
+dim(result)
+class(result)
+names(result)
+```
+
+
+
+```{r}
+rda_file <- "brown_c44.rda"
+ds_name <- tools::file_path_sans_ext(rda_file)
+if (!file.exists(rda_file)) {
+    assign(ds_name, result)
+    save(list = ds_name, file = rda_file)
+}
+# load(file = rda_file)
+
+dim(brown_c44)
+class(brown_c44)
+identical(names(brown_c44), names(result))
+```
+
+```{r}
+class(result)
+class(brown_c44)
+```
+
+
+
+```{r}
+library(tibble)
+library(data.table)
+
+identical(brown_c44, result)
+# identical(as.data.table(brown_c44), result)
+```
+
+
+```{r}
+str(brown_c44)
+```
+
