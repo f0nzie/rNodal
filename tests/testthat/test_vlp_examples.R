@@ -3,7 +3,6 @@ library(testthat)
 context("test example C44")
 
 
-
 test_that("VLP C44 output is the same as check rda file", {
     # Example from C.44 in Brown's book
     # P2 (pressure at end point is given in the original example).
