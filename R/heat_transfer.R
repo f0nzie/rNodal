@@ -27,7 +27,8 @@ temp.fluid <- function(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, m
 
 temp.gradient <- function(well_table, well.parameters) {
     # new function to calculate dT/dx using Ramey's equation
-    # well angle is fixed. Think of a vertical well for now
+    # well angle is fixed.
+    # Think of a vertical well for now.
     # Angle is constant.
     with(as.list(c(well.parameters)), {
         theta <- angle
