@@ -1,4 +1,5 @@
 library(testthat)
+library(data.table)
 
 context("test example C44")
 
@@ -35,8 +36,12 @@ test_that("VLP C44 output is the same as check rda file", {
         save(list = ds_name, file = rda_file)
     }
     load(file = rda_file)
-    expect_equal(result, get(ds_name))
-    # print(get(ds_name))
+    expected <- get(ds_name)
+
+    expect_equal(names(expected), names(result)) # same column names
+    expect_equal(dim(expected), dim(result))     # same dimensions
+    expect_true(all.equal(data.table(result),    # nearly the same
+              data.table(expected), tolerance = 1e-8))
 })
 
 
@@ -65,7 +70,12 @@ test_that("VLP C13 output is the same as check rda file", {
         save(list = ds_name, file = rda_file)
     }
     load(file = rda_file)
-    expect_equal(result, get(ds_name))
+
+    expected <- get(ds_name)
+    expect_equal(names(expected), names(result)) # same column names
+    expect_equal(dim(expected), dim(result))     # same dimensions
+    expect_true(all.equal(data.table(result),    # nearly the same
+                          data.table(expected), tolerance = 1e-8))
 
 })
 
@@ -94,6 +104,11 @@ test_that("VLP Oilwell_01 output is the same as check rda file", {
         save(list = ds_name, file = rda_file)
     }
     load(file = rda_file)
-    expect_equal(result, get(ds_name))
+
+    expected <- get(ds_name)
+    expect_equal(names(expected), names(result)) # same column names
+    expect_equal(dim(expected), dim(result))     # same dimensions
+    expect_true(all.equal(data.table(result),    # nearly the same
+                          data.table(expected), tolerance = 1e-8))
 
 })
