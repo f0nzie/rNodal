@@ -41,9 +41,9 @@ Given this MD, TVD data, build a new table with angles in radians and degrees.
 
 ### Example of table after calculations
 
-           	  MD    TVD      CumDisp     Angle
-         1	 0	     0	     0	         0	
-         2	 600	 600	 0	         0	
+           	  MD    TVD  CumDisp     Angle
+         1	 0	     0	  0	       0	
+         2	 600	 600	  0	       0	
          3	 1005	 1000	 63.4429	 9.01245	
          4	 4075	 4000	 715.286	 12.2587	
          5	 7700	 7500	 1659.02	 15.0902	
