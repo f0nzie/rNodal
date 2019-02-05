@@ -17,8 +17,9 @@ knitr::opts_chunk$set(
 ```
 
 
-        
-## + Heat transfer calculations. Angle constant
+## VLP calculation with Heat transfer calculations
+* Vertical well
+* Angle constant
 
 It will grab only few variables from the VLP final table above.
      
@@ -34,7 +35,7 @@ library(rNodal)
 
 # get only the variables we need for heat transfer. But what we really want 
 # is the deviation survey: MD, TVD
-well_table <- runVLP(well.input = input.example.C13, 
+vlp_output <- runVLP(well.input = input.example.C13, 
                      well.model)[, c("depth", "dL", "pres", "temp")]    
 
 input.example.C13 <- setWellInput(
@@ -51,7 +52,7 @@ well_parameters <- get_well_parameters(input.example.C13)
 
 # temp.gradient calculates the fluid temperature coming from the wellbore
 # inputs are depth, dL, pres, temp plus basic calculations
-rNodal:::temp.gradient(well_table, well_parameters)         
+rNodal:::temp.gradient(vlp_output, well_parameters)         
 
 ```
 
