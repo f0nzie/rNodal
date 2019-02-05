@@ -15,10 +15,7 @@ knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.a
 ## Example C44 by Hagendorn-Brown
 This notebook runs the modified Hagedorn-Brown correlation calculated according
 to Brown's book and procedure in Appendix C. Although the question is not really
-pointed at finding the bottomhole flowing pressure given the surface conditions
-and the wellhead pressure but rather calculating the length of the tubing if BHP
-is known, the calculations here demonstrate that both can be calculated or
-verified using this algorithm.
+pointed at finding the bottomhole flowing pressure (BHFP) given the surface conditions and the wellhead pressure but rather calculating the length of the tubing if BHP is known, the calculations here demonstrate that both can be calculated or verified using this algorithm.
 
 The pressures at both ends of the tubing: P1 is 500 psia and P2 1000 psia.
 
@@ -39,15 +36,16 @@ library(tibble)
 # The final results are very close to those of Brown.
 
 
-input_example <- setWellInput(field.name = "HAGBR.MOD",
-                                 well.name = "Brown_C44", 
-                                 depth.wh = 0, depth.bh = 3590, 
-                                 diam.in = 1.995, 
-                                 GLR = 1000, liq.rt = 600, wcut = 0.0, 
-                                 thp = 500, tht = 120, bht = 150, 
-                                 API = 42, oil.visc = 1.0, 
-                                 gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
-                                 )
+input_example <- setWellInput(
+                              field.name = "HAGBR.MOD",
+                              well.name = "Brown_C44", 
+                              depth.wh = 0, depth.bh = 3590, 
+                              diam.in = 1.995, 
+                              GLR = 1000, liq.rt = 600, wcut = 0.0, 
+                              thp = 500, tht = 120, bht = 150, 
+                              API = 42, oil.visc = 1.0, 
+                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+                              )
 
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
 

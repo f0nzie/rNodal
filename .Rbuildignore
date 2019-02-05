@@ -17,4 +17,4 @@ docs
 ^.*\.dll$
 ^.*\.o$
 images
-vignettes
+
