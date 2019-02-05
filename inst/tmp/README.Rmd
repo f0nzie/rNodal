@@ -4,16 +4,17 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r setup, include = FALSE}
+[![Travis-CI Build Status](https://travis-ci.org/f0nzie/rNodal.svg?branch=master)](https://travis-ci.org/f0nzie/rNodal) [![codecov](https://codecov.io/gh/f0nzie/rNodal/branch/develop/graph/badge.svg)](https://codecov.io/gh/f0nzie/rNodal)
+
+```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.path = "README-"
 )
 ```
-# rNodal
 
+# rNodal
 
 The goal of rNodal is to provide nodal analysis for oil and gas wells.
 
@@ -105,5 +106,6 @@ To run the model is necessary to provide:
 The results are given in the form of a dataframe where the rows represent the number of segment plus one and the columns are the calculations or variables.
 
 ```{r, out.width = "800px", echo=F}
-knitr::include_graphics("man/figures/README-results_df.jpg")
+knitr::include_graphics("./images/results_df.jpg")
 ```
+

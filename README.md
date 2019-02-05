@@ -1,10 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![Travis-CI Build
-Status](https://travis-ci.org/f0nzie/rNodal.svg?branch=master)](https://travis-ci.org/f0nzie/rNodal)
-[![codecov](https://codecov.io/gh/f0nzie/rNodal/branch/develop/graph/badge.svg)](https://codecov.io/gh/f0nzie/rNodal)
-
 # rNodal
 
 The goal of rNodal is to provide nodal analysis for oil and gas wells.
@@ -109,4 +105,4 @@ The results are given in the form of a dataframe where the rows
 represent the number of segment plus one and the columns are the
 calculations or variables.
 
-<img src="./images/results_df.jpg" width="800px" />
+<img src="man/figures/README-results_df.jpg" width="800px" />
