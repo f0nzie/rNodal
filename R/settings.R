@@ -2,6 +2,7 @@
 project.env <- new.env(parent = emptyenv()) # create new environment for project
 
 setProjectEnvironment <- function() {
+    data_file = "default"            # name for storage file
 
     project.env[["pkg.root"]]    <- pkg_root <- system.file("..",
                                                             package = "rNodal")
