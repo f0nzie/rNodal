@@ -27,9 +27,10 @@ temp.fluid <- function(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, m
 
 temp.gradient <- function(well_table, well.parameters) {
     # new function to calculate dT/dx using Ramey's equation
-    # well angle is fixed.
+    # well angle is fixed because well is vertical.
     # Think of a vertical well for now.
     # Angle is constant.
+    # TODO: make angle change at each segment or measuring point
     with(as.list(c(well.parameters)), {
         theta <- angle
         depth <- depth.bh - depth.wh
@@ -38,12 +39,13 @@ temp.gradient <- function(well_table, well.parameters) {
         A     <- 1 / k            # relaxation distance by Ramey. Shoham, pg 297
 
         Ti <- bht               # initial temperature for the marching algorithm
-        for (i in nrow(well_table):1) {           # asscending from the wellbore
+        # calculate bottom up
+        for (i in nrow(well_table):1) {           # ascending from the wellbore
             L <- depth - well_table[i, "depth"]   # calculate dL
             Tei <- well_table[i, "temp"]          # get ground temperature
 
             # calculate the well fluid temperature at "L" distance from the
-            # wellbore at angle theta
+            # wellbore at angle theta (beware: angle is constant)
             Ti <- (Tei - ge * L * sin(theta)) +
                 (Ti - Tei) * exp(-L/A) +
                 ge * A * sin(theta) * (1 - exp(-L/A))
