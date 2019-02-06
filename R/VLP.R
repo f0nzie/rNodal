@@ -240,14 +240,6 @@ runVLP <- function(well.input, model.parameters, hdf5 = FALSE) {
 
     vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
 
-    if (hdf5) {
-        # save input and output to HDF5 file
-        writeHdf5(well.input,  "well.input")
-        writeHdf5(basic.calcs, "core.calcs")
-        writeHdf5(vlp.output,  "vlp.output")
-        writeHdf5(vlp.model,   "vlp.model")
-    }
-
 
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
@@ -356,8 +348,6 @@ VLPcontrol <- function(well.parameters, model.parameters,
         # convert row-list to dataframe
         iter.tbl <- data.table::rbindlist(iter_row_vector)
         # print(iter.tbl)                     # show the dataframe
-        # TODO: maybe we should make writeHDF5() an option
-        if (hdf5) writeHdf5(iter.tbl, "iterations")     # write table to HDF5
     # convert row-vector to a dataframe
     segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
     return(segment_tbl)                           # final results
@@ -396,34 +386,7 @@ loadVLP <- function(model) {
 
 
 
-#' Write dataset to HDF5 file
-#'
-#' @param dataTable data that is going to be written
-#' @param dataset.name the name of the dataset
-#' @importFrom rhdf5 h5write H5close
-#' @keywords internal
-writeHdf5 <- function(dataTable, dataset.name) {
-    wellFile <- readFromProjectEnv("data.file.hdf5")
-    slot     <- readFromProjectEnv("slot")
-    data.name <- paste(slot, dataset.name, sep = "/")
-    # print(dataTable); print(wellFile); print(data.name)
-    rhdf5::h5write(dataTable, wellFile, data.name)                            # hdf5 error
-    H5close()
-}
 
-#' Save a slot in the HDF5 file
-#' @param field.name field name to compose the slot
-#' @param well.name well name to compose the slot
-#' @noRd
-#' @keywords internal
-.saveSlot <- function(field.name, well.name) {
-    hFile <- readFromProjectEnv("data.file.hdf5")
-    # get the well slot in HDF5
-    slot <- get.well.slot(hFile, field.name, well.name)                  # io error 3
-    if (is.null(slot)) stop("Slot not available. Check Field name or Well name.")
-    saveToProjectEnv("slot", slot)
-    return(project.env[["slot"]])
-}
 
 
 

@@ -3,7 +3,7 @@ Title: Oil and Gas Well Nodal Analysis for Production Petroleum Engineering
 Version: 0.0.2.9003
 Authors@R: person("Alfonso R.", "Reyes", role = c("aut", "cre"), email = "alfonso.reyes@oilgainsanalytics.com")
 Description: Vertical Lift Performance calculations for oil and gas wells.
-Depends: R (>= 3.2), methods,
+Depends: R (>= 3.2)
 Imports: rootSolve, 
     utils,
     dplyr, 
@@ -37,7 +37,6 @@ Collate:
     'utils.R'
     'VLP.R'
     'deviation_survey.R'
-    'hdf5.R'
     'heat_transfer.R'
     'rNodal-package.r'
     'zzz.R'

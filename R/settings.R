@@ -30,10 +30,6 @@ setProjectEnvironment <- function() {
         } else {
             # cat("Save session not found\n")
         }
-        if (is_hdf5_files()) {
-            cat(sprintf("There are %d HDF5 files\n", length(listAllHdf5(where = "local"))))
-            # pick the bigger
-        }
     }
 }
 

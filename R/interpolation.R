@@ -7,7 +7,7 @@
 #' @param drhov    Duns and Ros parameters. See equation on x-axis
 #' @param GLR      gas liquid ratio
 #' @param degree   degree of polynomial
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter %>%
 #' @importFrom stats lm predict
 #' @export
 #' @examples
