@@ -59,7 +59,7 @@ dunsros.holdup <- function(vsl, liq.sg, if.tens, vsg, diam, liq.visc, pres) {
     YL <- psi * YL.psi
 
     # return all values in function environment as a list
-    # but remove input parameters first. HDF5 files do not like duplicate members
+    # remove variable from memory
     rm(vsl, liq.sg, if.tens, vsg, diam, liq.visc, pres)
     out <- sapply(ls(), function(x) get(x), simplify = F, USE.NAMES = T)
     return(out)
