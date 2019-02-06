@@ -8,3 +8,7 @@ r_check_args: --as-cran
 
 git:
   depth: 5
+
+bioc_packages:
+  - S4Vectors
+  - rhdf5
