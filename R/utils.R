@@ -76,27 +76,11 @@ getSessionFilename <- function(session_file = "session.rda") {
 }
 
 
-#' Get the name of the default DataContainer
-#' @keywords internal
-getDefaultDataContainerName <- function() {
-    readFromProjectEnv("data.file.hdf5")
-}
-
 # this was causing an error during the build
 getProjectDir <- function() {
     # get the project folder
     getwd()
 }
-
-
-#' What is the status of the package
-#'
-#' @export
-nodal_status <- function() {
-    readFromProjectEnv("data.file.hdf5")
-}
-
-
 
 
 
