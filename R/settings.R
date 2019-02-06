@@ -50,9 +50,3 @@ readFromProjectEnv <- function(var) {
     project.env[[var]]
 }
 
-
-changeHdf5DefaultExtension <- function(new_extension) {
-    # change the extension from hdf5 to h5 or viceversa
-        # read current extension
-        # apply new_extension and save it to project environment
-}

@@ -30,20 +30,3 @@ test_that("relative path is a dot",
 # })
 
 
-
-# checking tests ... ERROR
-# Running 'testthat.R'
-# Running the tests in 'tests/testthat.R' failed.
-# Last 13 lines of output:
-#     1/1 mismatches
-# x[1]: "RLIBS_4b94ef4537/rNodal"
-# y[1]: "rNodal/inst"
-#
-#
-#
-# [1] "C:/Users/msfz751/AppData/Local/Temp/Rtmpc5fq1D/RLIBS_4b94ef4537/rNodal/../inst/extdata/default.hdf5"
-# [1] "default.hdf5"
-# [1] "C:/Users/msfz751/Documents/rNodal.Rcheck/tests/testthat/default.hdf5"
-# testthat results ================================================================
-#     OK: 13 SKIPPED: 0 FAILED: 1
-# 1. Failure: system.file(pkg) match rNodal/inst (@test_LL_paths.R#22)

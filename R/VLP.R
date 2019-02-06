@@ -226,7 +226,6 @@ get_well_parameters <- function(well.input) {
 #' Calls VLPcontrol() to run the subsusrface calculations
 #'
 #' @param well.input        well input data as a list
-#' @param hdf5 do we want to write to an HDF5 file
 #' @param model.parameters  well model parameters as a list
 #' @export
 runVLP <- function(well.input, model.parameters) {
@@ -236,7 +235,7 @@ runVLP <- function(well.input, model.parameters) {
     well.parameters <- c(well.input, basic.calcs) # join input and calc output
 
     # pass the well parameters and model parameters
-    vlp.output <- VLPcontrol(well.parameters, model.parameters, hdf5 = hdf5)
+    vlp.output <- VLPcontrol(well.parameters, model.parameters)
 
     vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
 
@@ -256,7 +255,6 @@ runVLP <- function(well.input, model.parameters) {
 #' @param well.parameters    well input and core calculations at surface
 #' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
-#' @param hdf5 do we want to write to an HDF5 file
 #' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
@@ -265,8 +263,6 @@ VLPcontrol <- function(well.parameters, model.parameters,
     # called by runVLP()
     with(as.list(c(well.parameters, model.parameters)),
     {
-        # get datetime slot for saving /field/well/dataset to HDF5
-        if (hdf5) .saveSlot(field.name, well.name)
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the VLP function that is needed

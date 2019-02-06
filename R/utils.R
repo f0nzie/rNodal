@@ -75,13 +75,6 @@ getSessionFilename <- function(session_file = "session.rda") {
     }
 }
 
-#' Save the user HDF5 file to a persistant file
-#' @keywords internal
-saveSession <- function() {
-    hdf5_file <- readFromProjectEnv("data.file.hdf5")
-    save(hdf5_file, file = "session.rda")
-
-}
 
 #' Get the name of the default DataContainer
 #' @keywords internal
