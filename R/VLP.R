@@ -229,7 +229,7 @@ get_well_parameters <- function(well.input) {
 #' @param hdf5 do we want to write to an HDF5 file
 #' @param model.parameters  well model parameters as a list
 #' @export
-runVLP <- function(well.input, model.parameters, hdf5 = FALSE) {
+runVLP <- function(well.input, model.parameters) {
 
     # perform basic calculations on the well input
     basic.calcs <-  getBasicCalcs(well.input)
@@ -261,7 +261,6 @@ runVLP <- function(well.input, model.parameters, hdf5 = FALSE) {
 #'
 #' @export
 VLPcontrol <- function(well.parameters, model.parameters,
-                       hdf5 = FALSE,
                        verbose = FALSE) {
     # called by runVLP()
     with(as.list(c(well.parameters, model.parameters)),
