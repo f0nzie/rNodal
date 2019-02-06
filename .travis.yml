@@ -9,6 +9,27 @@ r_check_args: --as-cran
 git:
   depth: 5
 
+r_packages:
+ - devtools
+ - covr
+ - roxygen2
+ - testthat
+ - rmarkdown
+ - knitr
+ - magrittr
+ - tibble
+ - dplyr
+ - ggplot2
+ - RColorBrewer
+ - data.table
+ - rootSolve
+ - utils
+ - rprojroot
+ - R.utils
+ - Hmisc
+ - readr
+ - zFactor
+
 bioc_packages:
   - S4Vectors
   - rhdf5
