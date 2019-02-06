@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.a
 ```
 
 ## Calculate VLP using Hagedorn-Brown (no heat transfer)
+* no temperature correction
 
 > NOTE. There is a problem with the GLR. Program crashes at GLR =< 362.6. Why?
 
@@ -71,6 +72,7 @@ well_parameters <- get_well_parameters(input.example.guo.44)
 rNodal:::temp.gradient(well_table, well_parameters)  
 ```
 
+> Pressure should be around 2233 psi.
 
 ## Data for unit testing
 
