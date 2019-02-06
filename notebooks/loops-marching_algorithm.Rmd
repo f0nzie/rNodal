@@ -1,0 +1,136 @@
+---
+title: "Marching Algorithm"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
+
+## Computational algorithm workflow
+### 1 read all the input data for the current pipe segment:
+oil.rt, gas.rt, oil.sg, gas.sg, L, diam, angle, temp.grad
+and initial pressure
+
+
+### 2 set the calculation increment 
+$$dL = L / n$$
+Usually n = 30
+
+### 3 guess initial outlet pressure. 
+Can assume 0.002 psi/ft for the gradient 
+$$\frac {dP}{dL} = 0.002$$
+  
+
+### 4 calculate the average pressure: 
+$$p_{avg} = \frac {(p_0 + p_1)} {2}$$
+
+### 5 calculate the fluid properties at P and T for $P_{avg}$
+oil.fvf, gas.fvf, oil.rt, gas.rt, oil.supvel, gas.supvel
+$$B_o, B_g \\ Q_o, Q_g \\ V_{SL}, V_{SG} \\ \rho_o, \rho_g \\
+\nu_o, \nu_g \\ z \\ Re, f$$
+
+
+
+### 6 calculate the pressure gradient dp.dz (-dP/dL)
+$$\left ( \frac {dp} {dL} \right ) = f(P_{avg}) $$
+
+### 7 calculate the outlet-calculated pressure
+
+$$p_{i+1(C)} = p_i - \left ( \frac {dP}{dL} \right )_i dL_i $$
+
+### 8 compare the guessed and calculated outlet pressures:
+(p.guess - p.calc) / p.calc should be less than the tolerance
+otherwise, increase iteration and make p.guess = p.calc
+
+$$| ( p_{i+1(G)} - p_{i+1(C)} ) / p_{i+1(C)} | < \epsilon$$
+
+### 9 Repeat 1 to 6 until convergence achieved. 
+Ten iterations is the usual.
+
+
+### 10 when convergence is achive, move to the next pipe increment
+p2.inlet = p1.outlet
+
+### 11 Repeat for all pipe increments 
+and calculate p and dp.dz for the current segment
+
+### 12 If there are more pipe segments, repeat calculations
+1-11 
+
+
+## Implementation of marching algorithm for well gradient
+For demo purposes, only using a dummy function, $log(P_{avg})^{-1}$.
+The next thing to do is generating a dataframe with the data. Actually, it could be two dataframes, one for the main results for each pipe segment; and the second dataframe -with more detail-, showing the iterations.
+
+
+```{r}
+library(latex2exp)
+library(ggplot2)
+
+tolerance = 0.00001
+thp       = 200          # initial pressure (tubing head pressure)
+depth_wh  = 0            # depth at wellhead
+depth_bh  = 9700         # depth at bottomhole
+segments  = 30           # calculation segments
+
+# rows have to be greater than segments to allocate the zero or initial value
+# consider that in length.out parameter in the sequence below
+depth   <- seq.int(from = depth_wh, to = depth_bh, length.out = segments+1)
+n       <- length(depth)   # depth points same as # rows or (segments+1)
+
+# dummy function that represents a lot of subsurface calculations
+fPa <- function(x) 9e-02 + 1e-04 * x + 5e-08  * x^2 - 2e-11 * x^3
+
+depth_top <- depth_wh
+dp_dz     <- 0.002                    # 1st approximation of the gradient
+p_in      <- thp                      # the initial pressure
+output <- vector("list")
+for (i in seq_len(n)) {               # n: is the number of depths or # rows
+    depth_prev <- ifelse(i == 1, depth_top, depth[i-1])
+    dL = depth[i] - depth_prev              # calculate dL
+    p_out = p_in + dp_dz * dL               # calculate outlet pressure
+    cat(sprintf("i=%2d depth=%8.0f dL=%8.1f segment=%d \n",  # header outer loop
+                i, depth[i], dL, i-1))
+    cat(sprintf("%8s %6s %6s %8s %8s %8s %10s \n",           # header inner loop
+            "iter", "p_in", "p_out", "p_avg", "p_calc", "dp/dz", "eps"))
+    epsilon <- 1   # initial values before inner loop
+    iter <- 1
+    # here we start iterating for the pressure gradient
+    while (epsilon > tolerance) {       # loop until AE greater than tolerance
+      p_avg <- (p_in + p_out) / 2       # calculate average pressure
+      dp_dz <- fPa(p_avg)   # calculate gradient as function of average pressure
+      p_calc <- p_in - (-dp_dz) * dL
+      epsilon <- abs( (p_out - p_calc) / p_calc )  # absolute error
+      cat(sprintf("%8d %6.1f %6.1f %8.2f %8.2f %8.5f %10.8f \n", 
+                  iter, p_in, p_out, p_avg, p_calc, dp_dz, epsilon))
+      
+      if (epsilon >= tolerance) p_out = p_calc # if error too big, iterate again
+      iter <- iter + 1                         # with a new pressure
+    } # end of while 
+    p_in = p_out      # assign p_out to the inlet pressure of new segment, p_in
+    output[[i]] <- list(depth = depth[i], p_calc = p_calc,   # values to list
+                        dp_dz = dp_dz, p_avg = p_avg)     
+} # end-for
+
+out_df <- data.table::rbindlist(output)    # convert list to table
+out_df
+```
+
+```{r fig.height=5, fig.width=5}
+ggplot(out_df, aes(x=dp_dz, y=p_calc)) +
+    scale_y_reverse(limits = c(max(out_df$p_calc), 0), 
+                    breaks = seq(0, max(out_df$p_calc), 100)) + 
+  geom_line() + geom_point() + 
+  labs(title = TeX("Pressure vs $\\frac{dp}{dz}$"))
+
+ggplot(out_df, aes(x=dp_dz, y=depth)) +
+    scale_y_reverse(limits = c(max(out_df$depth), 0), 
+                    breaks = seq(0, max(out_df$depth), 500)) +
+    geom_line() +
+    geom_point() + labs(title = TeX("Depth vs $\\frac{dp}{dz}$"))
+```
+
+
