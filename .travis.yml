@@ -12,3 +12,9 @@ git:
 bioc_packages:
   - S4Vectors
   - rhdf5
+
+before_script:
+ - R -e "devtools::document()"
+
+after_success:
+  - Rscript -e "covr::codecov()"
