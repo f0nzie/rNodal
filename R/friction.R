@@ -4,7 +4,8 @@
 #' @param ed relative roughness
 #' @param Re Reynolds number
 ff.chen <- function(ed, Re) {
-  1 / (-4 * log10(ed / 3.7065 - 5.042 / Re * log10(ed^1.1098/2.8527 + (7.149/Re)^0.8981)))^2
+  1 / (-4 * log10(ed / 3.7065 - 5.042 / Re * log10(ed^1.1098/2.8527 +
+                                                     (7.149/Re)^0.8981)))^2
 }
 
 
@@ -49,6 +50,8 @@ moody.ff <- function(Re, ed, tol = 0.00001, trials = 100) {
 #' @param ED Relative roughness
 #' @param f1 a Blasius function
 friction.factor <- function(REY, ED, f1 = blasius.0) {
+  result <- list(fgi = NA, FF = NA, iter = NA)
+
   if (REY > 2000) {
     # turbulent flow
     # FGI = 0.056 + 0.5 / REY^0.32
@@ -58,7 +61,8 @@ friction.factor <- function(REY, ED, f1 = blasius.0) {
   } else {
     # laminar flow
     FF = 64. / REY
-    return(FF)
+    result$FF <- FF
+    return(result)
   }
 
   # Colebrook iteration
@@ -80,8 +84,8 @@ friction.factor <- function(REY, ED, f1 = blasius.0) {
   # cat(DIFF, I)
   #cat(fgi, FGI)
   #ret <- FF
-  ret <- list(fgi = fgi, FF = FF, iter = I)
-  return(ret)
+  result <- list(fgi = fgi, FF = FF, iter = I)
+  return(result)
 
 }
 
