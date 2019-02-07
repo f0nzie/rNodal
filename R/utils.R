@@ -61,7 +61,7 @@ isRpackage <- function() {
 
 # this causing error during build
 is_saved_session <- function(session_file = "session.rda") {
-    session_dir <- getProjectDir()
+    session_dir <- getwd()
     .session_file <- paste(session_dir, session_file, sep = "/")
     ifelse(file.exists(.session_file), TRUE, FALSE)
 }
