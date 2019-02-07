@@ -32,7 +32,8 @@ test_that("system.file(pkg) creates a Temp dir at check time", {
         cat("in package ...")
         # expect_true("Temp" %in% res)
         expect_true("rNodal" %in% res)
-        expect_true("rNodal.Rcheck" %in% res)
+        if(.Platform$OS.type == "unix") expect_true("rNodal.Rcheck" %in% res)
+        if(.Platform$OS.type == "windows") expect_true("Temp" %in% res)
     } else {
         # happens when only testing
         cat("\t testing now ...")
