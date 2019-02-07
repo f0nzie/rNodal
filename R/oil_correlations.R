@@ -138,21 +138,4 @@ oil.shrinkage <- function(oil.fvf) {
 }
 
 
-#' Gas Formation Volume Factor, Bg.
-#' After Craft, pg 23
-#' Specify the units: cuft/SCF    "cuft"
-#'                    bbl/SCF     "bbl"
-#' @param pres      pressure                 psia
-#' @param temp      temperature              deg Far
-#' @param z         compressibility factor
-#' @param units     units for volume
-#'
-gas.fvf <- function(pres, temp, z, units = "cuft") {
-    Temp = TEMP.RANKINE + temp
 
-    if (units == "cuft")    Bg = 0.02829 * z * Temp / pres
-    if (units == "bbl")     Bg = 0.00504 * z * Temp / pres
-
-    return(Bg)
-
-}
