@@ -7,14 +7,16 @@ test_that("paths by setProjectEnvironment are all set", {
     last_two <- paste(res[length(res)-1], res[length(res)], sep = "/")
 
     setProjectEnvironment()
-    expect_true(grepl("rNodal/inst", project.env[["pkg.root"]]) ||
-                    grepl("Temp", project.env[["pkg.root"]]) # needed by covr
-                )
+    if(.Platform$OS.type == "windows")
+        expect_true(grepl("rNodal/inst", project.env[["pkg.root"]]) ||
+                        grepl("Temp", project.env[["pkg.root"]]) # needed by covr
+                    )
     expect_true(grepl("inst/extdata", project.env[["pkg.extdata"]]))
     print(project.env[["pkg.data"]])
-    expect_true(grepl("inst/data", project.env[["pkg.data"]]) ||
-                    grepl("Temp", project.env[["pkg.data"]]) # needed by covr
-                )
+    if(.Platform$OS.type == "windows")
+        expect_true(grepl("inst/data", project.env[["pkg.data"]]) ||
+                        grepl("Temp", project.env[["pkg.data"]]) # needed by covr
+                    )
     expect_true(grepl("inst/extdata", project.env[["data.folder"]]))
     expect_true(grepl("default.rda", project.env[["datafile.rda"]]))
 })
