@@ -12,7 +12,6 @@ test_that("paths by setProjectEnvironment are all set", {
                         grepl("Temp", project.env[["pkg.root"]]) # needed by covr
                     )
     expect_true(grepl("inst/extdata", project.env[["pkg.extdata"]]))
-    print(project.env[["pkg.data"]])
     if(.Platform$OS.type == "windows")
         expect_true(grepl("inst/data", project.env[["pkg.data"]]) ||
                         grepl("Temp", project.env[["pkg.data"]]) # needed by covr

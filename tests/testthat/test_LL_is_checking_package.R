@@ -27,7 +27,7 @@ test_that(".Rcheck is part of the getwd() path when devtools::check", {
 test_that("getwd() contains these member in its path", {
     result <<- unlist(strsplit(getwd(), split = "/"))
     # print(result)
-    print(R.version$os)
+    # print(R.version$os)
     if (is_checking_package()) {
 
         expect_true("testthat" %in% result)
