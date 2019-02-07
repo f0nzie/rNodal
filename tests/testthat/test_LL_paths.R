@@ -28,7 +28,7 @@ test_that("system.file(pkg) creates a Temp dir at check time", {
     print(res)
     print(.res)
     if (is_checking_package()) {
-        print(R.version()$os)
+        print(R.version$os)
         # happens during check
         cat("in package ...")
         # expect_true("Temp" %in% res)
