@@ -17,12 +17,13 @@ setProjectEnvironment <- function() {
     project.env[["data.folder"]]     <- extdata_folder
     project.env[["datafile.rda"]]   <- datafile.rda     # RDA file
 
+    # TODO: make the purpose of this check clearer
     if (!is_checking_package()) {
         # it is a user project folder. Not in building package mode
         if (is_saved_session()) {
             name_of_the_file <- load(getSessionFilename())
         } else {
-            cat("A former session file not found\n")
+            name_of_the_file <- NULL #cat("A former session file not found\n")
         }
     }
 }
@@ -30,7 +31,7 @@ setProjectEnvironment <- function() {
 
 
 #' Save a variable to the project environment
-#' @param var variable to save in environment
+#' @param var variable to save in environment; var is a string not an object
 #' @param value what is to be saved
 #' @keywords internal
 saveToProjectEnv <- function(var, value) {
@@ -38,7 +39,7 @@ saveToProjectEnv <- function(var, value) {
 }
 
 #' Read variable from environment
-#' @param var variable to read
+#' @param var variable to read; var is a string not an object
 #' @keywords internal
 readFromProjectEnv <- function(var) {
     project.env[[var]]
