@@ -1,31 +1,28 @@
-# create a project environment
-project.env <- new.env(parent = emptyenv()) # create new environment for project
+# create new environment for project
+project.env <- new.env(parent = emptyenv())
 
 setProjectEnvironment <- function() {
     data_file = "default"            # name for storage file
 
-    project.env[["pkg.root"]]    <- pkg_root <- system.file("..",
-                                                            package = "rNodal")
-    project.env[["pkg.extdata"]] <- pkg_extdata <- paste(
-        pkg_root, "inst","extdata", sep = "/")
-    project.env[["pkg.data"]]    <- pkg_data <- paste(pkg_root, "data", sep = "/")
+    pkg_root <- system.file(package = "rNodal")
+    project.env[["pkg.root"]]    <- pkg_root
+    project.env[["pkg.extdata"]] <- paste(pkg_root, "inst","extdata", sep = "/")
+    project.env[["pkg.data"]]    <- paste(pkg_root, "data", sep = "/")
 
-    data_folder <- pkg_extdata
+    extdata_folder <- project.env[["pkg.extdata"]]
 
     # full file path and extensions for data file
-    datafile.rda  <- file.path(data_folder, paste(data_file, "rda", sep = "."))
+    datafile.rda  <- file.path(extdata_folder, paste(data_file, "rda", sep = "."))
 
-    project.env[["data.folder"]]     <- data_folder
-    project.env[["data.file.rda"]]   <- datafile.rda     # RDA file
-
-
+    project.env[["data.folder"]]     <- extdata_folder
+    project.env[["datafile.rda"]]   <- datafile.rda     # RDA file
 
     if (!is_checking_package()) {
         # it is a user project folder. Not in building package mode
         if (is_saved_session()) {
             name_of_the_file <- load(getSessionFilename())
         } else {
-            # cat("Save session not found\n")
+            cat("A former session file not found\n")
         }
     }
 }
