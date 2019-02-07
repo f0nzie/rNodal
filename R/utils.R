@@ -130,6 +130,7 @@ named.list <- function(...) {
 
 
 get_list_examples <- function(folder = "examples", aPackage, ...) {
+    stopifnot(!is.null(aPackage)) # package must be provided
     # this is where examples live
     examples_dir <- system.file("examples", package = aPackage)
 
