@@ -17,7 +17,7 @@ test_that("parent folder of getwd() is tests", {
     cat("\n")
     print(res)
     print(.res)
-    expect_equal(.res, "tests")
+    expect_true((.res == "tests") || ("rNodal-tests" %in% res))
 })
 
 test_that("system.file(pkg) creates a Temp dir at check time", {
@@ -28,6 +28,7 @@ test_that("system.file(pkg) creates a Temp dir at check time", {
     print(res)
     print(.res)
     if (is_checking_package()) {
+        print(R.version()$os)
         # happens during check
         cat("in package ...")
         # expect_true("Temp" %in% res)
@@ -38,7 +39,10 @@ test_that("system.file(pkg) creates a Temp dir at check time", {
     } else {
         # happens when only testing
         cat("\t testing now ...")
-        expect_equal(.res, "rNodal/inst")
+        if(.Platform$OS.type == "windows") {
+            expect_true(.res == "rNodal/inst" || ("Temp" %in% res))
+        }
+
     }
 })
 

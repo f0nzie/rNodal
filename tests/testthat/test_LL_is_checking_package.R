@@ -25,17 +25,20 @@ test_that(".Rcheck is part of the getwd() path when devtools::check", {
 
 
 test_that("getwd() contains these member in its path", {
-    result <- unlist(strsplit(getwd(), split = "/"))
-    print(result)
+    result <<- unlist(strsplit(getwd(), split = "/"))
+    # print(result)
+    print(R.version$os)
     if (is_checking_package()) {
+
         expect_true("testthat" %in% result)
         expect_true("tests" %in% result)
         expect_true("rNodal.Rcheck" %in% result)
     }
     else {
+
         # not building package but testing
         expect_true("testthat" %in% result)
-        expect_true("tests" %in% result)
+        expect_true("tests" %in% result || "rNodal-tests" %in% result)
         expect_false("rNodal.Rcheck" %in% result)
     }
 
