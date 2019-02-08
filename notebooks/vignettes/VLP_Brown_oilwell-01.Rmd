@@ -1,0 +1,257 @@
+---
+title: "VLP Brown Example: Oilwell-01"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{VLP Brown Example: Oilwell-01}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Example 01. Get the VLP calculations
+This notebook runs the modified Hagedorn-Brown correlation calculated according
+to Brown's book and procedure in Appendix C. 
+
+```{r rows.print=30}
+library(rNodal)
+library(tibble)
+# Example from Prosper oil well 01. Dry version
+
+# roughness = 0.0006
+input_example <-  setWellInput(field.name = "HAGBR.MOD", 
+                               well.name = "Oilwell_01_Dry", 
+                               depth.wh = 0, depth.bh = 9275, 
+                               diam.in = 4.052, 
+                               GLR = 800, liq.rt = 983, wcut = 0.0, 
+                               thp = 100, tht = 60, bht = 210, 
+                               API = 37, oil.visc = 5.0, 
+                               gas.sg = 0.76, wat.sg = 1.07, if.tens = 30, 
+                               salinity = 23000
+)
+
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 29, 
+                          tol = 0.00001)
+
+as_tibble(runVLP(well.input = input_example, well_model))
+```
+
+    p30 = 740.1965
+
+
+## p9
+    MD      TVD     Pres    Temp    Gradient
+    0	0	100.0	70.0		
+    250.0	250.0	116.7	74.0	0.066728	0.17564
+    500.0	500.0	133.7	78.0	0.068134	0.17885
+    750.0	750.0	151.1	82.1	0.069378	0.18161
+    1000.0	1000.0	168.7	86.1	0.070492	0.18399
+    1000.0	1000.0	168.7	86.1	0.01	
+    1243.4	1243.3	186.1	90.1	0.07149	0.18607
+    1486.8	1486.7	203.7	94.0	0.072389	0.18788
+    1730.1	1730.1	221.5	97.9	0.073217	0.18951
+    1973.5	1973.5	239.5	101.9	0.073984	0.19097
+    2216.9	2216.9	257.7	105.8	0.074696	0.19229
+    2460.3	2460.2	276.1	109.7	0.075361	0.19349
+    2703.7	2703.6	294.6	113.7	0.075984	0.19458
+    2947.0	2947.0	313.2	117.6	0.076568	0.19558
+    3190.4	3190.4	332.0	121.5	0.077188	0.1967
+    3433.8	3433.8	350.9	125.5	0.077845	0.19793
+    3677.2	3677.1	370.0	129.4	0.078473	0.1991
+    3920.6	3920.5	389.3	133.4	0.079073	0.20021
+    4164.0	4163.9	408.6	137.3	0.079649	0.20125
+    4407.3	4407.3	428.2	141.2	0.080201	0.20225
+    4650.7	4650.7	447.8	145.2	0.080732	0.20319
+    4894.1	4894.0	467.6	149.1	0.081241	0.2041
+    5137.5	5137.4	488.0	153.0	0.08366	0.21069
+    5380.9	5380.8	509.0	156.9	0.086341	0.2181
+    5624.2	5624.2	530.6	160.9	0.089066	0.22568
+    5867.6	5867.6	553.0	164.8	0.091835	0.23342
+    6111.0	6110.9	576.0	168.7	0.094647	0.24133
+    6354.4	6354.3	599.8	172.6	0.097499	0.24941
+    6597.8	6597.7	624.2	176.5	0.10039	0.25764
+    6841.1	6841.1	649.3	180.4	0.10332	0.26604
+    7084.5	7084.5	675.2	184.2	0.10629	0.27461
+    7327.9	7327.9	701.8	188.0	0.1093	0.28334
+    7571.3	7571.2	729.1	191.8	0.11234	0.29225
+    7814.7	7814.6	757.2	195.4	0.11544	0.30135
+    8058.0	8058.0	786.1	198.9	0.11858	0.31064
+    8301.4	8301.4	815.7	202.2	0.12179	0.32017
+    8544.8	8544.8	846.2	205.1	0.12508	0.32996
+    8788.2	8788.1	877.5	207.6	0.12848	0.3401
+    9031.6	9031.5	909.6	209.3	0.13204	0.35069
+    9275.0	9274.9	942.7	210.0	0.13584	0.36189
+
+
+[h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[3 runs inst/extdata](I:\src\rNodal\inst\extdata\brown_20170709.h5)
+
+     
+
+    Type        MD      ID(in)  Roughness(in) 
+	Xmas Tree	600							
+	Tubing	    1000	4.052	0.0006					    
+	SSSV		        3.72						        
+	Tubing	    9000	4.052	0.0006					    
+	Casing	    9275	6.4	    0.0006
+	
+
+	
+   	     TVD     MD      FormTemp(deg F)
+     1	 0	     0	     60	
+     2	 600	 600	 40	
+     3	 9000	 9275	 210	
+	
+	
+	
+         Date        Comments   THP THT     WC      LIQRT    GDepth  GPres   ResPr      GOR	     GOR Free
+     1	 03/16/2011	 Test 1	    230	 143.8	 0      9784.1	 6250	 1322.6	 4042.19	 800	 0	
+     2	 05/21/2011	 Test 2	    521	 134.2	 0.5    7915.3	 6250	 1623.8	 3910.16	 800	 0	
+     3	 10/07/2011	 Test 3	    765	 118	 1.9	5636.9	 6250	 1962.6	 3778.13	 800	 0	
+
+
+## Calculate the angle for the original deviation survey
+
+   	     MD      TVD     CumDisp(ft) Angle(deg)
+     1	 0	     0	     0	         0	
+     2	 600	 600	 0	         0	
+     3	 1005	 1000	 63.4429	 9.01245	
+     4	 4075	 4000	 715.286	 12.2587	
+     5	 7700	 7500	 1659.02	 15.0902	
+     6	 9275	 9000	 2139.25	 17.7528
+
+
+## Set deviation survey and compute angle
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+library(rNodal)
+
+md_tvd_01 <- "
+MD      TVD 
+0	     0	 
+600	    600
+1005	 1000
+4075	 4000
+7700	 7500
+9275	 9000
+"
+
+md_tvd <- set_deviation_survey(md_tvd_01)
+md_tvd
+deviation_survey <- compute_angle_deviation_survey(md_tvd, reference = "vertical")
+dataFrame <- deviation_survey
+dataFrame
+```
+
+
+## Split the well in deltas
+
+### by interval steps
+
+```{r}
+# split deviated well in two ways: by and length.out
+library(rNodal)
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
+add_md_by <- rNodal:::split_well_in_deltas(md, by = 50)
+add_md_by
+```
+
+### by total size of the sample or rows
+
+```{r}
+# split deviated well in two ways: by and length.out
+library(rNodal)
+
+md <- deviation_survey[["MD"]]   # get MD vector
+
+add_md_lo <- rNodal:::split_well_in_deltas(md, length.out = 40)
+add_md_lo
+
+```
+
+```{r}
+
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_by)
+rNodal:::build_survey_with_deltas(deviation_survey, add_md_lo)
+```
+
+
+```{r}
+# split the MD of the well in equal parts but a total of "n" segments
+split <- seq.int(deviation_survey[1, "MD"], deviation_survey[nrow(deviation_survey), "MD"], 
+                 length.out = 100)
+
+# add the known MD values to the sequence. Now the length is little bit longer
+md <- deviation_survey[["MD"]]
+add_md <- sort(unique(c(md, split)))
+add_md
+
+
+# reconstruct MD v TVD but for the partitioned well in delta-x
+df <- data.frame()     # new long dataframe
+index <- 1             # index the small dataframe
+tvd <- 0 
+for (j in 1:length(add_md)) {  # iterate through the sequence
+    row = dataFrame[index, ]   # get a row of the deviation survey
+    # cat(index)
+    df[j, "md"]  <- add_md[j]  # assign MD in sequence to md in long dataframe
+    df[j, "seg"] <- index      # assign 
+    if (j == 1)                 # if it is the first row
+        df[j, "delta.md"] <- add_md[j]
+    else
+        df[j, "delta.md"] <- add_md[j] - df[j-1, "md"]
+    
+    df[j, "radians"] <- row[["radians"]]
+    df[j, "degrees"] <- row[["degrees"]]
+    df[j, "delta.tvd"] <- cos(row[["radians"]]) * df[j, "delta.md"] # calculate delta TVD
+    tvd <- tvd + df[j, "delta.tvd"]        # add delta.tvd
+    df[j, "tvd"] <- tvd                    # tvd column
+    if (add_md[j] >= row[["MD"]]) {        # switch to next deviation branch
+        index <- index + 1
+    }
+}
+df
+```
+
+
+
+```{r}
+# iterate through dataframe
+ for (index in 1:nrow(dataFrame)) { 
+     row = dataFrame[index, ] 
+     # do stuff with the row 
+     # print(row[["MD"]])
+     cat(row[["MD"]], "\n")
+ } 
+```
+
+```{r}
+for (index in 1:nrow(dataFrame)) { 
+    row = dataFrame[index, ] 
+    # cat(row, "\n")
+    for (j in add_md) {
+        if (j <= row[["MD"]]) {
+            cat(sprintf("%12f %12f \n", j, row[["MD"]]))
+            # print(row[["MD"]][index] * sin(row[["radians"]][index]))
+        }
+    }
+}
+```
+
+
+
+```{r}
+# split the tubing in dx pieces
+apply(deviation_survey, 1, function(x) x["MD"] 
+)
+```
+
+
+
+
+
+

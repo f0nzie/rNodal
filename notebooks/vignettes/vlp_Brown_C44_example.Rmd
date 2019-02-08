@@ -1,0 +1,86 @@
+---
+title: "VLP Brown Example: C44"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{VLP Brown example C44}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=F, error=T, message=F, warning=F}
+knitr::opts_chunk$set(echo=T, comment=NA, error=T, warning=F, message = F, fig.align = 'center')
+```
+
+## Example C44 by Hagendorn-Brown
+This notebook runs the modified Hagedorn-Brown correlation calculated according
+to Brown's book and procedure in Appendix C. Although the question is not really
+pointed at finding the bottomhole flowing pressure (BHFP) given the surface conditions and the wellhead pressure but rather calculating the length of the tubing if BHP is known, the calculations here demonstrate that both can be calculated or verified using this algorithm.
+
+The pressures at both ends of the tubing: P1 is 500 psia and P2 1000 psia.
+
+```{r rows.print=30}
+library(rNodal)
+library(tibble)
+
+# Example from C.44 in Brown's book
+# P2 (pressure at end point is given in the original example). 
+# The original question is: what is the length of the tubing.
+#
+# In our case we aproximately know the length (from the book), so we will try to
+# match P2 (known)
+#
+# Differences with Example C.13:
+# GLR, watercut, oil viscosity and API are different in C.44
+#
+# The final results are very close to those of Brown.
+
+
+input_example <- setWellInput(
+                              field.name = "HAGBR.MOD",
+                              well.name = "Brown_C44", 
+                              depth.wh = 0, depth.bh = 3590, 
+                              diam.in = 1.995, 
+                              GLR = 1000, liq.rt = 600, wcut = 0.0, 
+                              thp = 500, tht = 120, bht = 150, 
+                              API = 42, oil.visc = 1.0, 
+                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+                              )
+
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
+
+
+runVLP(well.input = input_example, well_model)
+```
+
+    p30 = 906.7220
+    p30 = 906.7217 (with zFactor)
+    p30 = 908.1580
+    p30-9 = 958.1
+
+[h5 temp](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[hdf5 in inst/extdata](I:\src\rNodal\inst\extdata\brown_c44.h5)
+
+
+
+        MD      TVD     Pres    Temp  
+        0	    0	    500.0	128.5
+        239.3	239.3	528.4	130.4
+        478.7	478.7	557.2	132.4
+        718.0	718.0	586.2	134.2
+        957.3	957.3	615.6	136.1
+        1196.7	1196.7	645.2	137.9
+        1436.0	1436.0	675.2	139.7
+        1675.3	1675.3	705.5	141.4
+        1914.7	1914.7	736.0	143.0
+        2154.0	2154.0	766.9	144.6
+        2393.3	2393.3	798.0	146.0
+        2632.7	2632.7	829.4	147.3
+        2872.0	2872.0	861.1	148.4
+        3111.3	3111.3	893.1	149.2
+        3350.7	3350.7	925.5	149.8
+        3590.0	3590.0	958.1	150.0
+
+
+
