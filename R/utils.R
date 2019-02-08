@@ -1,3 +1,47 @@
+#' Append an object to existing Rdata file
+#'
+add_object_to_rda <- function(obj, rda_file, overwrite = FALSE) {
+    .dummy <- NULL
+    if (!file.exists(rda_file)) save(.dummy, file = rda_file)
+
+    old_e <- new.env()
+    new_e <- new.env()
+
+    load(file = rda_file, envir = old_e)
+
+    name_obj <- deparse(substitute(obj))   # get the name of the object
+
+    # new_e[[name_obj]] <- get(name_obj)     # use this only outside a function
+    new_e[[name_obj]] <- obj
+
+    # merge object from old environment with the new environment
+    # ls(old_e) is a character vector of the object names
+    if (overwrite) {
+        # the old variables take precedence over the new ones
+        invisible(sapply(ls(new_e), function(x)
+            assign(x, get(x, envir = new_e), envir = old_e)))
+        # And finally we save the variables in the environment
+        save(list = ls(old_e), file = rda_file, envir = old_e)
+    }
+    else {
+        invisible(sapply(ls(old_e), function(x)
+            assign(x, get(x, envir = old_e), envir = new_e)))
+        # And finally we save the variables in the environment
+        save(list = ls(new_e), file = rda_file, envir = new_e)
+    }
+}
+
+
+append_to_rdata <- function(..., list = character(), file) {
+    .dummy <- NULL
+    if (!file.exists(file)) save(.dummy, file = file)
+    previous  <- load(file)
+    var.names <- c(list, as.character(substitute(list(...)))[-1L])
+    for (var in var.names) assign(var, get(var, envir = parent.frame()))
+    save(list = unique(c(previous, var.names)), file = file)
+}
+
+
 # function required to move a row up or down
 shift <- function(x, n, invert=FALSE, default=NA){
     stopifnot(length(x)>=n)
