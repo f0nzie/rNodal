@@ -19,9 +19,7 @@ saveToProjectEnv("TEMP.RANKINE", 460)
 
 
 
-
-
-#' Build a deviation survey table given MD and TVD
+#' Build a deviation survey dataframe given MD and TVD as text table
 #'
 #' The table should be two columns of text
 #'

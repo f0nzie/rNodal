@@ -24,7 +24,20 @@ temp.fluid <- function(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, m
 
 
 
-
+#' Calculate dT/dx using Ramey's equation
+#' Requires angle, depths, BHT, WHT, U, tubing diameter, mass rate, cp.avg
+#' cp.avg is heat capacity part of the basic initial calculations
+#' from well_table we only need:
+#'      depth table,
+#'      temperature at depth
+#' from well_parameters we need:
+#'      U,
+#'      angle,
+#'      depth.bh, depth.wh,
+#'      bht, tht,
+#'      diam.ft
+#'      mass.rate
+#'      cp.avg
 temp.gradient <- function(well_table, well.parameters) {
     # new function to calculate dT/dx using Ramey's equation
     # well angle is fixed because well is vertical.
@@ -36,7 +49,7 @@ temp.gradient <- function(well_table, well.parameters) {
         depth <- depth.bh - depth.wh
         ge    <- (bht - tht) / depth                       # geothermal gradient
         k     <- U * pi * diam.ft / mass.rate / cp.avg
-        A     <- 1 / k            # relaxation distance by Ramey. Shoham, pg 297
+        A     <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
 
         Ti <- bht               # initial temperature for the marching algorithm
         # calculate bottom up
