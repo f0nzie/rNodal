@@ -1,6 +1,5 @@
-#' Append an object to existing Rdata file
-#'
 add_object_to_rda <- function(obj, rda_file, overwrite = FALSE) {
+    # Append an object to existing Rdata file
     .dummy <- NULL
     if (!file.exists(rda_file)) save(.dummy, file = rda_file)
 
