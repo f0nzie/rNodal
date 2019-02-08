@@ -1,0 +1,507 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# add a row to existing dataframe
+https://stackoverflow.com/a/33742396/5270873
+```{r}
+appendToFile <- function(newRow, savedFile){
+    load(savedFile, new.env())
+    df = rbind(df, newRow)
+    save(df, file = savedFile)
+}
+
+df <- data.frame(x = 1:5, y = 6:10)
+save(df, file = "file.RData")
+appendToFile(c(50, 100), "file.RData")
+```
+
+
+# add a dataframe to an existing rdata file
+```{r}
+library(rlang)
+
+appendToRdata <- function(new_object, savedFile){
+    e <- new.env()
+    load(file = savedFile, e)
+    e_names <- env_names(e)
+    cat("existing objects:", e_names)
+    name_obj <- deparse(substitute(new_object))   # get the name of the object
+    print(name_obj)
+    e[[name_obj]] <- new_object
+    cat("with new objects:", env_names(e))
+    # save(envir = e, file = savedFile)
+    save(list = ls(e), file = savedFile)
+}
+```
+
+
+```{r}
+df1 <- data.frame(x = 1:6, y = 6:11)
+save(df1, file = "file.RData")
+```
+
+```{r}
+df2 <- data.frame(x = 2:12, y = 12:22)
+save(df2, file = "file.RData")
+```
+
+```{r}
+# add a dataframe
+df3 <- data.frame(x = 1:7, y = 6:12)
+appendToRdata(df3, "file.RData")
+```
+
+```{r}
+# add a dataframe
+df4 <- data.frame(x = 4:8, y = 14:18)
+appendToRdata(df4, "file.RData")
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+df1 <- data.frame(x = 1:6, y = 6:11)
+e[["obj1"]] <- df1
+env_print(e)
+env_names(e)
+# save(df1, file = "file.RData")
+```
+
+```{r}
+env_parent(e)
+```
+
+```{r}
+env_get(e, "df1")
+```
+
+```{r}
+env_get(e, "obj1")
+```
+
+# save all variables in global to its own RDS file
+https://stackoverflow.com/a/31735643/5270873
+```{r}
+save_each_to_rds <- function() {
+    obj_names <- ls(.GlobalEnv)
+    for(i in 1:length(obj_names)) {
+        file <- paste0(obj_names[i],".Rds")
+        saveRDS(get(obj_names[i], envir = .GlobalEnv), file)
+    }
+}
+
+save_each_to_rds()
+```
+
+
+```{r}
+library(rlang)
+
+e <- new.env()
+env_print(e)
+
+df1 <- data.frame(x = 1:7, y = 6:12)
+df2 <- data.frame(x = 1:7, y = 6:12)
+e[["df1"]] <- df1
+e[["df2"]] <- df2
+```
+
+```{r}
+library(rlang)
+
+e <- new.env()
+env_print(e)
+
+df3 <- data.frame(x = 1:7, y = 6:12)
+df4 <- data.frame(x = 4:8, y = 14:18)
+
+e[["df3"]] <- df3
+e[["df4"]] <- df4
+```
+
+```{r}
+append_to_rdata <- function(obj, rda_file) {
+    new_e <- new.env()
+    old_e <- new.env()
+    load(file = rda_file, envir = old_e)
+    name_obj <- deparse(substitute(obj))   # get the name of the object
+    new_e <- sapply(ls(old_e), function(x) assign(x, get(x)))
+    
+    new_e[[name_obj]] <- obj
+    
+    # obj_names <- sapply(ls(new_e), function(x) x)
+    obj_names <- ls(new_e)
+    print(obj_names)
+    vec_row <- vector("list")
+    # for (i in 1:length(obj_names)) {
+    #     vec_row[[i]] <- get(obj_names[i])
+    # }
+    # save(list = sapply(ls(new_e), function(x) x), file = rda_file)
+}
+
+```
+
+```{r}
+x <- 1
+append_to_rdata(x, rda_file = "adddata.rdata")
+```
+
+```{r}
+
+rm(a)
+```
+
+```{r}
+# create a data file with one object
+a <- 10
+save(a, file = "adddata.rdata")
+
+x <- 1.123
+df1 <- data.frame(p = 1:7, q = 6:12)
+df2 <- data.frame(x = 1:7, y = 6:12)
+
+obj <- x
+rda_file = "adddata.rdata"
+
+new_e <- new.env()
+old_e <- new.env()
+load(file = rda_file, envir = old_e)
+name_obj <- deparse(substitute(obj))   # get the name of the object
+
+obj_names <- ls(old_e)
+print(obj_names)
+
+new_e[[name_obj]] <- obj
+new_e[["df1"]] <- df1
+new_e[["df2"]] <- df2
+
+# remove objects
+rm(a, x, df1, df2, obj)
+
+print(new_e$obj)
+
+# merge object from old environment with the new environment
+sapply(ls(old_e), function(x) assign(x, get(x, envir = old_e), 
+                envir = new_e))
+
+# list objects and values
+sapply(ls(new_e), function(x) get(x, envir = new_e))
+
+rm(old_e, name_ob, obj_names)
+
+# save(list = sapply(ls(new_e), function(x) get(x, envir = new_e)), file = rda_file)
+
+# name_obj <- deparse(substitute(obj))   # get the name of the object
+# new_e <- sapply(ls(old_e), function(x) assign(x, get(x)))
+# 
+# new_e[[name_obj]] <- obj
+```
+
+```{r}
+obj_list <- ls(new_e)
+vec_row <- vector("list")
+for (i in 1:length(obj_list)) {
+    obj_name <- obj_list[i]
+    # cat(i, obj_name, "\n")
+    # print(get(obj_name, envir = new_e))
+    vec_row[[obj_name]] <- get(obj_name, envir = new_e)
+}
+vec_row
+```
+
+```{r}
+sapply(vec_row, function(x) x)
+```
+
+```{r}
+# save(lapply(vec_row, function(x) get(x)), file = rda_file)
+```
+
+```{r}
+# save the list objects but they have to be specified by a character vector
+# spelled out or implicit
+save(list = c("x", "obj", "df1"), file = rda_file)
+```
+
+```{r}
+# we save the variables in the environment
+save(list = names(vec_row), file = rda_file, envir = new_e)
+```
+
+```{r}
+# we save the variables in the environment
+save(list = ls(new_e), file = rda_file, envir = new_e)
+```
+
+
+
+
+```{r}
+# this doesn't work because we are not specifying the objects
+save(file = rda_file, envir = new_e)
+# nothing specified to be save()d
+```
+
+
+# Final try
+
+```{r}
+# create a data file with one object
+rda_file = "adddata.rdata"
+a <- 10
+save(a, file = rda_file)
+
+# new objects with data
+x <- 1.123
+df1 <- data.frame(p = 1:7, q = 6:12)
+df2 <- data.frame(m = 1:10, n = 11:20)
+
+obj <- x
+
+# create new environments
+new_e <- new.env()
+old_e <- new.env()
+
+# load the existing data file
+load(file = rda_file, envir = old_e)
+name_obj <- deparse(substitute(obj))   # get the name of the object
+
+obj_names <- ls(old_e)  # names of existing objects
+cat("existing objects\n")
+print(obj_names)
+
+# assign new objects to new environment
+new_e[[name_obj]] <- obj   
+new_e[["df1"]] <- df1
+new_e[["df2"]] <- df2
+
+# remove objects
+rm(a, x, df1, df2, obj)
+
+print(new_e$obj)
+ls(new_e)
+
+# merge object from old environment with the new environment
+sapply(ls(old_e), function(x) assign(x, get(x, envir = old_e), 
+                envir = new_e))
+ls(new_e)
+
+# list objects and values
+sapply(ls(new_e), function(x) get(x, envir = new_e))
+
+rm(old_e, name_obj, obj_names)
+
+# we save the variables in the environment
+save(list = ls(new_e), file = rda_file, envir = new_e)
+rm(new_e)
+```
+
+```{r}
+# load first append
+load(file = rda_file)
+```
+
+
+```{r}
+# 1st add more variables
+old_e <- new.env()
+load(file = rda_file, envir = old_e)
+
+new_e <- new.env()
+
+a_list <- list(a = 100, b = 200, c =300)
+
+# get name of the object
+name_obj <- deparse(substitute(a_list))   # get the name of the object
+
+# add new object
+new_e[[name_obj]] <- get(name_obj)
+ls(new_e)
+
+rm(name_obj, a_list)
+
+# merge object from old environment with the new environment
+invisible(sapply(ls(old_e), function(x) assign(x, get(x, envir = old_e), 
+                envir = new_e)))
+ls(new_e)
+
+# we save the variables in the environment
+save(list = ls(new_e), file = rda_file, envir = new_e)
+rm(new_e, old_e)
+```
+
+```{r}
+# 2nd addition
+rda_file = "adddata.rdata"
+m <- matrix(rnorm(50), nrow=10, ncol=5)
+
+old_e <- new.env()
+load(file = rda_file, envir = old_e)
+
+name_obj <- deparse(substitute(m))   # get the name of the object
+name_obj
+
+new_e <- new.env()
+new_e[[name_obj]] <- get(name_obj)
+rm(name_obj)
+
+# merge object from old environment with the new environment
+invisible(sapply(ls(old_e), function(x) assign(x, get(x, envir = old_e), 
+                envir = new_e)))
+ls(new_e)
+
+# we save the variables in the environment
+save(list = ls(new_e), file = rda_file, envir = new_e)
+rm(new_e, old_e)
+```
+
+```{r}
+# load first append
+load(file = "adddata.rdata")
+```
+
+
+# Making the function
+
+```{r}
+add_object_to_rda <- function(obj, rda_file, overwrite = FALSE) {
+    .dummy <- NULL
+    if (!file.exists(rda_file)) save(.dummy, file = rda_file)
+    old_e <- new.env()
+    new_e <- new.env()
+    
+    load(file = rda_file, envir = old_e)
+    
+    name_obj <- deparse(substitute(obj))   # get the name of the object
+    
+    new_e[[name_obj]] <- get(name_obj)
+    rm(name_obj)
+    
+    # merge object from old environment with the new environment
+    # the old variables take precendence over the new ones
+    # ls(old_e) is a character vector of the object names
+    # And finally we save the variables in the environment
+    if (overwrite) {
+        invisible(sapply(ls(new_e), function(x) 
+            assign(x, get(x, envir = new_e), envir = old_e)))
+        save(list = ls(old_e), file = rda_file, envir = old_e)
+    }
+    else {
+        invisible(sapply(ls(old_e), function(x)
+            assign(x, get(x, envir = old_e), envir = new_e)))
+        save(list = ls(new_e), file = rda_file, envir = new_e)
+    }
+}
+```
+
+
+```{r}
+rda_file = "adddata.rdata"
+a <- c(1, 2, 3, 4, 5, 6, 8)
+z <- c("x", "y", "z")
+add_object_to_rda(a, rda_file, overwrite = TRUE)
+add_object_to_rda(z, rda_file, overwrite = TRUE)
+```
+
+```{r}
+m <- matrix(rnorm(50), nrow=10, ncol=5)
+add_object_to_rda(m, rda_file, overwrite = TRUE)
+```
+
+
+```{r}
+a_list <- list(a = 100, b = 200, c =300)
+add_object_to_rda(a_list, rda_file, overwrite = TRUE)
+```
+
+```{r}
+df1 <- data.frame(p = 1:7, q = 6:12)
+add_object_to_rda(df1, rda_file = "adddata.rdata", overwrite = TRUE)
+```
+
+
+```{r}
+# remove all objects but selected
+rm(list = ls()[which(!c("resave") == ls())])
+```
+
+```{r}
+# how to remove variables in a character vector
+# sapply(not_the_function, function(x) rm(x))
+rm(list=setdiff(ls(), c("add_object_to_rda", "rda_file")))
+```
+
+```{r}
+df2 <- data.frame(p = 1:10, q = 11:20)
+add_object_to_rda(df2, rda_file = "adddata.rdata", overwrite = TRUE)
+```
+
+```{r}
+df3 <- data.frame(p = 1:35, q = 11:45)
+add_object_to_rda(df3, rda_file = "adddata.rdata", overwrite = TRUE)
+```
+
+```{r}
+df3 <- data.frame(p = 1:45, q = 11:55)
+add_object_to_rda(df3, rda_file = "adddata.rdata", overwrite = FALSE)
+```
+
+
+# Another solution
+https://stackoverflow.com/a/11813377/5270873
+
+```{r}
+resave <- function(..., list = character(), file) {
+    .dummy <- NULL
+    if (!file.exists(file)) save(.dummy, file = file)
+    previous  <- load(file)
+    var.names <- c(list, as.character(substitute(list(...)))[-1L])
+    for (var in var.names) assign(var, get(var, envir = parent.frame()))
+    save(list = unique(c(previous, var.names)), file = file)
+}
+```
+
+```{r}
+x1 <- 1
+x2 <- 2
+x3 <- 3
+save(x1, x2, x3, file = "abc.RData")
+```
+
+```{r}
+df2 <- data.frame(p = 1:10, q = 11:20)
+resave(df2, file = "abcd.RData")
+```
+
+```{r}
+load("abcd.RData")
+```
+
+```{r}
+df1 <- data.frame(p = 1:8, q = 6:13)
+df2 <- data.frame(p = 1:20, q = 11:30)
+df3 <- data.frame(p = 1:35, q = 11:45)
+resave(df1, df2, df3, file = "abcd.RData")
+```
+
+```{r}
+rm(list = ls()[which(!c("resave") == ls())])
+```
+
+```{r}
+rm(list=setdiff(ls(), c("resave")))
+```
+
+
+```{r}
+m <- matrix(1:50, nrow = 10, ncol = 5)
+resave(m, file = "abcd.RData")
+```
+
