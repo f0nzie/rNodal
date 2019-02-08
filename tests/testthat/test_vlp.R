@@ -4,7 +4,7 @@ context("VLP functions")
 
 
 test_that("standard P, T saved to environment", {
-    expect_equal(readFromProjectEnv("PRES.ATM"), 14.7)
+    expect_equal(readFromProjectEnv("PRES.ATM"), 14.7, tolerance = 0.001)
     expect_equal(readFromProjectEnv("TEMP.STD"), 60)
     expect_equal(readFromProjectEnv("TEMP.RANKINE"), 460)
 })
