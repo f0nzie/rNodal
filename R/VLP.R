@@ -89,6 +89,7 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
 #' @param wat.cp    heat capacity of water
 #' @param U         overall heat transfer coefficient
 #' @param angle     angle of the well to the horizontal
+#' @param geotherm geothermal data at two TVD points
 #' @rdname setWellInput-VLP
 #' @export
 setWellInput <- function( field.name = "HAGBR.GUO",
@@ -113,7 +114,8 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             oil.cp    = 0.53,        # heat capacity
                             gas.cp    = 0.5,
                             wat.cp    = 1.0,
-                            angle     = pi/2
+                            angle     = pi/2,
+                          geotherm    = NULL
                         ) {
 
     # well input parameters
@@ -130,7 +132,8 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             if.tens,
                             U,
                             oil.cp, gas.cp, wat.cp,
-                            angle
+                            angle,
+                            geotherm
     )
     return(out)
 }
