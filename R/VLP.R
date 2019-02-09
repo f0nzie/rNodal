@@ -229,18 +229,14 @@ get_well_parameters <- function(well.input) {
 runVLP <- function(well.input, model.parameters) {
 
     # perform basic calculations on the well input
-    basic.calcs <-  getBasicCalcs(well.input)
-    well.parameters <- c(well.input, basic.calcs) # join input and calc output
+    basic_calcs <-  getBasicCalcs(well.input)
+    # well_parameters <- c(well.input, basic_calcs) # join input and calc output
 
     # pass the well parameters and model parameters
-    vlp.output <- VLPcontrol(well.parameters, model.parameters)
-
-    vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
-
+    vlp.output <- VLPcontrol(well.input, basic_calcs, model.parameters)
 
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
-
 
 
 
@@ -250,26 +246,27 @@ runVLP <- function(well.input, model.parameters) {
 #' wellhead pressure and temperature. Fluid properties are calculated at each
 #' of the segment depths.
 #'
-#' @param well.parameters    well input and core calculations at surface
-#' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
+#' @param well_input  unprocessed list of well inputs            list
+#' @param basic_calcs  basic calculations based on the well inputs  list
+#' @param model_parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
 #' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
-VLPcontrol <- function(well.parameters, model.parameters,
+VLPcontrol <- function(well_input, basic_calcs, model_parameters,
                        verbose = FALSE) {
     # called by runVLP()
-    with(as.list(c(well.parameters, model.parameters)),
+    with(as.list(c(well_input, basic_calcs, model_parameters)),
     {
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
-        # load the VLP function that is needed
+        # load the VLP function provided in model_parameters
         vlp.function = loadVLP(vlp.model)
+
         # Calculate the well segments and depths
-        # Depth counts have to be greater than segments to allocate the zero or
-        # initial depth value.
-        # Consider that in R for length.out parameter.
-        # In R index starts at 1 not 0
+        # Depth points have to be greater than segments to allocate the zero or
+        # initial depth value. Consider that in R for the "length.out" parameter.
+        # Mind that in R index starts at 1 not 0 like C or Python
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
         depth.top <- depths[1]                # take the the first depth
@@ -301,7 +298,9 @@ VLPcontrol <- function(well.parameters, model.parameters,
                 t.avg <- (t0 + t1) / 2
                 # calculate pressure losses using the selected VLP correlation
                 # passing the current pressure, temperature and other parameters
-                corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
+                corr  <- vlp.function(pres = p.avg, temp = t.avg,
+                                      well_input, basic_calcs)
+
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
                 # calculate new pressure
@@ -320,9 +319,9 @@ VLPcontrol <- function(well.parameters, model.parameters,
                 if (eps >= tol) p1 = p.calc   # if error too big, iterate again
                 iter_dpdz <- iter_dpdz + 1    # with a a new p1
                 cum_iter <- cum_iter + 1      # number of total iterations
-            } # end of while
-            # at the end of the while-loop we obtain the average pressure
-            # build a row-vector out of: depth, dL, temperature, pressure,
+            } # end-while
+            # at the end of the while-loop, we obtain the average pressure
+            # then, build a row-vector out of: depth, dL, temperature, pressure,
             # segment, correlation results
             segment_row_vector[[i]] <- c(
                 i = i,             # row number
@@ -338,12 +337,10 @@ VLPcontrol <- function(well.parameters, model.parameters,
             p0 = p.calc   # assign p1 to the inlet pressure of new segment, p0
             t0 = t1       # do the same with the temperature
     } # end-for
-        # convert row-list to dataframe
-        iter.tbl <- data.table::rbindlist(iter_row_vector)
-        # print(iter.tbl)                     # show the dataframe
+        iter.tbl <- data.table::rbindlist(iter_row_vector) # row-list to dataframe
     # convert row-vector to a dataframe
-    segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
-    return(segment_tbl)                           # final results
+    segment_tbl <- data.table::rbindlist(segment_row_vector)
+    return(segment_tbl)                      # results in segments table
     }) # end with
 }
 
@@ -371,7 +368,7 @@ loadVLP <- function(model) {
 
     if (model == "hagbr.guo")      return(hagbr.guo)
     if (model == "hagbr.dummy")    return(hagbr.dummy)
-    if (model == "hagbr.mod")      return(hagbr.mod)
+    if (model == "hagbr.mod")      return(hagbr.mod)       # <-
     if (model == "dunsros.0")      return(dunsros.0)
     if (model == "fanbr.fanbr")    return(fanbr.fanbr)
 }

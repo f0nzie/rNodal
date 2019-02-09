@@ -130,11 +130,12 @@ rNodal:::temp.gradient(vlp_output, well_parameters)
 
 > 1. We don't need VLP calculations for the function temp_gradient(). We only need the depth table which is only one line.
 
-> 2. We don't need either the whole `well_parameters` list. #' from well_parameters we need: U, angle, depth.bh, depth.wh, bht, tht, diam.ft, mass.rate, cp.avg. All are scalars
+> 2. We don't need either the whole `well_parameters` list. 
+from well_parameters we need: U, angle, depth.bh, depth.wh, bht, tht, diam.ft, mass.rate, cp.avg. All are scalars
 
 > 3. We should separate the well inputs from the initial calculations instead of merging them in `well_parameters`. It would be clearer and more usable. Have more sense.
 
-> 4. We should create a function that only returns the depth points. Also another one that add the ground temperature. The standalone function could be called from different scripts.
+> 4. We should create a function that only returns the depth points. Also another one that adds the ground temperature. The standalone function could be called from different scripts.
 
 > 5. The calculations in temp.gradient are independent of pressure.
 
