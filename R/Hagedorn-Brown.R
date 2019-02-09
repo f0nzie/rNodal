@@ -2,14 +2,21 @@
 NULL
 
 
+hagbr.mod.1 <- function(pres, temp, well_input, basic_calcs) {
+  with(as.list(well_input, basic_calcs), {
+    print(basic_calcs$oil.sg)
+  })
+}
+
+
 #' Hagedorn correlation from the Brown's book. Procedure C.42
 #'
 #' @param    pres    pressure at depth          psia    dbl
 #' @param    temp    temperature at depth       deg F   dbl
 #' @param    well.params  surface parameters            list
 #'
-hagbr.mod <- function(pres, temp, well.params) {
-    with(as.list(well.params), {
+hagbr.mod <- function(pres, temp, well_input, basic_calcs) {
+    with(as.list(c(well_input, basic_calcs)), {  # to pass several list use c()
 
         # calculate gradient as function of pres and temp
 

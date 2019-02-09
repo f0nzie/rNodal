@@ -230,7 +230,7 @@ runVLP <- function(well.input, model.parameters) {
 
     # perform basic calculations on the well input
     basic_calcs <-  getBasicCalcs(well.input)
-    well_parameters <- c(well.input, basic_calcs) # join input and calc output
+    # well_parameters <- c(well.input, basic_calcs) # join input and calc output
 
     # pass the well parameters and model parameters
     vlp.output <- VLPcontrol(well.input, basic_calcs, model.parameters)
@@ -238,7 +238,19 @@ runVLP <- function(well.input, model.parameters) {
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
 
-
+VLPcontrol.1 <- function(well_input, basic_calcs, model.parameters,
+                           verbose = FALSE) {
+    # called by runVLP()
+    with(as.list(c(well_input, basic_calcs, model.parameters)),
+         {
+             vlp.function = loadVLP(vlp.model)
+             p.avg <- 100
+             t.avg <-  150
+             corr  <- hagbr.mod(pres = p.avg, temp = t.avg,
+                                   well_input, basic_calcs)
+         })
+    return(data.frame())
+}
 
 
 #' VLP calculation algorithm
@@ -258,7 +270,8 @@ VLPcontrol <- function(well_input, basic_calcs, model.parameters,
     # called by runVLP()
     with(as.list(c(well_input, basic_calcs, model.parameters)),
     {
-        well.parameters <- c(well_input, basic_calcs)
+        well.parameters <- c(well_input, basic_calcs)   # temporary
+
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the VLP function that is needed
@@ -299,7 +312,9 @@ VLPcontrol <- function(well_input, basic_calcs, model.parameters,
                 t.avg <- (t0 + t1) / 2
                 # calculate pressure losses using the selected VLP correlation
                 # passing the current pressure, temperature and other parameters
-                corr  <- vlp.function(pres = p.avg, temp = t.avg, well.parameters)
+                corr  <- vlp.function(pres = p.avg, temp = t.avg,
+                                      well_input, basic_calcs)
+
                 dp.dz <- corr$dp.dz       # extract dp/dz or pressure gradient
                 z     <- corr$z
                 # calculate new pressure
