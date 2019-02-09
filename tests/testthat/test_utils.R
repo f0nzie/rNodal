@@ -3,7 +3,7 @@ library(testthat)
 
 context("append_to_rda() if file does not exist")
 
-rda_file <- "appended.Rdata"
+rda_file <- "append_to_rdata.Rdata"
 if (file.exists(rda_file)) file.remove(rda_file)
 
 test_that("if Rdata file does not exist, create empty", {
