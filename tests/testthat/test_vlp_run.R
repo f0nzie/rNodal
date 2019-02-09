@@ -1,4 +1,5 @@
 library(testthat)
+library(data.table)
 
 
 # read the expected values table
@@ -69,7 +70,7 @@ test_that("list saved matches actual list", {
     expect_equal(dim(result), c(30,45))
     expect_equal(tail(result, 1)[["pres"]], 1909.763, tolerance = 1e-5)
     expect_equal(tail(result, 1)[["z"]], 0.8529847, tolerance = 1e-7)
-    expect_equal(result, expected)
+    expect_true(identical(data.table(result), data.table(expected)))
 })
 
 
@@ -139,5 +140,5 @@ test_that("list saved matches actual list", {
         expect_equal(dim(result), c(30, 45))
         expect_equal(tail(result, 1)[["pres"]], 769.3803, tolerance = 1e-5)
         expect_equal(tail(result, 1)[["z"]], 0.9235756, tolerance = 1e-7)
-        expect_equal(result, expected)
+        expect_true(identical(data.table(result), data.table(expected)))
 })
