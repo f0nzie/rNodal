@@ -29,7 +29,8 @@ test_that("WDS dataframe has at least two columns", {
         9275
     "
     wds_df = read.table(header = TRUE, text = wds)
-    expect_error(compute_angle_deviation_survey(wds_df), "WDS should have at least two columns")
+    expect_error(compute_angle_deviation_survey(wds_df),
+                 "WDS should have at least two columns")
 })
 
 
