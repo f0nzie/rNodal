@@ -253,11 +253,12 @@ runVLP <- function(well.input, model.parameters) {
 #' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
-VLPcontrol <- function(well.parameters, model.parameters,
+VLPcontrol <- function(well_input, basic_calcs, model.parameters,
                        verbose = FALSE) {
     # called by runVLP()
-    with(as.list(c(well.parameters, model.parameters)),
+    with(as.list(c(well_input, basic_calcs, model.parameters)),
     {
+        well.parameters <- c(well_input, basic_calcs)
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
         # load the VLP function that is needed
