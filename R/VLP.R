@@ -332,8 +332,8 @@ VLPcontrol <- function(well_input, basic_calcs, model_parameters,
                 iter_dpdz <- iter_dpdz + 1    # with a a new p1
                 cum_iter <- cum_iter + 1      # number of total iterations
             } # end-while
-            # at the end of the while-loop we obtain the average pressure
-            # build a row-vector out of: depth, dL, temperature, pressure,
+            # at the end of the while-loop, we obtain the average pressure
+            # then, build a row-vector out of: depth, dL, temperature, pressure,
             # segment, correlation results
             segment_row_vector[[i]] <- c(
                 i = i,             # row number
@@ -349,12 +349,10 @@ VLPcontrol <- function(well_input, basic_calcs, model_parameters,
             p0 = p.calc   # assign p1 to the inlet pressure of new segment, p0
             t0 = t1       # do the same with the temperature
     } # end-for
-        # convert row-list to dataframe
-        iter.tbl <- data.table::rbindlist(iter_row_vector)
-
+        iter.tbl <- data.table::rbindlist(iter_row_vector) # row-list to dataframe
     # convert row-vector to a dataframe
-    segment_tbl <- data.table::rbindlist(segment_row_vector) # add row to table
-    return(segment_tbl)                           # final results
+    segment_tbl <- data.table::rbindlist(segment_row_vector)
+    return(segment_tbl)                      # results in segments table
     }) # end with
 }
 
