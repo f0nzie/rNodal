@@ -265,22 +265,20 @@ VLPcontrol.1 <- function(well_input, basic_calcs, model.parameters,
 #' @param verbose prevent printing messages. Default is FALSE
 #'
 #' @export
-VLPcontrol <- function(well_input, basic_calcs, model.parameters,
+VLPcontrol <- function(well_input, basic_calcs, model_parameters,
                        verbose = FALSE) {
     # called by runVLP()
-    with(as.list(c(well_input, basic_calcs, model.parameters)),
+    with(as.list(c(well_input, basic_calcs, model_parameters)),
     {
-        well.parameters <- c(well_input, basic_calcs)   # temporary
-
         if (verbose) cat("VLP control for well model:", vlp.model, "\n")
 
-        # load the VLP function that is needed
+        # load the VLP function provided in model_parameters
         vlp.function = loadVLP(vlp.model)
+
         # Calculate the well segments and depths
-        # Depth counts have to be greater than segments to allocate the zero or
-        # initial depth value.
-        # Consider that in R for length.out parameter.
-        # In R index starts at 1 not 0
+        # Depth points have to be greater than segments to allocate the zero or
+        # initial depth value. Consider that in R for the "length.out" parameter.
+        # Mind that in R index starts at 1 not 0 like C or Python
         depths <- seq.int(from = depth.wh, to = depth.bh, length.out = segments+1)
         n      <- length(depths)   # which is the same as # rows in the dataframe
         depth.top <- depths[1]                # take the the first depth
