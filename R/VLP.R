@@ -238,19 +238,6 @@ runVLP <- function(well.input, model.parameters) {
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
 
-VLPcontrol.1 <- function(well_input, basic_calcs, model.parameters,
-                           verbose = FALSE) {
-    # called by runVLP()
-    with(as.list(c(well_input, basic_calcs, model.parameters)),
-         {
-             vlp.function = loadVLP(vlp.model)
-             p.avg <- 100
-             t.avg <-  150
-             corr  <- hagbr.mod(pres = p.avg, temp = t.avg,
-                                   well_input, basic_calcs)
-         })
-    return(data.frame())
-}
 
 
 #' VLP calculation algorithm
@@ -259,8 +246,9 @@ VLPcontrol.1 <- function(well_input, basic_calcs, model.parameters,
 #' wellhead pressure and temperature. Fluid properties are calculated at each
 #' of the segment depths.
 #'
-#' @param well.parameters    well input and core calculations at surface
-#' @param model.parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
+#' @param well_input  unprocessed list of well inputs            list
+#' @param basic_calcs  basic calculations based on the well inputs  list
+#' @param model_parameters   model characteristics. Hagedorn-Brown, Duns-Ros,
 #'                           Fancher-Brown, etc. Also tolerances and boundaries
 #' @param verbose prevent printing messages. Default is FALSE
 #'

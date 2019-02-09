@@ -2,18 +2,13 @@
 NULL
 
 
-hagbr.mod.1 <- function(pres, temp, well_input, basic_calcs) {
-  with(as.list(well_input, basic_calcs), {
-    print(basic_calcs$oil.sg)
-  })
-}
-
 
 #' Hagedorn correlation from the Brown's book. Procedure C.42
 #'
-#' @param    pres    pressure at depth          psia    dbl
-#' @param    temp    temperature at depth       deg F   dbl
-#' @param    well.params  surface parameters            list
+#' @param pres    pressure at depth          psia    dbl
+#' @param temp    temperature at depth       deg F   dbl
+#' @param well_input  unprocessed list of well inputs            list
+#' @param basic_calcs  basic calculations based on the well inputs  list
 #'
 hagbr.mod <- function(pres, temp, well_input, basic_calcs) {
     with(as.list(c(well_input, basic_calcs)), {  # to pass several list use c()
