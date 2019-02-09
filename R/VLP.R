@@ -229,14 +229,11 @@ get_well_parameters <- function(well.input) {
 runVLP <- function(well.input, model.parameters) {
 
     # perform basic calculations on the well input
-    basic.calcs <-  getBasicCalcs(well.input)
-    well.parameters <- c(well.input, basic.calcs) # join input and calc output
+    basic_calcs <-  getBasicCalcs(well.input)
+    well_parameters <- c(well.input, basic_calcs) # join input and calc output
 
     # pass the well parameters and model parameters
-    vlp.output <- VLPcontrol(well.parameters, model.parameters)
-
-    vlp.model <- toupper(model.parameters$vlp.model) # model name in uppercase
-
+    vlp.output <- VLPcontrol(well.input, basic_calcs, model.parameters)
 
     return(tibble::as_tibble(vlp.output))                 # return dataframe
 }
