@@ -299,3 +299,61 @@ deviation_survey
 # rNodal:::calc_angle_deviation_survey(deviation_survey)
 ```
 
+
+# Specifying geothermal gradient
+
+```{r rows.print=30}
+library(rNodal)
+# vertical well
+# Example from C.13 in Brown
+# P2 (pressure at end point is given). 
+# The question is: what is the length of the tubing.
+# P2 = 1000 psia
+
+geothermal_data <- c("
+  TVD   temp
+  0     120
+  2670  150
+")
+
+input.example.C13 <- setWellInput(
+                        field.name = "HAGBR.MOD", 
+                        well.name = "Brown_C13", 
+                        depth.wh = 0, 
+                        depth.bh = 2670, 
+                        diam.in = 1.995, 
+                        GLR = 500, 
+                        liq.rt = 1000, 
+                        wcut = 0.6, 
+                        thp = 500, 
+                        tht = 120, 
+                        bht = 150, 
+                        API = 22, 
+                        gas.sg = 0.65, 
+                        wat.sg = 1.07, 
+                        if.tens = 30,
+                        geotherm = geothermal_data
+                        )
+
+
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 11, 
+                          tol = 0.000001)
+
+# c13_output <- runVLP(well.input = input.example.C13, well.model)
+# c13_output
+```
+
+
+```{r}
+geothermal_data <- c("
+  TVD   temp
+  0     120
+  2670  150
+")
+
+
+geotherm_df <- read.table(header = TRUE, text = geothermal_data)
+geotherm_df
+```
+
