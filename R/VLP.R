@@ -150,6 +150,12 @@ Gwell.input <- setWellInput()
 getBasicCalcs <- function(well.input) {
     with(as.list(well.input), {
 
+        # convert text table of geothermal gradient to dataframe
+        geotherm_df <- read.table(header = TRUE, text = geotherm)
+        bht <- tail(geotherm_df, 1)[["temp"]]
+        tht <- head(geotherm_df, 1)[["temp"]]
+        depth.bh <- tail(geotherm_df, 1)[["TVD"]] - head(geotherm_df, 1)[["TVD"]]
+
         # calculate temperature gradient
         temp.grad <- (bht - tht) / depth.bh
 
@@ -192,6 +198,9 @@ getBasicCalcs <- function(well.input) {
 
         # heat capacity
         cp.avg <- (oil.cp + gas.cp + wat.cp) /3
+
+        # calculate geothermal gradient
+        geotherm_df <- read.table(header = TRUE, text = geotherm)
 
         # calculated
         out.calc <- named.list( temp.grad,
