@@ -368,7 +368,7 @@ loadVLP <- function(model) {
 
     if (model == "hagbr.guo")      return(hagbr.guo)
     if (model == "hagbr.dummy")    return(hagbr.dummy)
-    if (model == "hagbr.mod")      return(hagbr.mod)
+    if (model == "hagbr.mod")      return(hagbr.mod)       # <-
     if (model == "dunsros.0")      return(dunsros.0)
     if (model == "fanbr.fanbr")    return(fanbr.fanbr)
 }
