@@ -1,7 +1,12 @@
 
 create_test_tables <- function() {
     proj_root <- rprojroot::is_rstudio_project$find_file()
-    rda_file <- file.path(proj_root, "tests", "testthat", "md_tvd.rda")
+
+
+    # --------------------------------------------------------------------------
+    # MD vs TVD tables
+    test_rda <- "md_tvd.rda"
+    rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
 
     # table 1
     md_tvd_txt_1 <- "
@@ -83,4 +88,82 @@ create_test_tables <- function() {
 "
     md_tvd_3 <- set_deviation_survey(md_tvd_txt_3)
     rNodal:::append_to_rdata(md_tvd_3, file = rda_file)
+
+
+    # --------------------------------------------------------------------------
+    # basic calculations
+    test_rda <- "basic_calcs.rda"
+    rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
+
+    # Brown_C13
+    well_input <- setWellInput(
+      field.name = "HAGBR.MOD",
+      well.name = "Brown_C13",
+      depth.wh = 0, depth.bh = 2670,
+      diam.in = 1.995,
+      GLR = 500,
+      liq.rt = 1000,
+      wcut = 0.6,
+      thp = 500,
+      tht = 120,
+      bht = 150,
+      API = 22,
+      gas.sg = 0.65,
+      wat.sg = 1.07,
+      if.tens = 30)
+
+    basic_calcs_c13 <- getBasicCalcs(well_input)
+    rNodal:::append_to_rdata(basic_calcs_c13, file = rda_file)
+
+    # Guo_P44
+    well_input <- setWellInput(
+        field.name = "HAGBR.MOD",
+        well.name = "Guo_P44",
+        depth.wh = 0, depth.bh = 9700, diam.in = 1.995,
+        GLR = 362.7, liq.rt = 758, wcut = 0.1,
+        thp = 100, tht = 80, bht = 180,
+        API = 40, gas.sg = 0.70, wat.sg = 1.05,
+        if.tens = 30)
+
+    basic_calcs_ep44 <- getBasicCalcs(well_input)
+    rNodal:::append_to_rdata(basic_calcs_ep44, file = rda_file)
+
+
+    # C44
+    well_input <- setWellInput(
+        field.name = "HAGBR.MOD",
+        well.name = "Brown_C44",
+        depth.wh = 0, depth.bh = 3590,
+        diam.in = 1.995,
+        GLR = 1000, liq.rt = 600, wcut = 0.0,
+        thp = 500, tht = 120, bht = 150,
+        API = 42, oil.visc = 1.0,
+        gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+    )
+
+    basic_calcs_c44 <- getBasicCalcs(well_input)
+    rNodal:::append_to_rdata(basic_calcs_c44, file = rda_file)
+
+
+    # Oilwell_Dry_01
+    well_input <-  setWellInput(field.name = "HAGBR.MOD",
+                                well.name = "Oilwell_01_Dry",
+                                depth.wh = 0,
+                                depth.bh = 9275,
+                                diam.in = 4.052,
+                                GLR = 800, liq.rt = 983, wcut = 0.0,
+                                thp = 100,
+                                tht = 60,
+                                bht = 210,
+                                API = 37,
+                                oil.visc = 5.0,
+                                gas.sg = 0.76,
+                                wat.sg = 1.07,
+                                if.tens = 30,
+                                salinity = 23000
+    )
+
+    basic_calcs_ow_dry <- getBasicCalcs(well_input)
+    rNodal:::append_to_rdata(basic_calcs_ow_dry, file = rda_file)
+
 }
