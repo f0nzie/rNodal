@@ -1,0 +1,131 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+proj_root <- rprojroot::is_rstudio_project$find_file()
+test_rda <- "basic_calcs.rda"
+rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
+
+if (!file.exists(rda_file))
+    stop("No test table.\nUse the table generator first\n")
+load(rda_file)
+```
+
+
+```{r}
+x <- basic_calcs_c13
+unlist(Map(function(x, i) x, x, names(x)))
+```
+
+```{r}
+Map(function(x, i) paste(i, x), x, names(x))
+```
+
+```{r}
+mylist <- basic_calcs_c13
+
+f <- function(x) {
+    cat(x)
+}
+
+invisible(
+    sapply(names(mylist), function(x) { 
+     f(mylist[[x]])
+     # cat(n, '\n')
+    })
+)
+```
+
+## using sapply, function and invisible
+
+```{r}
+library(testthat)
+
+mylist <- basic_calcs_c13
+
+g <- function(x) {
+    # cat(x, "\n")
+    expect_equal(basic_calcs_c13[[x]], basic_calcs_c13[[x]])
+}
+
+invisible(
+    sapply(names(mylist), function(x) { 
+     g(x)
+     # cat(n, '\n')
+    })
+)
+```
+
+
+## Mapply
+
+```{r}
+# x <- basic_calcs_c13
+# mapply(function(x, i) paste(i, x), x, names(x))
+mapply(function(x, i) list(name=i,value=x), x, names(x))
+```
+
+```{r}
+x <- 1:5
+
+f <- function(x) {
+    x*x    
+}
+
+mapply(f, x)
+```
+
+```{r}
+g <- function(x) {
+    data.frame(x2=x*x, x3=x*x*x, x4 = x^4)
+}
+
+as.data.frame(lapply(as.data.frame(t(mapply(g, x))), as.numeric))
+```
+
+```{r}
+mapply(function(x, y) seq_len(x)+y, 1:4, 5:8)
+```
+
+```{r}
+mapply(function(i) c(i), 1:10)
+```
+
+```{r}
+as.data.frame(sapply(1:10, function(i) {
+    sapply(1:5, function(j) c(i,j), simplify = TRUE)
+    }, simplify = TRUE))
+```
+
+
+
+## Map
+
+```{r}
+x <- basic_calcs_c13
+Map(function(x, i) paste(i, x), x, names(x))
+```
+
+
+
+
+```{r}
+    # print(basic_calcs)
+
+    # expect_equal(basic_calcs, basic_calcs_c13)
+
+    # expected <- basic_calcs_c13
+    # #
+    # for (i in 1:length(names(basic_calcs))) {
+    #     name <- names(basic_calcs[i])
+    #     value <- basic_calcs[[i]]
+    #     cat(i, name)
+    #     cat(value)
+    #     cat("\n")
+    #     expect_equal(value, expected[i])
+    # }
+    # print(sapply(names(basic_calcs_t_c13)function(y, n, i) { paste(n[[i]], y[[i]]) }, y=x, n=names(x))
+```
+
