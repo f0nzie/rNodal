@@ -123,12 +123,9 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
         mutate(point = replace_na_with_last(point)) %>%
         mutate(radians = replace_na_from_bottom(radians)) %>%
         mutate(geo_grad = replace_na_from_bottom(geo_grad)) %>%
-        mutate(dTVD = replace_na_from_bottom(dTVD)) %>%
-        mutate(dtemp = replace_na_from_bottom(dtemp)) %>%
-        mutate(temp = replace_na_with_last(temp)) %>%
-        mutate(temp = dtemp + geo_grad * (tvd+dTVD) ) %>% # temp[[1]]: temperature at the top
+        mutate(temp = temp[[1]] + geo_grad * tvd) %>% # temp[[1]]: temperature at the top
         # if the TVD was given, do not calculate it, keep the original
-        mutate(temp = ifelse(!given, dtemp + geo_grad * (tvd+dTVD), temp)) %>%
+        mutate(temp = ifelse(!given, temp[[1]] + geo_grad * tvd, temp)) %>%
         mutate(delta.md = ifelse(cos(radians) <= epsilon,
                                  delta.tvd,
                                  delta.tvd / cos(radians))) %>%
@@ -170,8 +167,6 @@ as_dataframe_geothermal_data <- function(geotherm=NULL) {
         # calculate gradient at depth for 2 rows and above
         calc_geotherm_df <- geotherm_df %>%
             mutate(geo_grad = (temp - lag(temp)) / (TVD - lag(TVD))) %>%
-            mutate(dTVD = - lag(TVD, default=0)) %>%
-            mutate(dtemp = lag(temp, default=temp[1])) %>%
             mutate(geo_grad = ifelse(is.na(geo_grad), 0, geo_grad))
     }
 
