@@ -88,7 +88,8 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             gas.cp    = 0.5,
                             wat.cp    = 1.0,
                             angle     = pi/2,
-                          geotherm    = NULL
+                          geotherm    = NULL,
+                          dev_survey  = NULL
                         ) {
 
     # well input parameters
@@ -106,102 +107,60 @@ setWellInput <- function( field.name = "HAGBR.GUO",
                             U,
                             oil.cp, gas.cp, wat.cp,
                             angle,
-                            geotherm
+                            geotherm,
+                            dev_survey
     )
     return(out)
 }
 
 
-# load default values for well input
-Gwell.input <- setWellInput()
 
-
-#' Perform basic calculations based on the well inputs
+#' Set the high level model parameters for VLP calculations
 #'
-#' @param well.input well input data as a list
-#' @export
-getBasicCalcs <- function(well.input) {
-    with(as.list(well.input), {
-
-        # convert text table of geothermal gradient to dataframe
-        if (!is.null(geotherm)) {  # do not calculate if no geot data provided
-            geotherm_df <- read.table(header = TRUE, text = geotherm)
-            bht <- tail(geotherm_df, 1)[["temp"]]
-            tht <- head(geotherm_df, 1)[["temp"]]
-            depth.bh <- tail(geotherm_df, 1)[["TVD"]] - head(geotherm_df, 1)[["TVD"]]
-        } else {
-            geotherm_df <- data.frame()
-            warning("No geothermal table entered")
-        }
-
-        # calculate temperature gradient
-        temp.grad <- (bht - tht) / depth.bh
-
-        # convert tubing diameter to ft
-        diam <- diam.in /12
-        diam.ft <- diam.in / 12
-
-        # calculate area in ft^2
-        area <- pi / 4 * diam^2
-
-        # calculate specific gravity of oil from API
-        oil.sg <- 141.5 / (131.5 + API)
-
-        # oil and water fractions
-        wat.fraction <- wcut
-        oil.fraction <- 1 - wat.fraction
-        WOR          <- wat.fraction / oil.fraction
-
-        # calculate oil, gas and water rate at standard conditions
-        # Options of names to use: oil.srt, gas.srt, wat.srt
-        #                          OIL.RT, GAS.RT, WAT.RT
-        #                          oil.Srt, gas.Srt, wat.Srt
-        oil.rt <- liq.rt * oil.fraction
-        gas.rt <- liq.rt * GLR
-        wat.rt <- liq.rt * wat.fraction
-
-        # GOR
-        GOR = (oil.rt + wat.rt) / oil.rt * GLR
-
-        # total mass per STB = mass oil + mass water + mass gas. C42.3
-        mass.total <- oil.sg * 350 * (1 / (1+WOR)) +
-            wat.sg * 350 * (WOR / (1+WOR)) +
-            0.0764 * GLR * gas.sg
-
-        # TODO: calculate fluid properties at P, T conditions
-
-        # 4. calculate the mass flow rate w = m * q
-        mass.rt  <-  mass.total * liq.rt
-        mass.rate <- mass.rt
-
-        # heat capacity
-        cp.avg <- (oil.cp + gas.cp + wat.cp) /3
-
-        # calculated
-        out.calc <- named.list( temp.grad,
-                                diam, area, diam.ft,         # added diam.ft
-                                oil.sg,
-                                oil.fraction, wat.fraction, WOR,
-                                oil.rt, gas.rt, wat.rt,
-                                mass.total,
-                                GOR,
-                                mass.rt, mass.rate,
-                                cp.avg
-        )
-        return(out.calc)
-    })
-}
-
-
-#' Get the well input together with the basic calculations
+#' Prepare high level model inputs such as type of model, number of tubing segments,
+#' tolerance for iterations, initial value of dp/dz putting them as a list.
+#' Default VLP model is Hagendorn-Brown-Guo
 #'
-#' @param well.input the well input
+#' @param vlp.model     the name of the VLP model or correlation
+#' @param segments      number of segments for the tubing string
+#' @param tol           tolerance for error during interations
+#' @param dp.dz.ini     initial gradient
+#' @param well_input     a list with all the wel inputs
 #' @export
-get_well_parameters <- function(well.input) {
+setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
+                         segments = 29,            # table rows = segments + 1
+                         tol = 0.0001,             # tolerance in dp.dz calc
+                         dp.dz.ini = 0.002,         # initial value for dp.dz
+                         well_input = NULL
+) {
+
+    # print(names(well_input))
+
     # perform basic calculations on the well input
-    basic.calcs <-  getBasicCalcs(well.input)
-    well.parameters <- c(well.input, basic.calcs)
-    well.parameters
+    basic_calcs <-  getBasicCalcs(well_input)
+
+    # the angle deviation table has been built/calculated in basic_calcs
+    print(dim(basic_calcs$ang_dev_survey_df))
+    # print(names(basic_calcs$ang_dev_survey_df))
+
+    # the geothermal gradient has been calculated in basic_calcs
+    print(dim(basic_calcs$geotherm_df))
+    # print(names(basic_calcs$geotherm_df))
+
+    # Build the geothermal table following the no. segments in the model
+    # a table of this form
+    # MD  TVD  dL   temp  L   dT.dx   Ti
+    # print(segments)
+
+
+
+    named.list(vlp.model,
+               segments,
+               tol,
+               dp.dz.ini,
+               well_input,
+               basic_calcs
+    )
 }
 
 
