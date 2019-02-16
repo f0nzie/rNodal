@@ -1,0 +1,167 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+```{r}
+library(rNodal)
+library(dplyr)
+
+p44 <- new.env()
+p44.input  <- new.env(parent = p44)
+p44.output <- new.env(parent = p44.input)
+```
+
+
+# Fluid temperature parameters using `get_fluid_temp_parameters()`
+```{r}
+# Example Problem from Guo book
+# Note that U (heat transfer coefficient is added at the end)
+
+with(p44.input, {
+
+  geothermal_2p_txt <- c("
+    TVD    temp
+    0       80
+    9700   180
+  ")
+  
+  deviation_survey_2p_txt <- "
+       TVD    MD
+         0     0
+      9700  9700
+  "
+  
+  input.example.P44 <- setWellInput(
+                          field.name = "HAGBR.MOD", 
+                          well.name = "Guo_P44", 
+                          depth.wh = 0, depth.bh = 9700, diam.in = 1.995, 
+                          GLR = 362.7, liq.rt = 758, wcut = 0.1, 
+                          thp = 100, 
+                          tht = 80, bht = 180, 
+                          API = 40, gas.sg = 0.70, wat.sg = 1.05, 
+                          if.tens = 30,
+                          U = 4,
+                          geotherm = geothermal_2p_txt,
+                          dev_survey = deviation_survey_2p_txt
+                          )
+  
+  fluid_temp_params <- get_fluid_temp_parameters(input.example.P44)
+  fluid_temp_params
+})
+
+```
+
+
+# Testing new deviation survey functions
+
+## Two points
+```{r}
+# convert text table of geothermal gradient to dataframe
+# in environments we have to explicitily *print* previous objects
+with(p44.input, {
+  geotherm <- as_dataframe_geothermal_data(geothermal_2p_txt)
+  geothermal_2p_df <- geotherm$calc_geotherm_df
+  print(geothermal_2p_df)
+  
+  deviation_survey_2p <- calc_deviation_survey(deviation_survey_2p_txt, 
+                                                reference = "horizontal")
+  print(deviation_survey_2p)
+})
+```
+
+
+### Build iteration table (two geothermal points)
+
+```{r table-iter_table, rows.print=25}
+with(p44.input, {
+  # assign geothermal and deviation data
+  geothermal_df    <- geothermal_2p_df
+  deviation_survey <- deviation_survey_2p
+  
+  iter_table <- build_iteration_table(deviation_survey, 
+                                      geotherm_df = geothermal_df, 
+                                      depth_points = 30)
+  iter_table
+})
+```
+
+# Calculate fluid temperatures, bottom to top
+
+```{r function-that-returns-Ti, rows.print=50}
+with(p44.input, {
+  # extract constants
+  U         <- fluid_temp_params$U
+  diam_ft   <- fluid_temp_params$diam.ft
+  mass_rate <- fluid_temp_params$mass.rate
+  cp_avg    <- fluid_temp_params$cp.avg
+})  
+
+with(p44.output, {
+  # what if we send a smaller dataframe with only the necessary columns
+  # the, the table is inverted in a function that returns only the 
+  # calculated column
+  # iter-table is produced by a function
+  k         <- U * pi * diam_ft / mass_rate / cp_avg
+  A         <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+  
+  # the fluid temperature function
+  fT <- function(Ti, Tei, geo_grad.nz, L, theta.nz) {
+    (Tei - geo_grad.nz * L * sin(theta.nz)) +
+      (Ti - Tei) * exp(-L/A) +
+      geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+  }
+  
+  calculate_Ti <- function(df) {
+    df %>% 
+      mutate(L = tvd[[n()]] - tvd) %>% 
+      mutate(Tei = temp) %>% 
+      mutate(theta = radians) %>% 
+      arrange(desc(tvd)) %>% 
+      mutate(theta.nz = ifelse(tvd == 0, lag(theta), theta)) %>%
+      mutate(geo_grad.nz = ifelse(tvd == 0, lag(geo_grad), geo_grad)) %>% 
+      { 
+        x <- head(.,1)$Tei 
+        sapply(1:nrow(.), function(i) { 
+          x <<- fT(x, .$Tei[i], .$geo_grad.nz[i], .$L[i], .$theta.nz[i]) # global x
+          .$Ti[i] <<- x  }) 
+        . } %>%  # return internal dataframe
+      # select(-c(L, Tei, theta, geo_grad.nz, theta.nz)) %>% 
+      arrange(tvd)    # go back to original order
+  }
+  
+  iter_table_Ti <- iter_table %>% 
+    mutate(Ti = NA) %>%       # add the fluid temperature variable Ti
+    do(calculate_Ti(.)) %>%   # calculate Ti
+    select(new_point, tvd, md, Ti, everything()) %>% 
+    print()
+})
+```
+
+```{r eval=FALSE}
+# write to CSV file
+# write.csv(file = "c13-100000r.csv", x = iter_table_Ti, row.names = FALSE)
+```
+
+```{r}
+p44$iter_table_Ti
+```
+
+```{r}
+ls(p44)
+```
+
