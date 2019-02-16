@@ -11,3 +11,5 @@ inst/doc
 inst/extdata/default.hdf5
 
 *.html
+
+*.csv
