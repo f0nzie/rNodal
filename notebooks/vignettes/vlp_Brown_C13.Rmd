@@ -26,6 +26,18 @@ library(rNodal)
 # The question is: what is the length of the tubing.
 # P2 = 1000 psia
 
+geothermal_data <- c("
+  TVD   temp
+  0     120
+  2670  150
+")
+
+deviation_survey <- c("
+    TVD     MD
+       0     0
+    2670  2670
+")
+
 input.example.C13 <- setWellInput(
                         field.name = "HAGBR.MOD", 
                         well.name = "Brown_C13", 
@@ -40,12 +52,17 @@ input.example.C13 <- setWellInput(
                         API = 22, 
                         gas.sg = 0.65, 
                         wat.sg = 1.07, 
-                        if.tens = 30)
+                        if.tens = 30,
+                        geotherm = geothermal_data,
+                        dev_survey = deviation_survey
+                        )
 
 
 well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
                           segments = 11, 
-                          tol = 0.000001)
+                          tol = 0.000001,
+                          well_input = input.example.C13
+                          )
 
 c13_output <- runVLP(well.input = input.example.C13, well.model)
 c13_output
