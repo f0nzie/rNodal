@@ -1,0 +1,812 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+
+# Testing new deviation survey functions
+
+## Two points
+```{r}
+library(rNodal)
+library(dplyr)
+
+geothermal_2p_data <- c("
+  TVD    temp
+  0      120
+  2670   150
+")
+
+deviation_survey_2p_txt <- "
+     TVD    MD
+       0     0
+    2670  2670
+"
+
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_2p_data)
+geothermal_2p_df <- geotherm$calc_geotherm_df
+geothermal_2p_df
+
+deviation_survey_2p <- calc_deviation_survey(deviation_survey_2p_txt, 
+                                              reference = "horizontal")
+deviation_survey_2p
+```
+
+## Three points
+```{r}
+library(rNodal)
+library(dplyr)
+
+geothermal_3p_data <- c("
+  TVD    temp
+  0      120
+  800    129
+  2670   150
+")
+
+deviation_survey_3p_txt <- "
+     TVD    MD
+       0     0
+     800   800
+    2670  2670
+"
+```
+
+```{r}
+deviation_survey_3p <- calc_deviation_survey(deviation_survey_3p_txt, 
+                                              reference = "horizontal")
+deviation_survey_3p
+```
+
+### convert text table of geothermal gradient to dataframe
+```{r}
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_3p_data)
+
+geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df
+```
+
+### Build iteration table
+```{r table-iter_table, rows.print=25}
+deviation_survey <- deviation_survey_2p
+geothermal_df    <- geothermal_2p_df
+
+iter_table <- build_iteration_table(deviation_survey, geotherm_df = geothermal_df, 
+                      depth_points = 13)
+iter_table
+```
+
+### Fluid temperature parameters using function
+```{r}
+# the standard well input
+# Note that U (heat transfer coefficient is added at the end)
+input.example.C13 <- setWellInput(
+                        field.name = "HAGBR.MOD",
+                        well.name = "Brown_C13", 
+                        depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+                        GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                        thp = 500, tht = 120, bht = 150, 
+                        API = 22, gas.sg = 0.65, wat.sg = 1.07,
+                        U = 17,
+                        geotherm = geothermal_3p_data,
+                        dev_survey = deviation_survey_3p_txt
+                        )
+
+fluid_temp_params <- get_fluid_temp_parameters(input.example.C13)
+fluid_temp_params
+```
+
+# Calculate fluid temperatures, bottom to top
+    L <- depth - iteration_temp$tvd[i]
+    Tei <- iteration_temp$geotherm[i]
+    theta <- iteration_temp$radians[i]
+
+```{r table-iteratable, rows.print=25}
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+Ti0 <- tail(iter_table, 1)[["temp"]]
+
+iteratable <- 
+  iter_table %>% 
+    # arrange(desc(tvd)) %>%
+    mutate(L = tvd[[n()]] - tvd) %>% 
+    mutate(Tei = temp) %>% 
+    mutate(theta = radians) %>% 
+    print
+```
+
+      # mutate(Ti.1 = Tei - geo_grad.nz * L * sin(theta.nz)) %>% 
+  # mutate(Ti.3 = geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))) %>% 
+  
+  # mutate(Ti.2 = (lag(Ti, default = Ti[1]) - Tei) * exp(-L/A)) %>%
+  # mutate(Ti.2 = ifelse(row_number() == 1, (150-Tei)*exp(-L/A), (lag(Ti) - Tei) * exp(-L/A) )) %>%
+  # mutate(Ti = Ti.1 + Ti.2 + Ti.3) %>% 
+  
+    mutate(Ti.0 = Tei - geo_grad * L * sin(theta)) %>% 
+    mutate(Ti.1 = 150 * exp(-L/A)) %>%
+    mutate(Ti.2 = (-Tei * exp(-L/A))) %>% 
+    mutate(Ti.3 = geo_grad * A * sin(theta) * (1 - exp(-L/A))) %>% 
+    mutate(Ti = Ti.0 + lag(Ti.1, default=150) + Ti.2 + Ti.3) %>% 
+    
+## Inverted iteratable    
+```{r table-inv_iteratable}
+inv_iteratable <- 
+  iteratable %>% 
+    arrange(desc(tvd)) %>% 
+    mutate(theta.nz = ifelse(tvd == 0, lag(theta), theta)) %>%
+    mutate(geo_grad.nz = ifelse(tvd == 0, lag(geo_grad), geo_grad)) %>%
+    print()
+```
+
+##     
+
+```{r rows.print=25}
+
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+# Ti <- tail(iteratable,1)$temp
+cat(U, diam_ft, mass_rate, cp_avg, "\n")
+
+Ti0 <- tail(iter_table, 1)[["temp"]]
+cat(Ti0, "\n")
+
+# inverted table
+iteratable2 <- 
+iteratable %>% 
+  arrange(desc(tvd)) %>% 
+  mutate(theta.nz = ifelse(tvd == 0, lag(theta), theta)) %>%
+  mutate(geo_grad.nz = ifelse(tvd == 0, lag(geo_grad), geo_grad)) %>%
+  mutate(Ti = lag(Ti, default=Tei[1]) * exp(-L/A)) %>%
+  
+  mutate(Ti1 = (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (lag(Ti, default = Tei[1]) - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))) %>%
+  
+  mutate(Ti2 = (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (Ti - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))) %>%
+
+    # select(L, theta.nz, geo_grad.nz, Tei, Ti, Ti1, Ti2) %>%
+  select(L, theta.nz, geo_grad.nz, Tei, Ti, Ti1, Ti2) %>% 
+  print() 
+  
+```
+
+```{r}
+fx <- function(Ti, Tei, geo_grad.nz, L, theta.nz) (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (Ti - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+
+
+```
+
+## For-loop and function
+
+```{r}
+# this is working
+# We have to set the loop on ascending count now because the dataframe is inverted
+
+# function to find the fluid temperature
+fT <- function(aTi, aTei, ageo_grad.nz, aL, atheta.nz) {
+  (aTei - ageo_grad.nz * aL * sin(atheta.nz)) +
+    (aTi - aTei) * exp(-aL/A) +
+    ageo_grad.nz * A * sin(atheta.nz) * (1 - exp(-aL/A))
+}
+
+# constants
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+Ti <- head(iteratable2,1)$Tei
+cat(U, diam_ft, mass_rate, cp_avg, A, Ti, "\n")
+
+for (i in 1:nrow(iteratable2)) {
+  geo_grad.nz <- iteratable2$geo_grad.nz[i]
+  theta.nz    <- iteratable2$theta.nz[i]
+  Tei         <- iteratable2$Tei[i]
+  L           <- iteratable2$L[i]
+  
+  Ti <- fT(Ti, Tei, geo_grad.nz, L, theta.nz)
+
+  cat(sprintf("%3d %8.2f %9.4f %9.6f %8.2f %8.2f \n", i, L, theta.nz, geo_grad.nz,
+                  Tei, Ti))
+}  
+```
+
+## For-loop, function and with
+```{r}
+# it works
+# we use with() to avoid repetition of the dataframe
+# we also use a function that is called from the for loop
+
+fT <- function(xTi, Tei, geo_grad.nz, L, theta.nz) {
+  (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (xTi - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+}
+
+x <- head(inv_iteratable,1)$Tei
+cat(A, U, diam_ft, mass_rate, cp_avg, "\n")
+for (i in 1:nrow(inv_iteratable)) {
+  with(inv_iteratable, {
+      x <<- fT(x, Tei[i], geo_grad.nz[i], L[i], theta.nz[i])
+      cat(sprintf("%3d %8.2f %9.4f %9.6f %8.2f %10.4f \n", i, L[i], theta.nz[i],
+                    geo_grad.nz[i], Tei[i], x))
+  })
+}
+```
+
+## Using sapply instead of for-loop
+
+```{r sapply-on-inverted-table, rows.print=20}
+# iterating with sapply instead of for-loop
+# working with dataframe "inv_iteratable"
+
+fT <- function(xTi, Tei, geo_grad.nz, L, theta.nz) {
+  (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (xTi - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+}
+
+x <- head(inv_iteratable,1)$Tei
+inv_iteratable$Ti <- 150
+invisible(
+  sapply(1:nrow(inv_iteratable), function(i) {
+    with(inv_iteratable, {  # makes a copy of the dataframe
+      x <<- fT(x, Tei[i], geo_grad.nz[i], L[i], theta.nz[i])  # to global x
+      # Ti[i] <<- x    # this will not produce an assignment
+      inv_iteratable$Ti[i] <<- x    # to global dataframe
+  })
+}))
+
+inv_iteratable
+```
+
+# Simplify the Ti calculation
+
+  (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    Ti * exp(-L/A) - Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+  
+  Ti  =  - ( (Tei - geo_grad.nz * L * sin(theta.nz)) -
+    Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) ) / exp(-L/A)
+    
+  Ti * exp(-L/A) + (Tei - geo_grad.nz * L * sin(theta.nz)) -
+    Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+    
+  k2 = (Tei - geo_grad.nz * L * sin(theta.nz)) -
+    Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) 
+    
+  k1 = exp(-L/A)
+    
+  Ti = Ti * k1 + k2
+    
+
+```{r function-that-returns-Ti, rows.print=20}
+# what if we send a smaller dataframe with only the necessary columns
+# the, the table is inverted in a function that returns only the 
+# calculated column
+# iter-table is produced by a function
+
+# constants
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+k         <- U * pi * diam_ft / mass_rate / cp_avg
+A         <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+calculate_Ti <- function(df) {
+  df %>% 
+    mutate(L = tvd[[n()]] - tvd) %>% 
+    mutate(Tei = temp) %>% 
+    mutate(theta = radians) %>% 
+    arrange(desc(tvd)) %>% 
+    mutate(theta.nz = ifelse(tvd == 0, lag(theta), theta)) %>%
+    mutate(geo_grad.nz = ifelse(tvd == 0, lag(geo_grad), geo_grad)) %>% 
+    mutate(k2 = (Tei - geo_grad.nz * L * sin(theta.nz)) - Tei * exp(-L/A) + 
+             geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) ) %>% 
+    mutate(k1 = exp(-L/A)) %>% 
+    mutate(Ti = lag(Ti, default=head(Tei,1)) * k1 + k2) %>% 
+    arrange(tvd) %>% 
+    select(-c(k1, k2, L, Tei, theta, geo_grad.nz, theta.nz))
+}
+
+iter_table_Ti <- iter_table %>% 
+  do(calculate_Ti(.)) %>% 
+  print()
+```
+
+
+```{r}
+
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+Ti <- tail(iteratable,1)$temp
+cat(A, U, diam_ft, mass_rate, cp_avg, Ti, "\n")
+
+for (i in nrow(iteratable):1) {
+  # radians <- ifelse(i == 1, iteratable$radians[i+1], iteratable$radians[i])
+  # if we are inifinitesimally close to zero depth don't make the angle zero
+  # because near zero the angle of a vertical well is 90 degrees
+  if (iteratable[i, "tvd"] == 0) {
+    theta <- iteratable[i+1, "radians"]
+    geo_grad <- iteratable[i+1, "geo_grad"]
+  } else {
+      theta <- iteratable[i, "radians"]
+      geo_grad <- iteratable[i, "geo_grad"]
+  }
+    
+  Tei      <- iteratable$temp[i]
+  L        <- iteratable$L[i]
+  
+  Ti <- (Tei - geo_grad * L * sin(theta)) +
+    (Ti - Tei) * exp(-L/A) +
+    geo_grad * A * sin(theta) * (1 - exp(-L/A))
+
+  cat(sprintf("%3d %8.2f %9.4f %9.6f %8.2f %9.4f \n", i, L, theta, geo_grad,
+                  Tei, Ti))
+  # cat(i, L, "\n")
+      
+}  
+```
+
+### Table produced by function `temp.gradient()`
+
+ 12       0.00    1.571     150.00     150.00 
+ 11     242.73    1.571     147.27     149.97 
+ 10     485.45    1.571     144.55     149.83 
+  9     728.18    1.571     141.82     149.53 
+  8     970.91    1.571     139.09     149.00 
+  7    1213.64    1.571     136.36     148.20 
+  6    1456.36    1.571     133.64     147.07 
+  5    1699.09    1.571     130.91     145.60 
+  4    1941.82    1.571     128.18     143.75 
+  3    2184.55    1.571     125.45     141.51 
+  2    2427.27    1.571     122.73     138.88 
+  1    2670.00    1.571     120.00     135.86 
+
+## Temp Fluid calculations using `dplyr` table
+
+```{r}
+iteration_temp <- iteratable
+
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+# depth <- tail(iteration_temp$tvd, 1)
+depth <- tail(iteration_temp$tvd, 1)
+
+Ti = fluid_temp_params$bht
+
+for (i in nrow(iteration_temp):1) {
+    L <- depth - iteration_temp$tvd[i]
+    Tei <- iteration_temp$geotherm[i]
+    theta <- iteration_temp$radians[i]
+    temp_grad <- iteration_temp$geo_grad[i]
+    
+    # theta <- pi/2  # this fixes the temperature at the surface
+    
+    Ti <- (Tei - temp_grad * L * sin(theta)) +
+        (Ti - Tei) * exp(-L/A) +
+        temp_grad * A * sin(theta) * (1 - exp(-L/A))
+    
+    cat(sprintf("%3d %8.2f %8.3f %9.2f %8.2f \n", i, L, theta, Tei, Ti))
+}
+```
+
+# New function `calc_fluid_temp()`
+* Uses a well table of depths, dL, radians, geothermal gradient   
+* The angle is not fixed anymore   
+* Works for vertical and deviated wells
+* Input of a list of fluid temperature parameters
+
+```{r}
+depth_table
+```
+
+
+```{r rows.print=20}
+# call function
+calc_fluid_temp(depth_table, fluid_temp_params)
+
+```
+
+
+
+
+# Heat transfer calculations with `temp.fluid()`
+Moved from notebobook vlp_brown_C13.Rmd
+
+It will grab only few variables from the VLP final table above.
+     
+     c("depth", "dL", "pres", "temp")
+     
+```{r rows.print=30}
+# calculate the fluid temperature in the well
+# input: deviation survey and well calculated parameters: uses new functions: 
+#        get_well_parameters
+#        rNodal:::temp.gradient
+
+library(rNodal)
+
+deviation_survey <- c("
+TVD   MD
+    0     0
+    2670  2670
+")
+
+# the standard well input
+# Note that U (heat transfer coefficient is added at the end)
+input.example.C13 <- setWellInput(
+                        field.name = "HAGBR.MOD",
+                        well.name = "Brown_C13", 
+                        depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+                        GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                        thp = 500, tht = 120, bht = 150, 
+                        API = 22, gas.sg = 0.65, wat.sg = 1.07,
+                        U = 17,
+                        dev_survey = deviation_survey,
+                        angle = pi/2  # horizontal reference
+                        )
+
+# well model
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 11, 
+                          tol = 0.000001,
+                          well_input = input.example.C13
+                          )
+
+# run VLP only to get the initial part of the table
+# TODO: maybe we need to add a function that only return the simple stuff
+# such as depth, dL
+vlp_output <- runVLP(well.input = input.example.C13, 
+                     well.model)
+
+# get only the variables we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+well_table <- vlp_output[, c("depth", "dL", "pres", "temp")]   
+
+# get initial well parameters including basic calculations
+well_parameters <- get_well_parameters(input.example.C13)
+
+# temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
+rNodal:::temp.gradient(well_table, well_parameters)         
+```
+
+### List of well parameters (Hmisc)
+```{r}
+Hmisc::list.tree(well_parameters, maxcomp = 40)
+```
+
+
+### heat transfer calculations using `temp.fluid()`
+
+```{r rows.print=30}
+# Extracting temp gradient inputs from well_parameters
+# this in an old version where all well parameters had to be spelled out
+# parameters necessary to calculate the fluid temperature
+
+well_table <- vlp_output[, c("depth", "dL", "pres", "temp")]   
+
+theta   <- well_parameters$angle
+diam.ft <- well_parameters$diam.ft
+tht     <- well_parameters$tht
+bht     <- well_parameters$bht
+depth   <- well_parameters$depth.bh
+ge      <- well_parameters$temp.grad
+U       <- well_parameters$U
+cp.avg  <- well_parameters$cp.avg
+mass.rate <- well_parameters$mass.rate
+
+
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, 
+                    diam.ft, mass.rate)
+# we don't want all parameters spelled out      ^   ^      ^     ^      ^      ^     
+```
+
+
+# Heat transfer calculations fluid temp params, temp.gradient()
+* Get fluid temperature parameters
+* Vertical well
+* deviation survey provided. Two points
+* Angle constant
+
+
+It will grab only few variables from the VLP final table above.
+     
+     c("depth", "dL", "pres", "temp")
+
+
+### get only variables we need for heat transfer
+```{r}
+# get only the variables we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+Ddltemp_table <- vlp_output[, c("depth", "dL", "temp")] 
+Ddltemp_table
+```
+
+### list of well parameters
+```{r}
+# get initial well parameters including basic calculations
+well_parameters <- get_well_parameters(input.example.C13)
+names(well_parameters)
+```
+
+
+```{r}
+fluid_temp_params <- get_fluid_temp_parameters(input.example.C13)
+fluid_temp_params
+```
+
+
+### extract cp_avg and angle
+```{r}
+# heat capacity is a scalar from basic calculations
+fluid_temp_params$cp.avg
+fluid_temp_params$angle
+```
+
+## Heat transfer with function `temp.gradient()`
+* Ddltemp_table: is a table of depths, dL and ambient temperature
+
+* fluid_temp_params: fluid temperature parameters
+
+> Note. L (length tubing) grows from 0 at the bottom.
+
+```{r rows.print=25}
+# temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
+# in this case, the angle is constant 90 degrees (PI/2). This is we take as 
+# reference the horizontal.
+# Ddltemp_table: is a table of depths, dL and ambient temperature
+rNodal:::temp.gradient(Ddltemp_table, fluid_temp_params)  
+```
+
+
+# Functions
+
+## calculate angle for deviation survey
+
+```{r}
+deviation_survey <- deviation_survey_3p
+```
+
+
+```{r function-calc_deviation_survey, eval=FALSE}
+# calculate angle depending of the reference
+epsilon <- 1e-8
+reference <- "horizontal"
+
+switch(reference,
+       vertical   = {arcFun <- acos; dispFun <- sin},
+       horizontal = {arcFun <- asin; dispFun <- cos} )
+
+
+ang_deviation_survey <- deviation_survey %>% 
+    mutate(point = as.integer(row_number() - 1)) %>% 
+    select(point, everything()) %>% 
+    mutate(tvd = TVD) %>%
+    mutate(md = MD) %>% 
+    mutate(delta.md = MD - lag(MD, default = 0)) %>% 
+    mutate(delta.tvd = TVD - lag(TVD, default = 0)) %>% 
+    mutate(radians = ifelse(delta.md==0, 0, arcFun(delta.tvd / delta.md))) %>%
+    mutate(disp = ifelse(dispFun(radians) <= epsilon, # if sin or cos of the angle
+                             0,                       # is zero or very near zero
+                             delta.md * dispFun(radians))) %>%
+    mutate(cum_disp = cumsum(disp)) %>%
+    print()
+    
+```
+
+## Create iteration table
+
+### convert text table of geothermal gradient to dataframe
+```{r}
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_data)
+
+geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df
+```
+
+### Join angle deviation survey with geothermal gradient
+```{r}
+ang_deviation_survey <- full_join(deviation_survey_3p, geothermal_3p_df)
+ang_deviation_survey
+```
+
+
+### grow table with more intervals (n=11)
+
+```{r rows.print=25}
+# add extra rows for calculations
+# the original depths are included in the table as part of the total number of rows
+num_segs <- 12
+ang_deviation_survey %>% 
+    select(TVD) %>%      # select TVD
+    pull(TVD) %>% 
+    # {. -> tmp } %>%       
+    { tmp <- .                                  # assign to tmp
+        mn <- min(tmp); mx <- max(tmp)          # create two objects min, max
+        seq(mn, mx, length.out = num_segs) %>% 
+            c(., tmp) %>%
+            unique %>% 
+            sort()
+    } %>% 
+    data.frame(tvd = .) %>%                  # convert vector to dataframe
+    mutate(new_point = 99+row_number()) %>%  # add a column
+    print() -> grown                         # create dataframe grown
+```
+
+### Join deviation survey with iteration points
+
+```{r rows.print=55}
+# join the two tables (small original and grown with more rows) by TVD
+# table with lots of NAs
+right_join(ang_deviation_survey, grown, by = "tvd") %>% 
+    # mutate(delta.tvd = TVD - lag(TVD, default = 0))  %>%
+    mutate(delta.tvd = tvd - lag(tvd, default = 0))  %>% 
+    print()-> joined
+```
+
+### Functions to replace empty angles in iterative table
+
+```{r}
+# replaces NAs with the last value starting at the top
+point <- joined[["point"]]
+point
+
+replace_na_with_last<-function(x, a=!is.na(x)){
+ x[which(a)[c(1,1:sum(a))][cumsum(a)+1]]
+}
+
+# replaces NAs in a vector by using a value starting at the bottom
+replace_na_from_bottom<-function(x, a=!is.na(x)){
+    x <- rev(x)
+    rev(x[which(a)[c(1,1:sum(a))][cumsum(a)+1]])
+}
+
+
+replace_na_with_last(point)
+replace_na_from_bottom(point)
+```
+
+### join deviation survey with added iterative points
+```{r final_iterative_table, rows.print=55}
+epsilon <- 1e-8
+
+# get MD, delta.md given TVD and angle at new intervals
+iteration_table <- joined %>%
+  mutate(given = ifelse(is.na(TVD), FALSE, TRUE)) %>% 
+  mutate(point = replace_na_with_last(point)) %>% 
+  mutate(radians = replace_na_from_bottom(radians)) %>%
+  mutate(geo_grad = replace_na_from_bottom(geo_grad)) %>% 
+  # mutate(temp = temp[[1]] + geo_grad * tvd) %>%
+  
+  # if last temperature, keep it, otherwise will be calculated with decimals
+  # mutate(temp = ifelse(row_number() != n(), temp[[1]] + geo_grad * tvd, temp)) %>%
+  
+  # if the TVD was given in the original table, do not calculate it, keep the original
+  mutate(temp = ifelse(!given, temp[[1]] + geo_grad * tvd, temp)) %>% 
+  mutate(delta.md = ifelse(cos(radians) <= epsilon,
+                             delta.tvd,
+                             delta.tvd / cos(radians))) %>%
+  mutate(md = cumsum(delta.md)) %>%
+  mutate(disp = delta.md * sin(radians)) %>%
+  mutate(cum_disp = cumsum(disp)) %>%
+  # select(-c(disp, cum_disp, new_point)) %>% 
+    print
+```
+
+## Function as_dataframe_geothermal_data()
+
+```{r function-as_dataframe_geothermal_data}
+geotherm <- c("
+  TVD    temp
+  0      120
+  1000   128
+  2670   150
+")
+
+# convert text table of geothermal gradient to dataframe
+
+# three cases:
+# nrow=0: no geothermal table. stop, enter at least two temps
+# nrow=1: only one temperature provided. stop, enter at least two temps
+# nrow=2: wellhead and bottomhole temperatures
+# nrow=3: multigradient
+
+if (!is.null(geotherm)) {  # do not calculate if no geot data provided
+    geotherm_df <- read.table(header = TRUE, text = geotherm, comment.char = "#")
+} else {
+    cat("No geothermal table entered\n")
+    geotherm_df <- data.frame()
+}
+
+# analyze dataframe by number of rows
+if (nrow(geotherm_df) == 0) {
+  stop("Empty table. Enter at least two temps")
+} else if (nrow(geotherm_df) == 1) { 
+   stop("One temp only. Enter at least two temps") 
+} else {
+  # calculate gradient at depth for 2 rows and above
+  calc_geotherm_df <- geotherm_df %>% 
+    mutate(geo_grad = (temp - lag(temp)) / (TVD - lag(TVD))) %>% 
+    mutate(geo_grad = ifelse(is.na(geo_grad), 0, geo_grad))
+}
+
+# extract scalars for depth and temperature
+depth.top <- head(geotherm_df, 1)[["TVD"]]
+depth.bot <- tail(geotherm_df, 1)[["TVD"]]
+tht <- head(geotherm_df, 1)[["temp"]]
+bht <- tail(geotherm_df, 1)[["temp"]] 
+
+# if calc_geotherm_df has two rows, we extract the geothermal gradient
+temp.grad <- ifelse(nrow(calc_geotherm_df) == 2, 
+                    tail(calc_geotherm_df, 1)[["geo_grad"]], NA)
+
+nrows = nrow(calc_geotherm_df)
+
+named.list(calc_geotherm_df, nrows, depth.top, depth.bot, tht, bht, temp.grad)
+
+```
+
+### Join angle deviation survey with geothermal gradient
+```{r}
+full_join(deviation_survey_3p, geothermal_3p_df)
+```
+
+
+```{r}
+geotherm$temp.grad
+```
