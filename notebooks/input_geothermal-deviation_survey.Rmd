@@ -1,0 +1,242 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+> Notes.
+
+> 1. We don't need VLP calculations for the function temp_gradient(). We only need the depth table which is only one vector line.
+
+> 2. We don't need either the whole `well_parameters` list. 
+from well_parameters we need: U, angle, depth.bh, depth.wh, bht, tht, diam.ft, mass.rate, cp.avg. All are scalars
+
+> 3. We should separate the well inputs from the initial calculations instead of merging them in `well_parameters`. It would be clearer and more usable. Have more sense.
+
+> 4. We should create a function that only returns the depth points. Also another one that adds the ground temperature. The standalone function could be called from different scripts.
+
+> 5. The calculations in temp.gradient are independent of pressure.
+
+> 6. We could suply the table of depths and fluid temperature to the VLPControl function and let the algorithm calculate the average temperature from the new table that considers heat transfer.
+
+> 7. Avoid using `temp.grad` which only considers the earth temperature not the fluid's. The temperature gradient should not be a scalar but a vector as calculated by `temp.gradient`.
+
+> 8. Which one should be calculated first? (i) the fluid temperature gradient, or (ii) the deviation survey with angles? 
+First, the deviation survey table because we need the angle to calculate the temperature gradient at each depth point.
+
+
+## Workflow for temperature gradient
+1. Data requirements
+
+    1. We need the geohermal data at two or three different temperatures
+  
+    1. deviation survey. It doesn't matter if the well is vertical. A function will calculate the angle even if vertical.
+  
+    1. We need the heat capacity of the fluid (`cp.avg`), the heat transfer coefficient (`U`), the diameter of the tubing (`diam.ft`), and the mass rate (`mass.rate`).
+  
+2. We generate the angle deviation survey dataframe with the function `compute_angle_deviation_survey()`. The calculations are based on a true deviation survey of MD vs TVD. We don't need anything else. The angles will be calculated.
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+library(rNodal)
+library(dplyr)
+
+md_tvd_01 <- "
+    MD      TVD 
+    0	     0	 
+    600	    600
+    1005	 1000
+    4075	 4000
+    7700	 7500
+    9275	 9000
+    "
+deviation_survey <- set_deviation_survey(md_tvd_01)
+compute_angle_deviation_survey(deviation_survey, reference = "vertical")
+```
+
+```{r}
+# vertical (like in Prosper)
+#   MD  TVD  delta.md delta.tvd  radians   disp  cum_disp  degrees
+#    0	   0	   0	     0	    0.0000000	   0.000	  0.000	   0.000000
+#  600	 600	 600	   600	    0.0000000	   0.000	  0.000	   0.000000
+# 1005	1000	 405	   400	    0.1572970	   63.443	  63.443	9 .012451
+# 4075	4000	3070	  3000	    0.2139555	  651.844	 715.287	12.258749
+# 7700	7500	3625	  3500	    0.2633734	  943.729	1659.016	15.090185
+# 9275	9000	1575	  1500	    0.3098446	  480.234	2139.250	17.752790
+```
+
+
+3. We read the number of segments specified by the VLP model. It can be set by the user or hard written in the code.
+
+4. We take the head and tail measurements of the TVD (not MD), and build a depth points vector based on the number of segments. The number of `depth points` is the number of segments plus one.
+
+1. We iterate through the depth vector and start building the depths iteration table:
+
+    1. Since the depth vector is in TVD, we calculate MD for the iterations points since we already have the angle from the angle deviation survey. It is essentially a TVD to MD conversion.
+   
+    1. The MD calculation looks for the angle and calculates a new MD based on TVD.
+    
+$$cos^{-1} = \frac {\Delta TVD} {\Delta MD}$$
+
+```{r}
+acos(400/405)
+acos(3500/3625)
+100 / 0.157297 
+```
+  
+  
+
+
+
+# Specifying geothermal gradient
+
+```{r rows.print=30}
+library(rNodal)
+
+geothermal_data <- c("
+  TVD   temp
+  0     120
+  2670  150
+")
+
+deviation_survey <- c("
+  MD    TVD
+  0     0
+  2670  2670
+")
+
+input.example.C13 <- setWellInput(
+                        field.name = "HAGBR.MOD", 
+                        well.name = "Brown_C13", 
+                        depth.wh = 0, 
+                        depth.bh = 2670, 
+                        diam.in = 1.995, 
+                        GLR = 500, 
+                        liq.rt = 1000, 
+                        wcut = 0.6, 
+                        thp = 500, 
+                        tht = 120, 
+                        bht = 150, 
+                        API = 22, 
+                        gas.sg = 0.65, 
+                        wat.sg = 1.07, 
+                        if.tens = 30,
+                        geotherm = geothermal_data,
+                        dev_survey = deviation_survey
+                        )
+
+
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 21, 
+                          tol = 0.000001,
+                          well_input = input.example.C13)
+
+vlp_output <- runVLP(well.input = input.example.C13, well.model)
+vlp_output
+# c13_output
+```
+
+## getiing the input for temperature and geothermal gradient calculation
+
+```{r rows.print=25}
+# get only the variables we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+# we don't need pressure
+depth_dL_pt <- vlp_output[, c("depth", "dL", "pres", "temp")] 
+depth_dL_pt
+
+# this is the input table for temp.gradient
+# depth     dL        pres      temp
+# 0.0000	  0.0000	  500.0000	120.0000	
+# 127.1429	127.1429	525.0425	121.4286	
+# 254.2857	127.1429	550.1359	122.8571	
+# 381.4286	127.1429	575.2866	124.2857	
+# 508.5714	127.1429	600.5005	125.7143	
+# 635.7143	127.1429	625.7830	127.1429	
+# 762.8571	127.1429	651.1393	128.5714	
+# 890.0000	127.1429	676.5745	130.0000	
+# 1017.1429	127.1429	702.0931	131.4286	
+# 1144.2857	127.1429	727.6995	132.8571	
+# 1271.4286	127.1429	753.3979	134.2857	
+# 1398.5714	127.1429	779.1922	135.7143	
+# 1525.7143	127.1429	805.0861	137.1429	
+# 1652.8571	127.1429	831.0830	138.5714	
+# 1780.0000	127.1429	857.1862	140.0000	
+# 1907.1429	127.1429	883.3987	141.4286	
+# 2034.2857	127.1429	909.7233	142.8571	
+# 2161.4286	127.1429	936.1626	144.2857	
+# 2288.5714	127.1429	962.7190	145.7143	
+# 2415.7143	127.1429	989.3949	147.1429	
+# 2542.8571	127.1429	1016.1921	148.5714	
+# 2670.0000	127.1429	1043.1125	150.0000	
+```
+
+```{r}
+# get initial well parameters including basic calculations
+well_parameters <- get_well_parameters(input.example.C13)
+names(well_parameters)
+ 
+#  [1] "field.name"        "well.name"         "depth.wh"          "tht"              
+#  [5] "depth.bh"          "bht"               "diam.in"           "ed"               
+#  [9] "thp"               "liq.rt"            "wcut"              "API"              
+# [13] "oil.visc"          "gas.sg"            "GLR"               "wat.sg"           
+# [17] "salinity"          "if.tens"           "U"                 "oil.cp"           
+# [21] "gas.cp"            "wat.cp"            "angle"             "geotherm"         
+# [25] "dev_survey"        "temp.grad"         "diam"              "area"             
+# [29] "diam.ft"           "oil.sg"            "oil.fraction"      "wat.fraction"     
+# [33] "WOR"               "oil.rt"            "gas.rt"            "wat.rt"           
+# [37] "mass.total"        "GOR"               "mass.rt"           "mass.rate"        
+# [41] "cp.avg"            "geotherm_df"       "ang_dev_survey_df"
+```
+
+```{r}
+# heat capacity is a scalar from basic calculations
+well_parameters$cp.avg
+well_parameters$U
+well_parameters$diam.ft
+well_parameters$mass.rate
+# [1] 0.6766667
+```
+
+
+```{r rows.print=25}
+# temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
+rNodal:::temp.gradient(depth_dL_pt, well_parameters)  
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+geothermal_data <- c("
+  TVD   temp
+  0     120
+  2670  150
+")
+
+
+geotherm_df <- read.table(header = TRUE, text = geothermal_data)
+geotherm_df
+```
+
+
+```{r}
+  # if (!is.null(depth.wh) && !is.null(depth.bh)) depth <- depth.bh - depth.wh
+  # else stop("No depths provided")
+
+#  stopifnot(!is.null(depth.wh), !is.null(depth.bh))
+#  stopifnot(!is.null(tht), !is.null(bht))
+
+  # if (!is.null(tht) && !is.null(bht)) depth <- bht - tht
+  # else stop("No wellhead and bottomhole temperatures provided")
+```
+
