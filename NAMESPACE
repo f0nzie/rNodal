@@ -2,8 +2,13 @@
 
 export(VLPcontrol)
 export(Z)
+export(as_dataframe_geothermal_data)
+export(build_iteration_table)
+export(calc_deviation_survey)
+export(calc_fluid_temp)
 export(compute_angle_deviation_survey)
 export(getBasicCalcs)
+export(get_fluid_temp_parameters)
 export(get_well_parameters)
 export(interp.fanbr)
 export(mu.gas)

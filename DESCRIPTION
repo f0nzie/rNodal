@@ -37,6 +37,7 @@ Collate:
     'utils.R'
     'VLP.R'
     'deviation_survey.R'
+    'fluid_temp.R'
     'heat_transfer.R'
     'rNodal-package.r'
     'zzz.R'
