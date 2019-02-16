@@ -83,7 +83,7 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
                                   depth_points) {
     epsilon <- 1e-8
 
-    number_segments <- depth_points - 1
+    number_segments <- depth_points
 
     # TODO: validate columns in ang_deviation_survey. It must contain angles
 
