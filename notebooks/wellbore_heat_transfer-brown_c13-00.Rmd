@@ -1,0 +1,480 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+
+
+# Heat transfer calculations with `temp.fluid()`
+Moved from notebobook vlp_brown_C13.Rmd
+
+It will grab only few variables from the VLP final table above.
+     
+     c("depth", "dL", "pres", "temp")
+     
+```{r rows.print=30}
+# calculate the fluid temperature in the well
+# input: deviation survey and well calculated parameters: uses new functions: 
+#        get_well_parameters
+#        rNodal:::temp.gradient
+
+library(rNodal)
+
+
+geothermal_data <- c("
+  TVD    temp
+  0      120
+  2670   150
+")
+
+deviation_survey <- c("
+TVD   MD
+    0     0
+    2670  2670
+")
+
+# the standard well input
+# Note that U (heat transfer coefficient is added at the end)
+input.example.C13 <- setWellInput(
+                        field.name = "HAGBR.MOD",
+                        well.name = "Brown_C13", 
+                        depth.wh = 0, depth.bh = 2670, diam.in = 1.995, 
+                        GLR = 500, liq.rt = 1000, wcut = 0.6, 
+                        thp = 500, tht = 120, bht = 150, 
+                        API = 22, gas.sg = 0.65, wat.sg = 1.07,
+                        U = 17,
+                        dev_survey = deviation_survey,
+                        geotherm = geothermal_data,
+                        angle = pi/2  # horizontal reference
+                        )
+
+# well model
+well.model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 11, 
+                          tol = 0.000001,
+                          well_input = input.example.C13
+                          )
+
+# run VLP only to get the initial part of the table
+# TODO: maybe we need to add a function that only return the simple stuff
+# such as depth, dL
+vlp_output <- runVLP(well.input = input.example.C13, 
+                     well.model)
+
+# get only the variables we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+well_table <- vlp_output[, c("depth", "dL", "pres", "temp")]   
+
+# get initial well parameters including basic calculations
+well_parameters <- get_well_parameters(input.example.C13)
+
+# temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
+rNodal:::temp.gradient(well_table, well_parameters)         
+```
+
+### List of well parameters (Hmisc)
+```{r}
+Hmisc::list.tree(well_parameters, maxcomp = 40)
+```
+
+
+### heat transfer calculations using `temp.fluid()`
+
+```{r rows.print=30}
+# Extracting temp gradient inputs from well_parameters
+# this in an old version where all well parameters had to be spelled out
+# parameters necessary to calculate the fluid temperature
+
+well_table <- vlp_output[, c("depth", "dL", "pres", "temp")]   
+
+theta   <- well_parameters$angle
+diam.ft <- well_parameters$diam.ft
+tht     <- well_parameters$tht
+bht     <- well_parameters$bht
+depth   <- well_parameters$depth.bh
+ge      <- well_parameters$temp.grad
+U       <- well_parameters$U
+cp.avg  <- well_parameters$cp.avg
+mass.rate <- well_parameters$mass.rate
+
+
+# calculate dT/dx for the well
+rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, 
+                    diam.ft, mass.rate)
+# we don't want all parameters spelled out      ^   ^      ^     ^      ^      ^     
+```
+
+
+# Heat transfer calculations fluid temp params, temp.gradient()
+* Get fluid temperature parameters
+* Vertical well
+* deviation survey provided. Two points
+* Angle constant
+
+
+It will grab only few variables from the VLP final table above.
+     
+     c("depth", "dL", "pres", "temp")
+
+
+### get only variables we need for heat transfer
+```{r}
+# get only the variables we need for heat transfer. But what we really want 
+# is the deviation survey: MD, TVD
+Ddltemp_table <- vlp_output[, c("depth", "dL", "temp")] 
+Ddltemp_table
+```
+
+### list of well parameters
+```{r}
+# get initial well parameters including basic calculations
+well_parameters <- get_well_parameters(input.example.C13)
+names(well_parameters)
+```
+
+
+```{r}
+fluid_temp_params <- get_fluid_temp_parameters(input.example.C13)
+fluid_temp_params
+```
+
+
+### extract cp_avg and angle
+```{r}
+# heat capacity is a scalar from basic calculations
+fluid_temp_params$cp.avg
+fluid_temp_params$angle
+```
+
+## Heat transfer with function `temp.gradient()`
+* Ddltemp_table: is a table of depths, dL and ambient temperature
+
+* fluid_temp_params: fluid temperature parameters
+
+> Note. L (length tubing) grows from 0 at the bottom.
+
+```{r rows.print=25}
+# temp.gradient calculates the fluid temperature coming from the wellbore
+# inputs are depth, dL, pres, temp plus basic calculations
+# in this case, the angle is constant 90 degrees (PI/2). This is we take as 
+# reference the horizontal.
+# Ddltemp_table: is a table of depths, dL and ambient temperature
+rNodal:::temp.gradient(Ddltemp_table, fluid_temp_params)  
+```
+
+# Make Iterative table with `dplyr`
+
+```{r}
+library(rNodal)
+library(dplyr)
+
+deviation_survey <- c("
+  TVD   MD
+    0     0
+    2670  2670
+")
+
+deviation_survey <- set_deviation_survey(deviation_survey)
+deviation_survey
+```
+
+### Select plane of reference: vertical or horizontal
+
+```{r}
+# calculate angle depending of the reference
+reference <- "horizontal"
+switch(reference,
+       vertical   = {arcFun <- acos; dispFun <- sin},
+       horizontal = {arcFun <- asin; dispFun <- cos} )
+```
+
+### calculate angle for deviation survey
+
+```{r}
+# vertical reference
+ang_deviation_survey <- deviation_survey %>% 
+    mutate(point = as.integer(row_number() - 1)) %>% 
+    select(point, everything()) %>% 
+    mutate(tvd = TVD) %>%
+    mutate(md = MD) %>% 
+    mutate(delta.md = MD - lag(MD, default = 0)) %>% 
+    mutate(delta.tvd = TVD - lag(TVD, default = 0)) %>% 
+    mutate(radians = ifelse(delta.md==0, 0, arcFun(delta.tvd / delta.md))) %>%
+    mutate(disp = delta.md * dispFun(radians)) %>%
+    mutate(cum_disp = cumsum(disp)) %>%
+    print()
+    
+```
+
+### grow table with more intervals (n=11)
+
+```{r rows.print=25}
+
+num_segs <- 12
+ang_deviation_survey %>% 
+    select(TVD) %>%      # select TVD
+    pull(TVD) %>% 
+    # {. -> tmp } %>%       
+    { tmp <- .                                  # assign to tmp
+        mn <- min(tmp); mx <- max(tmp)          # create two objects min, max
+        seq(mn, mx, length.out = num_segs) %>% 
+            c(., tmp) %>%
+            unique %>% 
+            sort()
+    } %>% 
+    data.frame(tvd = .) %>%                  # convert vector to dataframe
+    mutate(new_point = 99+row_number()) %>%  # add a column
+    print() -> grown                         # create dataframe grown
+```
+
+### Join deviation survey with iteration points
+
+```{r rows.print=55}
+# join the two tables (small original and grown with more rows) by TVD
+# table with lots of NAs
+right_join(ang_deviation_survey, grown, by = "tvd") %>% 
+    # mutate(delta.tvd = TVD - lag(TVD, default = 0))  %>%
+    mutate(delta.tvd = tvd - lag(tvd, default = 0))  %>% 
+    print()-> joined
+```
+
+### Functions to replace empty angles in iterative table
+```{r}
+# replaces NAs with the last value starting at the top
+point <- joined[["point"]]
+point
+
+replace_na_with_last<-function(x, a=!is.na(x)){
+ x[which(a)[c(1,1:sum(a))][cumsum(a)+1]]
+}
+
+# replaces NAs in a vector by using a value starting at the bottom
+replace_na_from_bottom<-function(x, a=!is.na(x)){
+    x <- rev(x)
+    rev(x[which(a)[c(1,1:sum(a))][cumsum(a)+1]])
+}
+
+
+replace_na_with_last(point)
+replace_na_from_bottom(point)
+```
+
+### join deviation survey with added iterative points
+```{r rows.print=55}
+library(magrittr)
+
+epsilon <- 1e-8
+# get MD, delta.md given TVD and angle at new intervals
+iteration_table <- joined %>%
+  mutate(point = replace_na_with_last(point)) %>% 
+  mutate(radians = replace_na_from_bottom(radians)) %>% 
+    mutate(delta.md = ifelse(cos(radians) <= epsilon,
+                             delta.tvd,
+                             delta.tvd / cos(radians))) %>%
+    mutate(md = cumsum(delta.md)) %>%
+    mutate(disp = delta.md * sin(radians)) %>%
+    mutate(cum_disp = cumsum(disp)) %>%
+  # select(-c(disp, cum_disp, new_point)) %>% 
+    print
+```
+
+### Fluid temperature parameters using function
+```{r}
+fluid_temp_params <- get_fluid_temp_parameters(input.example.C13)
+fluid_temp_params
+```
+
+### calculate geothermal temperature with `dplyr`
+```{r rows.print=55}
+# calculate temp gradient
+temp_grad <- fluid_temp_params$temp.grad
+tht <- fluid_temp_params$tht
+bht <- fluid_temp_params$bht
+
+iteration_temp <- 
+    iteration_table %>% 
+    select(-c(disp, cum_disp)) %>% 
+    mutate(geotherm =  tht + temp_grad * tvd) %>% 
+    print
+
+# depth_table: to be used in calculations of fluid temperature
+depth_table <-
+  iteration_temp %>% 
+  select(new_point, tvd, md, delta.tvd, delta.md, radians, geotherm) %>% 
+  print()
+  
+```
+
+### Table produced by function `temp.gradient()`
+
+ 12       0.00    1.571     150.00     150.00 
+ 11     242.73    1.571     147.27     149.97 
+ 10     485.45    1.571     144.55     149.83 
+  9     728.18    1.571     141.82     149.53 
+  8     970.91    1.571     139.09     149.00 
+  7    1213.64    1.571     136.36     148.20 
+  6    1456.36    1.571     133.64     147.07 
+  5    1699.09    1.571     130.91     145.60 
+  4    1941.82    1.571     128.18     143.75 
+  3    2184.55    1.571     125.45     141.51 
+  2    2427.27    1.571     122.73     138.88 
+  1    2670.00    1.571     120.00     135.86 
+
+### Temp Fluid calculations using `dplyr` table
+```{r}
+U <- fluid_temp_params$U
+diam_ft <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg <- fluid_temp_params$cp.avg
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+depth <- tail(iteration_temp$tvd, 1)
+Ti = bht
+
+cat(U, diam_ft, mass_rate, cp_avg, Ti, "\n")
+
+for (i in nrow(iteration_temp):1) {
+  # if we are inifinitesimally close to zero depth don't make the angle zero
+  # because near zero the angle of a vertical well is 90 degrees
+  if (iteration_temp[i, "tvd"] == 0) theta <- iteration_temp[i+1, "radians"]
+  else theta <- iteration_temp[i, "radians"]
+    L <- depth - iteration_temp$tvd[i]
+    Tei <- iteration_temp$geotherm[i]
+    
+    Ti <- (Tei - temp_grad * L * sin(theta)) +
+        (Ti - Tei) * exp(-L/A) +
+        temp_grad * A * sin(theta) * (1 - exp(-L/A))
+    cat(sprintf("%3d %8.2f %9.4f %9.6f %9.2f %8.4f \n", i, L, theta, temp_grad, 
+                Tei, Ti))
+}
+```
+
+# New function `calc_fluid_temp()`
+* Uses a well table of depths, dL, radians, geothermal gradient   
+* The angle is not fixed anymore   
+* Works for vertical and deviated wells
+* Input of a list of fluid temperature parameters
+
+```{r}
+depth_table
+```
+
+
+```{r rows.print=20}
+# call function
+calc_fluid_temp(depth_table, fluid_temp_params)
+
+```
+
+
+
+
+
+# APPENDIX
+
+### previous data (unit testing)
+
+    p30 = 1043.8745
+    p30 = 1043.8793
+    p30 = 1045.1834
+    p30 = 1043.1091 (after using p.avg and t.avg)
+    p30 = 1043.1094 (after using p.avg, t.avg, p0 = p.calc)
+
+
+### where the HDF5 file is
+
+[link to hdf5 file](C:\Users\msfz751\AppData\Local\Temp\RtmpEbxvPR\file40c0446c2f7.h5)
+
+[hdf5 in inst/extdata](I:\src\rNodal\inst\extdata\brown_c13.h5)
+
+[h5](C:\Users\msfz751\AppData\Local\Temp\RtmpM3UF3e\file526835c54c20.h5)
+
+
+### results for unit testing
+
+      MD      TVD     Pres  Temp
+       0       0     500.0  135.8
+     242.7   242.7   563.1  137.9
+     485.5	 485.5	 627.5  139.8
+     728.2	 728.2	 693.1	141.6
+     970.9	 970.9	 759.8	143.4
+    1213.6	1213.6	 827.6	144.9
+    1456.4	1456.4	 896.5	146.3
+    1699.1	1699.1	 966.4	147.6
+    1941.8	1941.8	1037.3	148.6
+    2184.5	2184.5	1109.3	149.3
+    2427.3	2427.3	1182.2	149.8
+    2670.0	2670.0	1255.9	150.0
+
+### Temperature results as text table (use in unit test)    
+    
+```{r rows.print=20}
+# convert text table to dataframe in preparation for unit test
+results_unit_test <- "
+      MD      TVD     Pres  Temp
+       0       0     500.0  135.8
+     242.7   242.7   563.1  137.9
+     485.5	 485.5	 627.5  139.8
+     728.2	 728.2	 693.1	141.6
+     970.9	 970.9	 759.8	143.4
+    1213.6	1213.6	 827.6	144.9
+    1456.4	1456.4	 896.5	146.3
+    1699.1	1699.1	 966.4	147.6
+    1941.8	1941.8	1037.3	148.6
+    2184.5	2184.5	1109.3	149.3
+    2427.3	2427.3	1182.2	149.8
+    2670.0	2670.0	1255.9	150.0
+"    
+
+library(readr)
+read_table2(results_unit_test, col_names = TRUE)
+```
+    
+        
+### deviation survey table as text        
+```{r}
+library(rNodal)
+
+# separate the columns with tabs
+well_as_text <- "
+    MD  TVD    
+       0	     0   
+     242.7   242.7
+     485.5   485.5
+     728.2   728.2
+     970.9   970.9
+    1213.6  1213.6
+    1456.4	1456.4
+    1699.1	1699.1
+    1941.8	1941.8
+    2184.5	2184.5
+    2427.3	2427.3
+    2670.0	2670.0
+"
+
+deviation_survey <- set_deviation_survey(well_as_text)
+deviation_survey
+```
+
+```{r}
+# rNodal:::calc_angle_deviation_survey(deviation_survey)
+```
+
+
