@@ -35,6 +35,18 @@ library(tibble)
 #
 # The final results are very close to those of Brown.
 
+geothermal_txt <- "
+TVD   temp
+0     120
+3590  150
+"
+
+dev_survey_txt <- "
+TVD   MD
+0     0
+3590  3590
+"
+
 
 input_example <- setWellInput(
                               field.name = "HAGBR.MOD",
