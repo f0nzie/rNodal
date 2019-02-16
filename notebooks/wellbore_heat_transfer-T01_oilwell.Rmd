@@ -1,0 +1,285 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Build a calculated deviation survey
+
+```{r}
+# in Prosper the angle is measured againt the vertical
+# we obtain the angle but the reference is set as the horizontal
+library(rNodal)
+library(dplyr)
+
+md_tvd_01 <- "
+MD      TVD 
+0	     0	 
+600	    600
+1005	 1000
+4075	 4000
+7700	 7500
+9275	 9000
+"
+
+deviation_survey <- set_deviation_survey(md_tvd_01)
+ang_deviation_survey <- compute_angle_deviation_survey(deviation_survey, reference = "vertical")
+ang_deviation_survey
+```
+
+## recreate whole table and angle with dplyr
+
+```{r}
+# calculate angle depending of the reference
+reference <- "horizontal"
+switch(reference,
+       vertical   = {arcFun <- acos; dispFun <- sin},
+       horizontal = {arcFun <- asin; dispFun <- cos} )
+```
+
+```{r}
+# vertical reference
+ang_deviation_survey <- deviation_survey %>% 
+    mutate(point = as.integer(row_number() - 1)) %>% 
+    select(point, everything()) %>% 
+    mutate(tvd = TVD) %>%
+    mutate(md = MD) %>% 
+    mutate(delta.md = MD - lag(MD, default = 0)) %>% 
+    mutate(delta.tvd = TVD - lag(TVD, default = 0)) %>% 
+    mutate(radians = ifelse(delta.md==0, 0, arcFun(delta.tvd / delta.md))) %>% 
+    mutate(disp = delta.md * dispFun(radians)) %>% 
+    mutate(cum_disp = cumsum(disp)) %>% 
+    print()
+    
+```
+
+## grow table with more intervals
+
+```{r rows.print=25}
+num_segs <- 50
+ang_deviation_survey %>% 
+    select(TVD) %>%      # select TVD
+    pull(TVD) %>% 
+    # {. -> tmp } %>%       
+    { tmp <- .                                  # assign to tmp
+        mn <- min(tmp); mx <- max(tmp)          # create two objects min, max
+        seq(mn, mx, length.out = num_segs) %>% 
+            c(., tmp) %>%
+            unique %>% 
+            sort()
+    } %>% 
+    data.frame(tvd = .) %>%                  # convert vector to dataframe
+    mutate(new_point = 99+row_number()) %>%  # add a column
+    print() -> grown                         # create dataframe grown
+```
+
+
+
+### Join deviation survey with iteration points
+
+```{r rows.print=55}
+# join the two tables (small original and grown with more rows) by TVD
+# table with lots of NAs
+right_join(ang_deviation_survey, grown, by = "tvd") %>% 
+    # mutate(delta.tvd = TVD - lag(TVD, default = 0))  %>%
+    mutate(delta.tvd = tvd - lag(tvd, default = 0))  %>% 
+    print()-> joined
+```
+
+### Functions to replace empty angle in new iterative points
+```{r}
+# replaces NAs with the last value starting at the top
+point <- joined[["point"]]
+point
+
+replace_na_with_last<-function(x, a=!is.na(x)){
+ x[which(a)[c(1,1:sum(a))][cumsum(a)+1]]
+}
+
+# replaces NAs in a vector by using a value starting at the bottom
+replace_na_from_bottom<-function(x, a=!is.na(x)){
+    x <- rev(x)
+    rev(x[which(a)[c(1,1:sum(a))][cumsum(a)+1]])
+}
+
+
+replace_na_with_last(point)
+replace_na_from_bottom(point)
+```
+
+
+### join deviation survey with added iterative points
+```{r rows.print=55}
+library(magrittr)
+
+# get MD, delta.md given TVD and angle at new intervals
+iteration_table <- joined %>% 
+    mutate(point = replace_na_with_last(point)) %>% 
+    mutate(radians = replace_na_from_bottom(radians)) %>% 
+    mutate(delta.md = delta.tvd / cos(radians)) %>% 
+    mutate(md = cumsum(delta.md)) %>% 
+    mutate(disp = delta.md * sin(radians)) %>% 
+    mutate(cum_disp = cumsum(disp)) %>% 
+    print
+```
+
+```{r}
+# angle calculations for only MD, TVD
+iteration_table %>% 
+    na.omit() %>% 
+    nest(-c(point, TVD, MD)) %>% 
+    unnest()
+```
+
+# Calculate ground temperature using geothermal gradient
+
+   	     TVD     MD      FormTemp(deg F)
+     1	 0	     0	     60	
+     2	 600	 600	 40	
+     3	 9000	 9275	 210
+
+```{r rows.print=55}
+# calculate temp gradient
+temp_grad <- 0.01666667
+tht <- 60
+bht <- 210
+U <- 8
+diam_ft <- 0.3376667
+mass_rate <- 334581.9
+cp_avg <- 0.6766667
+
+
+
+iteration_temp <- 
+    iteration_table %>% 
+    select(-c(disp, cum_disp, new_point)) %>% 
+    mutate(geotherm =  tht + temp_grad * tvd) %>% 
+    # mutate(Ti = (geotherm - ))
+    print
+    
+```
+
+```{r}
+k     <- U * pi * diam_ft / mass_rate / cp_avg
+A     <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+
+L <- 0
+depth <- tail(iteration_temp$tvd, 1)
+Ti = bht
+
+for (i in nrow(iteration_temp):1) {
+    # L <- iteration_temp$delta.tvd[i]
+    L <- depth - iteration_temp$tvd[i]
+    Tei <- iteration_temp$geotherm[i]
+    theta <- iteration_temp$radians[i]
+    cat(sprintf("%3d %8.3f %8.3f %9.5f %8.3f \n", i, Tei, L, theta, Ti))
+    Ti <- (Tei - temp_grad * L * sin(theta)) +
+        (Ti - Tei) * exp(-L/A) +
+        temp_grad * A * sin(theta) * (1 - exp(-L/A))
+    
+}
+```
+
+
+```{r}
+library(tidyr)
+
+iteration_nested <- iteration_table %>% 
+    na.omit() %>%
+    nest(-point, -TVD, -MD) %>% 
+    print
+```
+
+```{r}
+iteration_nested$data
+```
+
+
+
+# sandbox
+
+```{r rows.print=55, eval=FALSE}
+tvd <- ang_deviation_survey[["TVD"]]
+# tvd
+num_segs <- 50
+new_tvd <- seq(min(tvd), max(tvd), length.out = num_segs)
+# new_tvd
+sort(unique(c(tvd, new_tvd))) %>% 
+    data.frame(TVD = .) %>% 
+    mutate(new_point = 100+row_number()) -> grown
+
+grown    
+```
+
+
+
+```{r, eval=FALSE}
+# split the tubing in dx pieces
+apply(angle_deviation_survey, 1, function(x) x["MD"] 
+)
+```
+
+
+
+```{r, eval=FALSE}
+build_survey_with_deltas <- function(deviation_survey, md_split) {
+    # reconstruct MD v TVD but for the partitioned well in delta-x
+    df <- data.frame()     # new long dataframe
+    index <- 1             # index the small dataframe
+    tvd <- 0
+    for (j in 1:length(md_split)) {  # iterate through the sequence
+        row = deviation_survey[index, ]   # get a row of the deviation survey
+        df[j, "md"]  <- md_split[j]  # assign MD in sequence to md in long dataframe
+        df[j, "seg"] <- index      # assign
+        if (j == 1)                 # if it is the first row
+            df[j, "delta.md"] <- md_split[j]
+        else
+            df[j, "delta.md"] <- md_split[j] - df[j-1, "md"]
+
+        df[j, "radians"] <- row[["radians"]]
+        df[j, "degrees"] <- row[["degrees"]]
+        df[j, "delta.tvd"] <- cos(row[["radians"]]) * df[j, "delta.md"] # calculate delta TVD
+        tvd <- tvd + df[j, "delta.tvd"]        # add delta.tvd
+        df[j, "tvd"] <- tvd                    # tvd column
+        if (md_split[j] >= row[["MD"]]) {        # switch to next deviation branch
+            index <- index + 1
+        }
+    }
+    df
+}
+
+seq_split <- seq(0, 9275, length.out = 30)
+build_survey_with_deltas(ang_deviation_survey, seq_split)
+```
+
+```{r rows.print=55, eval=FALSE}
+# with intermediate assignments
+tvd <- ang_deviation_survey[["TVD"]]
+# tvd
+num_segs <- 50
+new_tvd <- seq(min(tvd), max(tvd), length.out = num_segs)
+# new_tvd
+sort(unique(c(tvd, new_tvd))) %>% 
+    data.frame(TVD = .) %>% 
+    mutate(new_point = 100+row_number()) -> grown
+
+```
+
+
+
+```{r rows.print=25}
+# almost the original code
+num_segs <- 50
+ang_deviation_survey %>% 
+    select(TVD) %>%      # select TVD
+    pull(TVD) %>%        # pull a vector
+    {. ->> tmp       # assign to tmp
+        mn <- min(tmp); mx <- max(tmp)  # create two objects min, max
+        seq(mn, mx, length.out = num_segs) %>% # create a sequence
+            c(., tmp) %>%                    # create a combined vector
+            unique() } %>%                   # extract unique values
+        sort()  %>%                          # sort
+    data.frame(TVD = .) %>%                  # convert vector to dataframe
+    mutate(new_point = 99+row_number()) %>%  # add a column
+    print() -> grown                         # create dataframe grown
+```

@@ -1,0 +1,180 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+
+# Testing new deviation survey functions
+
+## Two points
+```{r}
+library(rNodal)
+library(dplyr)
+
+geothermal_3p_txt <- c("
+  TVD    temp
+  0      60
+  600    40
+  9000   210
+")
+
+deviation_survey_6p_txt <- "
+  MD      TVD 
+  0	     0	 
+  600	    600
+  1005	 1000
+  4075	 4000
+  7700	 7500
+  9275	 9000
+"
+
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_3p_txt)
+geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df
+
+deviation_survey_6p <- calc_deviation_survey(deviation_survey_6p_txt, 
+                                              reference = "horizontal")
+deviation_survey_6p
+```
+
+
+```{r}
+deviation_survey_6p <- calc_deviation_survey(deviation_survey_6p_txt, 
+                                              reference = "vertical")
+deviation_survey_6p
+```
+
+### convert text table of geothermal gradient to dataframe
+```{r}
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_3p_txt)
+
+geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df
+```
+
+### Build iteration table (two geothermal points)
+```{r table-iter_table, rows.print=50}
+geothermal_txt <- geothermal_3p_txt
+deviation_survey_txt <- deviation_survey_6p_txt
+
+deviation_survey <- deviation_survey_6p
+geothermal_df    <- geothermal_3p_df
+
+iter_table <- build_iteration_table(deviation_survey, 
+                                    geotherm_df = geothermal_df, 
+                                    depth_points = 43)
+iter_table
+```
+
+### Fluid temperature parameters using function
+```{r}
+# the standard well input
+# Note that U (heat transfer coefficient is added at the end)
+
+input_example <-  setWellInput(field.name = "HAGBR.MOD", 
+                               well.name = "Oilwell_01_Dry", 
+                               depth.wh = 0, 
+                               depth.bh = 9275, 
+                               diam.in = 4.052, 
+                               GLR = 800, liq.rt = 983, wcut = 0.0, 
+                               thp = 100, 
+                               tht = 60, bht = 210, 
+                               API = 37, oil.visc = 5.0, 
+                               gas.sg = 0.76, 
+                               wat.sg = 1.07, 
+                               if.tens = 30, 
+                               salinity = 23000, 
+                               dev_survey = deviation_survey_6p_txt, 
+                               geotherm = geothermal_3p_txt
+                                
+)
+
+fluid_temp_params <- get_fluid_temp_parameters(input_example)
+fluid_temp_params
+```
+
+
+# Calculate fluid temperatures, bottom to top
+
+# Simplify the Ti calculation
+
+  (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (xTi * exp(-L/A) - Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+  
+  xTi  =  -( (Tei - geo_grad.nz * L * sin(theta.nz)) -
+    Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) ) / exp(-L/A)
+    
+  xTi * exp(-L/A) + (Tei - geo_grad.nz * L * sin(theta.nz)) -
+    Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) 
+    
+  xTi = xTi * K1 + K2
+    
+
+  xTi = - ( (Tei - geo_grad.nz * L * sin(theta.nz)) +
+     - Tei * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A)) ) / exp(-L/A)
+
+
+```{r function-that-returns-Ti, rows.print=50}
+# what if we send a smaller dataframe with only the necessary columns
+# the, the table is inverted in a function that returns only the 
+# calculated column
+# iter-table is produced by a function
+
+# constants
+U         <- fluid_temp_params$U
+diam_ft   <- fluid_temp_params$diam.ft
+mass_rate <- fluid_temp_params$mass.rate
+cp_avg    <- fluid_temp_params$cp.avg
+k         <- U * pi * diam_ft / mass_rate / cp_avg
+A         <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+fT <- function(Ti, Tei, geo_grad.nz, L, theta.nz) {
+  (Tei - geo_grad.nz * L * sin(theta.nz)) +
+    (Ti - Tei) * exp(-L/A) +
+    geo_grad.nz * A * sin(theta.nz) * (1 - exp(-L/A))
+}
+
+calculate_Ti <- function(df) {
+  df %>% 
+    mutate(L = tvd[[n()]] - tvd) %>% 
+    mutate(Tei = temp) %>% 
+    mutate(theta = radians) %>% 
+    arrange(desc(tvd)) %>% 
+    mutate(theta.nz = ifelse(tvd == 0, lag(theta), theta)) %>%
+    mutate(geo_grad.nz = ifelse(tvd == 0, lag(geo_grad), geo_grad)) %>% 
+    { 
+      x <- head(.,1)$Tei 
+      sapply(1:nrow(.), function(i) { 
+        x <<- fT(x, .$Tei[i], .$geo_grad.nz[i], .$L[i], .$theta.nz[i]) # global x
+        .$Ti[i] <<- x  }) 
+      . } %>%  # return internal dataframe
+    select(-c(L, Tei, theta, geo_grad.nz, theta.nz)) %>% 
+    arrange(tvd)    # go back to original order
+}
+
+iter_table_Ti <- iter_table %>% 
+  mutate(Ti = NA) %>%       # add the fluid temperature variable Ti
+  do(calculate_Ti(.)) %>%   # calculate Ti
+  select(new_point, tvd, md, Ti, everything()) %>% 
+  print()
+```
