@@ -19,6 +19,12 @@ test_that("list saved matches actual list", {
       2670  150
     ")
 
+    deviation_survey <- c("
+      MD    TVD
+      0     0
+      2670  2670
+    ")
+
     well_input <- setWellInput(
         field.name = "HAGBR.MOD",
         well.name = "Brown_C13",
