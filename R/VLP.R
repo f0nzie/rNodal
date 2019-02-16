@@ -220,7 +220,22 @@ VLPcontrol <- function(well_input, basic_calcs, model_parameters,
         dp.dz     <- dp.dz.ini                # 1st approximation of the gradient
         p0        <- thp                      # the initial pressure
         t0        <- tht                      # initial temperature
+
+        # temperature gradient
         dt.dz     <- temp.grad                # temperature gradient at inlet
+
+        # at this point we have: (1) the deviation survey and (2) geothermal gradient
+        # we could calculate geothermal temperatures at each of the depth points
+        # when the table belong to a deviated well,
+        # or table has more than two rows
+
+        # print(ang_dev_survey_df)
+
+        # if we have an angle greater than zero it is a deviated well
+        # take into account the number of calculation segments. This is independent
+        # of the number of points in the deviation survey
+
+
 
         # initialize vectors of list type to store row calculations
         segment_row_vector <- vector("list", n)
