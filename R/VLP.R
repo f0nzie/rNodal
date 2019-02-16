@@ -62,13 +62,14 @@ set_deviation_survey <- function(well_as_string) {
 #' @param wat.cp    heat capacity of water
 #' @param U         overall heat transfer coefficient
 #' @param angle     angle of the well to the horizontal
-#' @param geotherm geothermal data at two TVD points
+#' @param geotherm    geothermal data at two TVD points
+#' @param dev_survey  deviation survey table
 #' @rdname setWellInput-VLP
 #' @export
 setWellInput <- function( field.name = "HAGBR.GUO",
                             well.name = "ExampleGuo",
-                            depth.wh  = 0,               # depth at wellhead
-                            depth.bh  = 9700,            # depth at bottomhole
+                            depth.wh  = NULL,               # depth at wellhead
+                            depth.bh  = NULL,            # depth at bottomhole
                             diam.in   = 1.995,
                             GLR       = 75,
                             liq.rt    = 758,
