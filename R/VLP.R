@@ -34,33 +34,6 @@ set_deviation_survey <- function(well_as_string) {
 
 
 
-
-#' Set the high level model parameters for VLP calculations
-#'
-#' Prepare high level model inputs such as type of model, number of tubing segments,
-#' tolerance for iterations, initial value of dp/dz putting them as a list.
-#' Default VLP model is Hagendorn-Brown-Guo
-#'
-#' @param vlp.model     the name of the VLP model or correlation
-#' @param segments      number of segments for the tubing string
-#' @param tol           tolerance for error during interations
-#' @param dp.dz.ini     initial gradient
-#' @export
-setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
-                         segments = 29,            # table rows = segments + 1
-                         tol = 0.0001,             # tolerance in dp.dz calc
-                         dp.dz.ini = 0.002         # initial value for dp.dz
-                         ) {
-
-    named.list(vlp.model,
-               segments,
-               tol,
-               dp.dz.ini
-               )
-}
-
-
-
 #' Set the most common well inputs
 #'
 #' Prepare all the well inputs to be entered into the VLP model by putting all
@@ -388,7 +361,129 @@ loadVLP <- function(model) {
 }
 
 
+#' Perform basic calculations based on the well inputs
+#'
+#' @param well_input well input data as a list
+#' @export
+getBasicCalcs <- function(well_input) {
+    with(as.list(well_input), {
 
+        if (!is.null(dev_survey)) {
+            # read deviation table
+            dev_survey_df <- read.table(header = TRUE, text = dev_survey)
+            # print(class(dev_survey_df))
+            ang_dev_survey_df <- compute_angle_deviation_survey(dev_survey_df,
+                                                                reference = "vertical")
+            # cat("\n")
+            # print(ang_dev_survey)
+        } else {
+            warning("no deviation survey table. We'll try using depths")
+            # do we have depths then?
+            stopifnot(!is.null(depth.wh), !is.null(depth.bh))
+            stopifnot(!is.null(tht), !is.null(bht))
+        }
+
+
+        geotherm_data <- as_dataframe_geothermal_data(geotherm)
+        geotherm_df <- geotherm_data$calc_geotherm_df
+
+        # calculate temperature gradient
+        temp.grad <- ifelse(is.na(geotherm_data$temp.grad),
+                            NA,
+                            (geotherm_data$bht - geotherm_data$tht)
+                            / geotherm_data$depth.bot)
+
+        # temp.grad <- (bht - tht) / depth.bh   # old
+
+        # convert tubing diameter to ft
+        diam <- diam.in /12
+        diam.ft <- diam.in / 12
+
+        # calculate area in ft^2
+        area <- pi / 4 * diam^2
+
+        # calculate specific gravity of oil from API
+        oil.sg <- 141.5 / (131.5 + API)
+
+        # oil and water fractions
+        wat.fraction <- wcut
+        oil.fraction <- 1 - wat.fraction
+        WOR          <- wat.fraction / oil.fraction
+
+        # calculate oil, gas and water rate at standard conditions
+        # Options of names to use: oil.srt, gas.srt, wat.srt
+        #                          OIL.RT, GAS.RT, WAT.RT
+        #                          oil.Srt, gas.Srt, wat.Srt
+        oil.rt <- liq.rt * oil.fraction
+        gas.rt <- liq.rt * GLR
+        wat.rt <- liq.rt * wat.fraction
+
+        # GOR
+        GOR = (oil.rt + wat.rt) / oil.rt * GLR
+
+        # total mass per STB = mass oil + mass water + mass gas. C42.3
+        mass.total <- oil.sg * 350 * (1 / (1+WOR)) +
+            wat.sg * 350 * (WOR / (1+WOR)) +
+            0.0764 * GLR * gas.sg
+
+        # TODO: calculate fluid properties at P, T conditions
+
+        # 4. calculate the mass flow rate w = m * q
+        mass.rt  <-  mass.total * liq.rt
+        mass.rate <- mass.rt
+
+        # heat capacity
+        cp.avg <- (oil.cp + gas.cp + wat.cp) /3
+
+        # calculated
+        out.calc <- named.list( diam, area, diam.ft,         # added diam.ft
+                                oil.sg,
+                                oil.fraction, wat.fraction, WOR,
+                                oil.rt, gas.rt, wat.rt,
+                                mass.total,
+                                GOR,
+                                mass.rt, mass.rate,
+                                cp.avg,
+                                geotherm_data,
+                                geotherm_df,
+                                temp.grad,
+                                ang_dev_survey_df
+        )
+        return(out.calc)
+    })
+}
+
+
+#' Get the well input together with the basic calculations
+#'
+#' @param well.input the well input
+#' @export
+get_well_parameters <- function(well.input) {
+    # perform basic calculations on the well input
+    basic.calcs <-  getBasicCalcs(well.input)
+    well.parameters <- c(well.input, basic.calcs)
+    well.parameters
+}
+
+#' Get the inputs for fluid temperature calculations
+#' @export
+get_fluid_temp_parameters <- function(well_input) {
+    get_well_parameters(well_input)[c(
+        "angle",
+        "diam.ft",
+        "tht",
+        "bht",
+        "depth.wh",
+        "depth.bh",
+        "temp.grad",
+        "U",
+        "cp.avg",
+        "mass.rate"
+        )]
+}
+
+# load default values for well input
+Gwell.input <- setWellInput()
 
 
 
