@@ -1,0 +1,278 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tibble)
+library(dplyr)
+library(rlang)
+
+data <- tribble(
+    ~month, ~index,
+    "Jan",  100.5,
+    "Feb",  110.5,
+    "Mar",  99.8
+)
+data
+```
+
+```{r}
+data %>%
+    mutate(excel_formula = index/lag(index, default = index[1])) %>% 
+    mutate(excel_formula = lag(excel_formula, default = 1) * excel_formula * 100) %>% 
+    print.data.frame()
+```
+
+```{r}
+data2 <- tribble(
+    ~month, ~index,
+    "Jan",  100,
+    "Feb",  100,
+    "Mar",  100
+)
+data2
+```
+
+```{r}
+data2 %>% 
+    mutate(formula = lag(index, default = index[1])) %>% 
+    mutate(formula = formula + lag(index)) %>% 
+    print()
+```
+
+
+https://stackoverflow.com/a/34625512/5270873
+```{r}
+calc_b <- function(n,A){
+  (1/14)*sum((13/14)^(n-1:n)*A[1:n])
+}
+
+df2 <- data.frame(A = seq(10,25,5))
+df2$b <- sapply(seq_along(df2$A), calc_b, df2$A)
+df2
+```
+
+```{r}
+calc_c <- function(n, A)
+    ifelse(n==1, A, n+A[n]-1)
+    
+df3 <- data.frame(A = rep(150,5))
+
+df3$c <- sapply(seq_along(df3$A), calc_c, df3$A)
+df3
+```
+
+```{r}
+calc_c <- function(n, A)
+    ifelse(n==1, A, A+n-1)
+
+df4 <- data.frame(A = rep(150,10))
+
+df4 %>% 
+    mutate(c = sapply(seq_along(df4$A), calc_c, df4$A))
+
+```
+
+```{r}
+df <- data.frame(var1=c(1:10), var2=c(rep(c(0,0.1),each=5)), BYGROUP_OBSNUM=c(0:4))
+df
+
+my.func <- function(x) { 
+    mapply(function(v1,v2,v3,n) {
+              if(v2==0 | v3==0){ as.numeric(v1) } 
+              else { 
+              sum(v1, x[rev(seq(1:(n-1))),1][1:v3] * v2 ^ seq(1:(n-1))[1:v3]) } },
+             x[,"var1"], x[,"var2"], x[,"BYGROUP_OBSNUM"],seq(1:nrow(x))) 
+            }
+
+df1 <- df %>%   
+         do(data.frame(., my.func(.))) %>% 
+          mutate(VAR1_NEW = my.func...)%>% 
+           select(-my.func...)
+
+df1
+```
+
+
+https://stackoverflow.com/questions/38983532/dplyr-iterative-calculation
+
+```{r}
+x <- data.frame(x1 = c(1:10)) 
+
+#This works.
+x$x2[1] <- 0
+
+for (i in 2:nrow(x)) {
+  x$x2[i] <- x$x2[i-1] * 1.1 + 1
+}
+
+x
+```
+
+```{r}
+x <- data.frame(x1 = c(1:10)) 
+x %>% 
+    mutate(x2 = ifelse(x1 == 1, 0, lag(x2) * 1.1 + 1))
+```
+
+```{r}
+x <- data.frame(x1 = c(1:10)) 
+
+x %>% 
+    mutate(x3 = Reduce(function(a,b) a*1.1+1, 1:(n()-1), 0, acc=T))
+
+```
+
+```{r}
+x <- data.frame(x1 = c(1:10), x2 = c(11:20)) 
+
+x %>% 
+    # mutate(x3 = Reduce(function(x1,y,c) x1*1+1, 1:(n()-1), 0, acc=T)) %>% 
+    mutate(x4 = Reduce(function(a,b,c) (a+1)^(1/a), 1:(n()-1), 0, acc=T))
+
+```
+
+
+```{r}
+x <- data.frame(x1 = c(1:10)) 
+x %>% 
+    mutate(x4=(1.1^(row_number()-1)-1)/(1.1-1)*1)
+```
+
+
+```{r}
+    library(dplyr)
+    library(magrittr)
+
+    x <- data_frame(x1 = c(1:10))
+    f_x <- function(x){(x-1)*1.1+1}
+    x$x2 <- x %$% x1 %>% f_x
+    
+    x
+```
+
+```{r}
+## Iterative function application:
+Funcall <- function(f, ...) f(...)
+
+## n-fold iterate of a function, functional style:
+Iterate <- function(f, n = 1)
+    function(x) Reduce(Funcall, rep.int(list(f), n), x, right = TRUE)
+
+## Continued fraction approximation to the golden ratio:
+Iterate(function(x) 1 + 1 / x, 30)(1)
+```
+
+https://stackoverflow.com/questions/35694147/perform-an-operation-on-a-vector-using-the-previous-value-after-an-initial-value?noredirect=1&lq=1
+
+In Excel, it's easy to perform a calculation on a previous cell by referencing that earlier cell. For example, starting from an initial value of 100 (step = 0), each next step would be 0.9 * previous + 9 simply by dragging the formula bar down from the first cell (step = 1). The next 10 steps would look like:
+
+
+```{r}
+tbl_txt <- "
+      step     value
+  0 100.00000
+  1  99.00000
+  2  98.10000
+  3  97.29000
+  4  96.56100
+  5  95.90490
+  6  95.31441
+  7  94.78297
+  8  94.30467
+  9  93.87420
+ 10  93.48678
+"
+
+tbl <- read.table(text = tbl_txt, header = TRUE)
+tbl
+```
+
+I've looked around the web and StackOverflow, and the best I could come up with is a for loop (below). Are there more efficient ways to do this? Is it possible to avoid a  for loop? It seems like most functions in R (such as cumsum, diff, apply, etc) work on existing vectors instead of calculating new values on the fly from previous ones.
+
+```{r}
+#for loop.  This works
+value <- 100   #Initial value
+
+for(i in 2:11) {
+  current <- 0.9 * value[i-1] + 9
+  value <- append(value, current)
+}
+
+cbind(step = 0:10, value)  #Prints the example output shown above
+```
+
+## Solution
+
+It seems like you're looking for a way to do recursive calculations in R. Base R has two ways of doing this which differ by the form of the function used to do the recursion. Both methods could be used for your example.
+
+`Reduce` can be used with recursion equations of the form `v[i+1]  =  function(v[i], x[i])` where `v` is the calculated vector and `x` an input vector; i.e. where the `i+1` output depends only the i-th values of the calculated and input vectors and the calculation performed by `function(v, x)` may be nonlinear.
+
+For you case, this would be
+
+```{r}
+value <- 100
+nout <- 10
+
+# v[i+1]  =  function(v[i], x[i])
+v <- Reduce(function(v, x) .9*v  + 9, x=numeric(nout),  init=value,
+            accumulate=TRUE)
+
+cbind(step = 0:nout, v)
+```
+
+```{r}
+
+temp_tbl <- "
+L           theta   geo_grad    Tei
+   0.00    1.5708  0.011236   150.00
+ 242.73    1.5708  0.011236   147.27
+ 485.45    1.5708  0.011236   144.55
+ 728.18    1.5708  0.011236   141.82
+ 970.91    1.5708  0.011236   139.09
+1213.64    1.5708  0.011236   136.36
+1456.36    1.5708  0.011236   133.64
+1699.09    1.5708  0.011236   130.91
+1941.82    1.5708  0.011236   128.18
+2184.55    1.5708  0.011236   125.45
+2427.27    1.5708  0.011236   122.73
+2670.00    1.5708  0.011236   120.00
+"
+
+df <- read.table(text = temp_tbl, header = TRUE)
+df
+ 
+```
+
+```{r}
+# constans
+U         <- 17
+diam_ft   <- 0.16625 
+mass_rate <- 378585.4 
+cp_avg    <- 0.6766667 
+
+k   <- U * pi * diam_ft / mass_rate / cp_avg
+A   <- 1 / k          # relaxation distance by Ramey. Shoham, pg 297
+
+
+A
+
+fT <- function(Ti, i) {
+  (df$Tei[i] - df$geo_grad[i] * df$L[i] * sin(df$theta[i])) +
+    (Ti - df$Tei[i]) * exp(-df$L[i]/A) +
+    df$geo_grad[i] * A * sin(df$theta[i]) * (1 - exp(-df$L[i]/A))
+}
+```
+
+```{r}
+nr <- nrow(df)
+T0 <- 150
+
+# v[i+1]  =  function(v[i], x[i])
+res <- Reduce(function(v, x) fT(v), x=numeric(nr),  init=T0,
+            accumulate=TRUE)
+
+cbind(step = 0:nr, res)
+```
+
