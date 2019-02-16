@@ -17,24 +17,54 @@ library(rNodal)
 library(tibble)
 # Example from Prosper oil well 01. Dry version
 
+geothermal_data <- c("
+   	 TVD     temp
+      0	     60	
+     9000	210
+")
+
+md_tvd_01 <- c("
+    MD      TVD 
+    0	        0	 
+    600	      600
+    1005	 1000
+    4075	 4000
+    7700	 7500
+    9275	 9000
+")
+
 # roughness = 0.0006
 input_example <-  setWellInput(field.name = "HAGBR.MOD", 
                                well.name = "Oilwell_01_Dry", 
-                               depth.wh = 0, depth.bh = 9275, 
+                               depth.wh = 0, 
+                               depth.bh = 9275, 
                                diam.in = 4.052, 
                                GLR = 800, liq.rt = 983, wcut = 0.0, 
-                               thp = 100, tht = 60, bht = 210, 
+                               thp = 100, 
+                               tht = 60, bht = 210, 
                                API = 37, oil.visc = 5.0, 
-                               gas.sg = 0.76, wat.sg = 1.07, if.tens = 30, 
-                               salinity = 23000
+                               gas.sg = 0.76, 
+                               wat.sg = 1.07, 
+                               if.tens = 30, 
+                               salinity = 23000, 
+                               dev_survey = md_tvd_01, 
+                               geotherm = geothermal_data
+                                
 )
 
 well_model <- setVLPmodel(vlp.model = "hagbr.mod", 
                           segments = 29, 
-                          tol = 0.00001)
+                          tol = 0.00001,
+                          well_input = input_example
+                          )
 
-as_tibble(runVLP(well.input = input_example, well_model))
+(output <- runVLP(well.input = input_example, well_model))
 ```
+
+```{r}
+
+```
+
 
     p30 = 740.1965
 

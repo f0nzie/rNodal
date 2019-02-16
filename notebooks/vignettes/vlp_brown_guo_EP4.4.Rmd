@@ -31,7 +31,8 @@ input.example.P44 <- setWellInput(
                         well.name = "Guo_P44", 
                         depth.wh = 0, depth.bh = 9700, diam.in = 1.995, 
                         GLR = 362.7, liq.rt = 758, wcut = 0.1, 
-                        thp = 100, tht = 80, bht = 180, 
+                        thp = 100, 
+                        tht = 80, bht = 180, 
                         API = 40, gas.sg = 0.70, wat.sg = 1.05, 
                         if.tens = 30)
 

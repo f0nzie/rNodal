@@ -56,10 +56,16 @@ input_example <- setWellInput(
                               GLR = 1000, liq.rt = 600, wcut = 0.0, 
                               thp = 500, tht = 120, bht = 150, 
                               API = 42, oil.visc = 1.0, 
-                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30
+                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30,
+                              geotherm = geothermal_txt,
+                              dev_survey = dev_survey_txt
                               )
 
-well_model <- setVLPmodel(vlp.model = "hagbr.mod", segments = 15, tol = 0.00001)
+well_model <- setVLPmodel(vlp.model = "hagbr.mod", 
+                          segments = 15, 
+                          tol = 0.00001,
+                          well_input = input_example
+                          )
 
 
 runVLP(well.input = input_example, well_model)
