@@ -34,11 +34,14 @@ test_that("list saved matches actual list", {
         gas.sg = 0.65,
         wat.sg = 1.07,
         if.tens = 30,
-        geotherm = geothermal_data)
+        geotherm = geothermal_data,
+        dev_survey = deviation_survey
+        )
 
     well_model <- setVLPmodel(vlp.model = "hagbr.mod",
                               segments = 11,
-                              tol = 0.000001)
+                              tol = 0.000001,
+                              well_input = well_input)
 
     result <- runVLP(well.input = well_input, well_model)
     expected <- output_c13
