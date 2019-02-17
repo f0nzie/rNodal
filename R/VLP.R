@@ -141,7 +141,8 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
     basic_calcs <-  getBasicCalcs(well_input)
 
     # the angle deviation table has been built/calculated in basic_calcs
-    print(dim(basic_calcs$ang_dev_survey_df))
+    # print(dim(basic_calcs$ang_dev_survey_df))
+
     # print(names(basic_calcs$ang_dev_survey_df))
 
     # the geothermal gradient has been calculated in basic_calcs
