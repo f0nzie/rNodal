@@ -18,10 +18,10 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
-# Testing new deviation survey functions
-
-## Two points
+# Fluid temperature parameters using function
 ```{r}
+# the standard well input
+# Note that U (heat transfer coefficient is added at the end)
 library(rNodal)
 library(dplyr)
 
@@ -37,15 +37,28 @@ deviation_survey_2p_txt <- "
     3590  3590
 "
 
-# convert text table of geothermal gradient to dataframe
-geotherm <- as_dataframe_geothermal_data(geothermal_2p_txt)
-geothermal_2p_df <- geotherm$calc_geotherm_df
-geothermal_2p_df
+input_example_c44 <- setWellInput(
+                              field.name = "HAGBR.MOD",
+                              well.name = "Brown_C44", 
+                              depth.wh = 0, depth.bh = 3590, 
+                              diam.in = 1.995, 
+                              GLR = 1000, 
+                              liq.rt = 600, 
+                              wcut = 0.0, 
+                              thp = 500, 
+                              tht = 120, bht = 150, 
+                              API = 42, 
+                              oil.visc = 1.0, 
+                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30,
+                              U = 8,
+                              geotherm = geothermal_2p_txt,
+                              dev_survey = deviation_survey_2p_txt
+                              )
 
-deviation_survey_2p <- calc_deviation_survey(deviation_survey_2p_txt, 
-                                              reference = "horizontal")
-deviation_survey_2p
+fluid_temp_params <- get_fluid_temp_parameters(input_example_c44)
+fluid_temp_params
 ```
+
 
 ## Three points
 ```{r}
@@ -83,6 +96,13 @@ geothermal_3p_df
 geothermal_txt <- geothermal_2p_txt
 deviation_survey_txt <- deviation_survey_2p_txt
 
+# convert text table of geothermal gradient to dataframe
+geotherm <- as_dataframe_geothermal_data(geothermal_2p_txt)
+geothermal_2p_df <- geotherm$calc_geotherm_df
+
+deviation_survey_2p <- calc_deviation_survey(deviation_survey_2p_txt, 
+                                              reference = "horizontal")
+
 deviation_survey <- deviation_survey_2p
 geothermal_df    <- geothermal_2p_df
 
@@ -92,27 +112,7 @@ iter_table <- build_iteration_table(deviation_survey,
 iter_table
 ```
 
-### Fluid temperature parameters using function
-```{r}
-# the standard well input
-# Note that U (heat transfer coefficient is added at the end)
 
-input_example_c44 <- setWellInput(
-                              field.name = "HAGBR.MOD",
-                              well.name = "Brown_C44", 
-                              depth.wh = 0, depth.bh = 3590, 
-                              diam.in = 1.995, 
-                              GLR = 1000, liq.rt = 600, wcut = 0.0, 
-                              thp = 500, tht = 120, bht = 150, 
-                              API = 42, oil.visc = 1.0, 
-                              gas.sg = 0.65, wat.sg = 1.07, if.tens = 30,
-                              geotherm = geothermal_2p_txt,
-                              dev_survey = deviation_survey_2p_txt
-                              )
-
-fluid_temp_params <- get_fluid_temp_parameters(input_example_c44)
-fluid_temp_params
-```
 
 
 # Calculate fluid temperatures, bottom to top
@@ -172,7 +172,7 @@ calculate_Ti <- function(df) {
       sapply(1:nrow(.), function(i) { 
         x <<- fT(x, .$Tei[i], .$geo_grad.nz[i], .$L[i], .$theta.nz[i]) # global x
         .$Ti[i] <<- x  }) 
-      . } %>%  # return internal dataframe
+      . } %>%       # return internal dataframe
     select(-c(L, Tei, theta, geo_grad.nz, theta.nz)) %>% 
     arrange(tvd)    # go back to original order
 }
