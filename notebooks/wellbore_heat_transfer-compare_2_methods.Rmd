@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
-## Enter table as text with depth, dL, pres and temp
+# Guo P44 data as text with depth, dL, pres and temp
 
 > Where is this data coming from? Guo_P44
 
@@ -62,11 +62,11 @@ depth	dL	pres	temp
 # read string text to dataframe
 well_table <- read.table(header = TRUE, text = well)
 as_tibble(well_table)
-
 ```
 
 
-## Fluid temperature calculation using old `temp.fluid` function
+# Fluid temperature calculation using old `temp.fluid` function
+
 ```{r rows.print=30}
 # parameters necessary to calculate the fluid temperature
 theta   <-  pi /2
@@ -88,7 +88,7 @@ rNodal:::temp.fluid(well_table, theta, depth, bht, tht, U, cp.avg, diam.ft, mass
 
 
 
-## Equation in Prosper manual
+## Fluid temperature equation in Prosper manual
 
 <div style="width:400px; height=400px">
 ![Prosper Rough Approximation](prosper_rough_approximation_temp_model.jpg)
