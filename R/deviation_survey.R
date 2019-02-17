@@ -78,12 +78,18 @@ calc_deviation_survey <- function(md_tvd_text,
 }
 
 
+#' Build an iteration table adding new points to the original deviation survey
+#'
+#' @param ang_deviation_survey the deviation survey including angles. dataframe
+#' @param geotherm_df geothermal data as dataframe
+#' @param depth_points number of rows of depth points in the table
+#' @param step_size the size of the delta L
 #' @export
 build_iteration_table <- function(ang_deviation_survey, geotherm_df,
-                                  depth_points) {
+                                  depth_points=NULL, step_size=NULL) {
     epsilon <- 1e-8
 
-    number_segments <- depth_points
+    # number_segments <- depth_points
 
     # TODO: validate columns in ang_deviation_survey. It must contain angles
 
@@ -91,6 +97,7 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
 
     # TODO: validate the name of the columns of geotherm_df
     ang_deviation_survey <- full_join(ang_deviation_survey, geotherm_df)
+    print(ang_deviation_survey)
 
     # add extra rows for calculations
     # the original depths are included in the table as part of the total number of rows
