@@ -13,11 +13,9 @@ test_that("return list has been read", {
       0      120
       2670   150
     ")
-
     result <- as_dataframe_geothermal_data(geothermal_txt)
     expected <- geothermal_c13
     expect_true(all.equal(expected, result))
-
 })
 
 
