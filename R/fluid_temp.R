@@ -1,11 +1,11 @@
 
-#' @export
 calc_fluid_temp <- function(depth_table=NULL, fluid_temp_parameters) {
     # depth_table with these columns:
     #       tvd, md, delta.tvd, delta.md, radians, geotherm
     # print(depth_table)
     # Hmisc::list.tree(fluid_temp_params, maxcomp = 20, attr.print=FALSE)
-    if (is.null(depth_table)) depth_table <- build_depth_table()
+
+    # if (is.null(depth_table)) depth_table <- build_depth_table()
 
     diam_ft <- fluid_temp_parameters$diam.ft
     tht <- fluid_temp_parameters$tht
