@@ -45,12 +45,19 @@ compute_angle_deviation_survey <- function(well_table,
     well_table
 }
 
-
+#' Perform calculations to obtain the angles in a deviation survey
+#' @param md_tvd_text the deviation survey as text
+#' @param reference if the angle in the wellbore is measured against the vertical
+#' or the horizontal
 #' @return a dataframe with MD, TVD, angle, displacement
-#' @export
+#'
+#' @importFrom dplyr mutate select lag
 calc_deviation_survey <- function(md_tvd_text,
                                   reference = c("vertical",
                                                         "horizontal")) {
+    # global variables check
+    point <- NULL; TVD <- NULL; MD <- NULL; delta.md <- NULL; radians <- NULL;
+    disp <- NULL; delta.tvd <- NULL
 
     epsilon <- 1e-8   # make global
 
@@ -85,8 +92,15 @@ calc_deviation_survey <- function(md_tvd_text,
 #' @param depth_points number of rows of depth points in the table
 #' @param step_size the size of the delta L
 #' @export
+#' @importFrom dplyr mutate select full_join right_join row_number everything pull
 build_iteration_table <- function(ang_deviation_survey, geotherm_df,
                                   depth_points=NULL, step_size=NULL) {
+    # global variables check
+    . <-  NULL
+    TVD <- NULL; tvd <- NULL; point <- NULL; radians <- NULL; geo_grad <- NULL;
+    dTVD <- NULL; dtemp <- NULL; temp <- NULL; given <- NULL; delta.tvd <- NULL;
+    delta.md <- NULL; new_point <- NULL; md <- NULL; MD <- NULL; disp <- NULL
+
     epsilon <- 1e-8
 
     # number_segments <- depth_points
@@ -153,16 +167,18 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
 }
 
 
+#' Convert text table of geothermal gradient to dataframe
+#'
+#' @param geotherm a text table
 #' @return a dataframe of depths vs temperatures vs geothermal gradients
-#' @export
+#' @importFrom utils head read.table tail
 as_dataframe_geothermal_data <- function(geotherm=NULL) {
-    # convert text table of geothermal gradient to dataframe
-
     # three cases:
     # nrow=0: no geothermal table. stop, enter at least two temps
     # nrow=1: only one temperature provided. stop, enter at least two temps
     # nrow=2: wellhead and bottomhole temperatures
     # nrow=3: multigradient
+    temp <- NULL; TVD <- NULL; geo_grad <- NULL
 
     if (!is.null(geotherm)) {  # do not calculate if no geot data provided
         geotherm_df <- read.table(header = TRUE, text = geotherm, comment.char = "#")
