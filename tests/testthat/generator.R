@@ -390,7 +390,7 @@ create_test_tables <- function() {
     # rNodal:::append_to_rdata(output_ow_dry, file = rda_file)
 
 
-    # -------------------------------------------------------------------------
+    # ========================================================================
     #
     # test data for:
     # test_geomethermal_gradient.R
@@ -400,14 +400,45 @@ create_test_tables <- function() {
     rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
 
 
+    # well C13
     geothermal_txt <- c("
       TVD    temp
       0      120
       2670   150
     ")
-
     geothermal_c13 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
     rNodal:::append_to_rdata(geothermal_c13, file = rda_file)
+
+
+    # well C44
+    geothermal_txt <- "
+    TVD   temp
+    0     120
+    3590  150
+    "
+    geothermal_c44 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
+    rNodal:::append_to_rdata(geothermal_c44, file = rda_file)
+
+
+    # well P44
+    geothermal_txt <- c("
+    TVD    temp
+    0       80
+    9700   180
+    ")
+    geothermal_p44 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
+    rNodal:::append_to_rdata(geothermal_p44, file = rda_file)
+
+
+    # well T01_OW
+    geothermal_txt <- c("
+    TVD    temp
+    0      60
+    600    40
+    9000   210
+    ")
+    geothermal_t01_ow <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
+    rNodal:::append_to_rdata(geothermal_t01_ow, file = rda_file)
 
 
 }
