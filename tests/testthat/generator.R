@@ -228,37 +228,50 @@ create_test_tables <- function() {
     # basic calculations - end
 
 
-#
-#     # -------------------------------------------------------------------------
-#     # runVLP() test tables
-#     #
-#     test_rda <- "vlp_run_output.rda"
-#     rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
-#
-#     # Brown_C13
-#     well_input <- setWellInput(
-#       field.name = "HAGBR.MOD",
-#       well.name = "Brown_C13",
-#       depth.wh = 0, depth.bh = 2670,
-#       diam.in = 1.995,
-#       GLR = 500,
-#       liq.rt = 1000,
-#       wcut = 0.6,
-#       thp = 500,
-#       tht = 120,
-#       bht = 150,
-#       API = 22,
-#       gas.sg = 0.65,
-#       wat.sg = 1.07,
-#       if.tens = 30)
-#
-#
-#     well_model <- setVLPmodel(vlp.model = "hagbr.mod",
-#                               segments = 11,
-#                               tol = 0.000001)
-#
-#     output_c13 <- runVLP(well.input = well_input, well_model)
-#     rNodal:::append_to_rdata(output_c13, file = rda_file)
+
+    # -------------------------------------------------------------------------
+    # runVLP() test tables
+    #
+    test_rda <- "vlp_run_output.rda"
+    rda_file <- file.path(proj_root, "tests", "testthat", test_rda)
+
+    # Brown_C13
+    geothermal_data <- c("
+      TVD   temp
+      0     120
+      2670  150
+    ")
+    deviation_survey <- c("
+      MD    TVD
+      0     0
+      2670  2670
+    ")
+    well_input <- setWellInput(
+      field.name = "HAGBR.MOD",
+      well.name = "Brown_C13",
+      depth.wh = 0, depth.bh = 2670,
+      diam.in = 1.995,
+      GLR = 500,
+      liq.rt = 1000,
+      wcut = 0.6,
+      thp = 500,
+      tht = 120,
+      bht = 150,
+      API = 22,
+      gas.sg = 0.65,
+      wat.sg = 1.07,
+      if.tens = 30,
+      geotherm = geothermal_2p_txt,
+      dev_survey = deviation_survey_2p_txt
+      )
+
+    well_model <- setVLPmodel(vlp.model = "hagbr.mod",
+                              segments = 11,
+                              tol = 0.000001,
+                              well_input = well_input)
+
+    output_c13 <- runVLP(well.input = well_input, well_model)
+    rNodal:::append_to_rdata(output_c13, file = rda_file)
 #
 #
 #     # Guo_P44

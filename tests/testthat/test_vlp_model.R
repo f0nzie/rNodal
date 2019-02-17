@@ -1,85 +1,85 @@
 library(testthat)
 
-context("Test setVLPmodel(), case I")
-
-test_that("model 1 match", {
-    # Brown_C13
-    geothermal_2p_txt <- c("
-      TVD    temp
-      0      120
-      2670   150
-    ")
-    deviation_survey_2p_txt <- "
-       TVD    MD
-         0     0
-      2670  2670
-    "
-    well_input <- setWellInput(
-        field.name = "HAGBR.MOD",
-        well.name = "Brown_C13",
-        depth.wh = 0, depth.bh = 2670,
-        diam.in = 1.995,
-        GLR = 500,
-        liq.rt = 1000,
-        wcut = 0.6,
-        thp = 500,
-        tht = 120,
-        bht = 150,
-        API = 22,
-        gas.sg = 0.65,
-        wat.sg = 1.07,
-        if.tens = 30,
-        geotherm = geothermal_2p_txt,
-        dev_survey = deviation_survey_2p_txt
-    )
-
-    well_model <- setVLPmodel(vlp.model = "hagbr.mod",
-                              segments = 11,
-                              tol = 0.000001,
-                              well_input = well_input
-                              )
-
-    expect_equal(well_model$vlp.model, "hagbr.mod")
-    expect_equal(well_model$segments, 11)
-    expect_equal(well_model$tol, 0.000001)
-})
-
-
-context("Test setVLPmodel(), case II")
-test_that("model 2 match", {
-    geothermal_2p_txt <- c("
-    TVD    temp
-    0       80
-    9700   180
-    ")
-    deviation_survey_2p_txt <- "
-       TVD    MD
-         0     0
-      9700  9700
-    "
-    well_input <- setWellInput(
-        field.name = "HAGBR.MOD",
-        well.name = "Guo_P44",
-        depth.wh = 0, depth.bh = 9700, diam.in = 1.995,
-        GLR = 362.7, liq.rt = 758, wcut = 0.1,
-        thp = 100, tht = 80, bht = 180,
-        API = 40, gas.sg = 0.70, wat.sg = 1.05,
-        if.tens = 30,
-        U = 4,
-        geotherm = geothermal_2p_txt,
-        dev_survey = deviation_survey_2p_txt
-    )
-
-    well_model <- setVLPmodel(vlp.model = "hagbr.mod",
-                              segments = 15,
-                              tol = 0.00001,
-                              well_input = well_input
-                              )
-
-    expect_equal(well_model$vlp.model, "hagbr.mod")
-    expect_equal(well_model$segments, 15)
-    expect_equal(well_model$tol, 0.00001)
-})
+# context("Test setVLPmodel(), case I")
+#
+# test_that("model 1 match", {
+#     # Brown_C13
+#     geothermal_2p_txt <- c("
+#       TVD    temp
+#       0      120
+#       2670   150
+#     ")
+#     deviation_survey_2p_txt <- "
+#        TVD    MD
+#          0     0
+#       2670  2670
+#     "
+#     well_input <- setWellInput(
+#         field.name = "HAGBR.MOD",
+#         well.name = "Brown_C13",
+#         depth.wh = 0, depth.bh = 2670,
+#         diam.in = 1.995,
+#         GLR = 500,
+#         liq.rt = 1000,
+#         wcut = 0.6,
+#         thp = 500,
+#         tht = 120,
+#         bht = 150,
+#         API = 22,
+#         gas.sg = 0.65,
+#         wat.sg = 1.07,
+#         if.tens = 30,
+#         geotherm = geothermal_2p_txt,
+#         dev_survey = deviation_survey_2p_txt
+#     )
+#
+#     well_model <- setVLPmodel(vlp.model = "hagbr.mod",
+#                               segments = 11,
+#                               tol = 0.000001,
+#                               well_input = well_input
+#                               )
+#
+#     expect_equal(well_model$vlp.model, "hagbr.mod")
+#     expect_equal(well_model$segments, 11)
+#     expect_equal(well_model$tol, 0.000001)
+# })
+#
+#
+# context("Test setVLPmodel(), case II")
+# test_that("model 2 match", {
+#     geothermal_2p_txt <- c("
+#     TVD    temp
+#     0       80
+#     9700   180
+#     ")
+#     deviation_survey_2p_txt <- "
+#        TVD    MD
+#          0     0
+#       9700  9700
+#     "
+#     well_input <- setWellInput(
+#         field.name = "HAGBR.MOD",
+#         well.name = "Guo_P44",
+#         depth.wh = 0, depth.bh = 9700, diam.in = 1.995,
+#         GLR = 362.7, liq.rt = 758, wcut = 0.1,
+#         thp = 100, tht = 80, bht = 180,
+#         API = 40, gas.sg = 0.70, wat.sg = 1.05,
+#         if.tens = 30,
+#         U = 4,
+#         geotherm = geothermal_2p_txt,
+#         dev_survey = deviation_survey_2p_txt
+#     )
+#
+#     well_model <- setVLPmodel(vlp.model = "hagbr.mod",
+#                               segments = 15,
+#                               tol = 0.00001,
+#                               well_input = well_input
+#                               )
+#
+#     expect_equal(well_model$vlp.model, "hagbr.mod")
+#     expect_equal(well_model$segments, 15)
+#     expect_equal(well_model$tol, 0.00001)
+# })
 
 
 

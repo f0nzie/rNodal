@@ -18,13 +18,11 @@ test_that("list saved matches actual list", {
       0     120
       2670  150
     ")
-
     deviation_survey <- c("
       MD    TVD
       0     0
       2670  2670
     ")
-
     well_input <- setWellInput(
         field.name = "HAGBR.MOD",
         well.name = "Brown_C13",
@@ -92,7 +90,7 @@ test_that("list saved matches actual list", {
 # })
 #
 #
-# context("runVLP() Guo_P44")
+# context("runVLP() Brown_C44")
 # test_that("list saved matches actual list", {
 #
 #         # Brown_C44
