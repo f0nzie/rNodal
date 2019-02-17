@@ -81,7 +81,7 @@ with(c13.input, {
   
   iter_table <- build_iteration_table(deviation_survey_2p, 
                                       geotherm_df = geothermal_2p_df, 
-                                      depth_points = 40)
+                                      step_size = 250)
   iter_table
 })
 ```
@@ -169,7 +169,7 @@ with(c13.output, {
 #
 
 ```{r}
-
+# not giving the expected output
 with(c13.input, {
   # constants
   U         <- fluid_temp_params$U
