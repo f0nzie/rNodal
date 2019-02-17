@@ -100,7 +100,10 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
         # {. -> tmp } %>%
         { tmp <- .                                  # assign to tmp
         mn <- min(tmp); mx <- max(tmp)          # create two objects min, max
-        seq(mn, mx, length.out = number_segments) %>%
+        {
+            if (is.null(step_size)) seq(mn, mx, length.out = depth_points)
+            else if (is.null(depth_points)) seq(mn, mx, by = step_size)
+            else stop() } %>%
             c(., tmp) %>%
             unique %>%
             sort()
