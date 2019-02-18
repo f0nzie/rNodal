@@ -13,7 +13,8 @@ geothermal_txt <- "
     3590  150
 "
 
-geothermal_c44 <- as_dataframe_geothermal_data(geothermal_txt)
+geothermal_c44 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
+geothermal_c44$calc_geotherm_df
 
 ```
 
