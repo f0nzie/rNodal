@@ -1,0 +1,19 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(rNodal)
+
+geothermal_txt <- "
+    TVD   temp
+    0     120
+    3590  150
+"
+
+geothermal_c44 <- as_dataframe_geothermal_data(geothermal_txt)
+
+```
+
