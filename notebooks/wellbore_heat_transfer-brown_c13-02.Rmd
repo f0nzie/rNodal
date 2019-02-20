@@ -72,7 +72,7 @@ with(c13.input, {
 with(c13.input, {
   # convert text table of geothermal gradient to dataframe
   geotherm <- as_dataframe_geothermal_data(geothermal_2p_txt)
-  geothermal_2p_df <- geotherm$calc_geotherm_df
+  geothermal_2p_df <- geotherm$geothermal_calcs
   print(geothermal_2p_df)
   
   deviation_survey_2p <- calc_deviation_survey(deviation_survey_2p_txt, 

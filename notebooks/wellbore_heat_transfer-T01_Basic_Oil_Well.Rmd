@@ -44,7 +44,7 @@ deviation_survey_6p_txt <- "
 
 # convert text table of geothermal gradient to dataframe
 geotherm <- as_dataframe_geothermal_data(geothermal_3p_txt)
-geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df <- geotherm$geothermal_calcs
 geothermal_3p_df
 
 deviation_survey_6p <- calc_deviation_survey(deviation_survey_6p_txt, 
@@ -64,7 +64,7 @@ deviation_survey_6p
 # convert text table of geothermal gradient to dataframe
 geotherm <- as_dataframe_geothermal_data(geothermal_3p_txt)
 
-geothermal_3p_df <- geotherm$calc_geotherm_df
+geothermal_3p_df <- geotherm$geothermal_calcs
 geothermal_3p_df
 ```
 

@@ -14,7 +14,7 @@ geothermal_txt <- c("
     ")
 
 geothermal_c13 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
-geothermal_c13$calc_geotherm_df
+geothermal_c13$geothermal_calcs
 
 ```
 
@@ -30,7 +30,7 @@ where $g_{E}$ is the geothermal gradient.
 For the example above, the geothermal gradient, for a vertical well, is calculated as:
 
 ```{r}
-geo_grad <- with(geothermal_c13$calc_geotherm_df, {
+geo_grad <- with(geothermal_c13$geothermal_calcs, {
     (tail(temp,1) - head(temp,1)) / (tail(TVD,1) - head(TVD,1)) 
 })
 geo_grad

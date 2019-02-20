@@ -146,8 +146,7 @@ setVLPmodel <- function( vlp.model = "hagbr.guo",  # name of the VLP correlation
     # print(names(basic_calcs$ang_dev_survey_df))
 
     # the geothermal gradient has been calculated in basic_calcs
-    print(dim(basic_calcs$geotherm_df))
-    # print(names(basic_calcs$geotherm_df))
+    print(dim(basic_calcs$geothermal_calcs))
 
     # Build the geothermal table following the no. segments in the model
     # a table of this form
@@ -361,7 +360,7 @@ getBasicCalcs <- function(well_input) {
 
 
         geotherm_data <- as_dataframe_geothermal_data(geotherm)
-        geotherm_df <- geotherm_data$calc_geotherm_df
+        geothermal_calcs <- geotherm_data$geothermal_calcs
 
         # calculate temperature gradient
         temp.grad <- ifelse(is.na(geotherm_data$temp.grad),
@@ -421,7 +420,7 @@ getBasicCalcs <- function(well_input) {
                                 mass.rt, mass.rate,
                                 cp.avg,
                                 geotherm_data,
-                                geotherm_df,
+                                geothermal_calcs,
                                 temp.grad,
                                 ang_dev_survey_df
         )
