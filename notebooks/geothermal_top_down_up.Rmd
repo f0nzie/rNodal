@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Calculating temperature top-down and bottom-up"
 output: html_notebook
 ---
 
@@ -7,14 +7,32 @@ output: html_notebook
 ```{r}
 library(rNodal)
 
-geothermal_txt <- "
-    TVD   temp
-    0     120
-    3590  150
-"
+geothermal_txt <- c("
+      TVD    temp
+      0      120
+      2670   150
+    ")
 
-geothermal_c44 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
-geothermal_c44$calc_geotherm_df
+geothermal_c13 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
+geothermal_c13$calc_geotherm_df
 
+```
+
+## Top-down calculations
+If we start at the top, at the wellhead, then $L=0$. Or $L_{in}=0$. Where $L_{in}$ is the top end of the pipe and $L_{out}$ is the bottom virtually movable differential end. The size of the interval (distance) is the difference between $L_{in}$ and $L_{out}$:
+$$\Delta L = |L_{out} - L_{in}|$$.
+
+Generally, we perform calculations from the wellhead to the reservoir (top-down). For the formation temperature, at any measured depth, we calculate it as:
+
+$$T_e(L) = T_{e}(top) + g_{E}\, L\, sin(\theta)$$
+where $g_{E}$ is the geothermal gradient.
+
+For the example above, the geothermal gradient, for a vertical well, is calculated as:
+
+```{r}
+geo_grad <- with(geothermal_c13$calc_geotherm_df, {
+    (tail(temp,1) - head(temp,1)) / (tail(TVD,1) - head(TVD,1)) 
+})
+geo_grad
 ```
 
