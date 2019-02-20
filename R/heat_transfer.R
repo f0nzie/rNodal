@@ -77,3 +77,54 @@ temp.gradient <- function(well_table, fluid_temp_parameters) {
         well_table
     })
 }
+
+
+#' Convert text table of geothermal gradient to dataframe
+#'
+#' @param geotherm a text table
+#' @return a dataframe of depths vs temperatures vs geothermal gradients
+#' @importFrom utils head read.table tail
+#' @export
+as_dataframe_geothermal_data <- function(geotherm=NULL) {
+    # three cases:
+    # nrow=0: no geothermal table. stop, enter at least two temps
+    # nrow=1: only one temperature provided. stop, enter at least two temps
+    # nrow=2: wellhead and bottomhole temperatures
+    # nrow=3: multigradient
+    temp <- NULL; TVD <- NULL; geo_grad <- NULL
+
+    if (!is.null(geotherm)) {  # do not calculate if no geot data provided
+        geotherm_df <- read.table(header = TRUE, text = geotherm, comment.char = "#")
+    } else {
+        cat("No geothermal table entered\n")
+        geotherm_df <- data.frame()
+    }
+
+    # analyze dataframe by number of rows
+    if (nrow(geotherm_df) == 0) {
+        stop("Empty table. Enter at least two temps")
+    } else if (nrow(geotherm_df) == 1) {
+        stop("One temp only. Enter at least two temps")
+    } else {
+        # calculate gradient at depth for 2 rows and above
+        geothermal_calcs <- geotherm_df %>%
+            mutate(geo_grad = (temp - lag(temp)) / (TVD - lag(TVD))) %>%
+            mutate(dTVD = - lag(TVD, default=0)) %>%
+            mutate(dtemp = lag(temp, default=temp[1])) %>%
+            mutate(geo_grad = ifelse(is.na(geo_grad), 0, geo_grad))
+    }
+
+    # extract scalars for depth and temperature
+    depth.top <- head(geotherm_df, 1)[["TVD"]]
+    depth.bot <- tail(geotherm_df, 1)[["TVD"]]
+    tht <- head(geotherm_df, 1)[["temp"]]
+    bht <- tail(geotherm_df, 1)[["temp"]]
+
+    # if calc_geotherm_df has two rows, we extract the geothermal gradient
+    temp.grad <- ifelse(nrow(geothermal_calcs) == 2,
+                        tail(geothermal_calcs, 1)[["geo_grad"]], NA)
+
+    nrows = nrow(geothermal_calcs)
+
+    named.list(geothermal_calcs, nrows, depth.top, depth.bot, tht, bht, temp.grad)
+}
