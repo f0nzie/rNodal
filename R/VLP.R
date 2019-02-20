@@ -443,6 +443,7 @@ get_well_parameters <- function(well.input) {
 
 #' Get the inputs for fluid temperature calculations
 #' @param well_input well input list
+#' @export
 get_fluid_temp_parameters <- function(well_input) {
     get_well_parameters(well_input)[c(
         "angle",

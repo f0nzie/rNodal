@@ -52,6 +52,7 @@ compute_angle_deviation_survey <- function(well_table,
 #' @return a dataframe with MD, TVD, angle, displacement
 #'
 #' @importFrom dplyr mutate select lag
+#' @export
 calc_deviation_survey <- function(md_tvd_text,
                                   reference = c("vertical",
                                                         "horizontal")) {
