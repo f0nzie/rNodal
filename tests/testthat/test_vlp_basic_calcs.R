@@ -48,7 +48,7 @@ test_that("list saved matches actual list", {
 
     g <- function(x) {
         # compare two lists
-        # cat("\t", x, basic_calcs[[x]], basic_calcs_c13[[x]], "\n")
+        # cat("\t", x, basic_calcs[[x]], result_list[[x]], "\n")
         expect_equal(result_list[[x]], expected_list[[x]])
     }
 
