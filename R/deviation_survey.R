@@ -77,10 +77,12 @@ calc_deviation_survey <- function(md_tvd_text,
         mutate(delta.md = MD - lag(MD, default = 0)) %>%
         mutate(delta.tvd = TVD - lag(TVD, default = 0)) %>%
         mutate(radians = ifelse(delta.md==0, 0, arcFun(delta.tvd / delta.md))) %>%
+        mutate(degrees = ifelse(delta.md==0, 0, radians * 180 / pi)) %>%
         mutate(disp = ifelse(dispFun(radians) <= epsilon, # if sin or cos of the angle
                              0,                       # is zero or very near zero
                              delta.md * dispFun(radians))) %>%
-        mutate(cum_disp = cumsum(disp))
+        mutate(cum_disp = cumsum(disp)) %>%
+        mutate(ref_vertical = ifelse(reference == "vertical", TRUE, FALSE))
 
     ang_deviation_survey
 }
