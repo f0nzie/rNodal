@@ -1,38 +1,366 @@
 ---
 title: "Calculating temperature top-down and bottom-up"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+  html_notebook: 
+    code_folding: hide
 ---
 
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+* What do we want to do?
+
+  1. Correct the calculation of fluid temperature that is performed bottom-up
+
+  2. It only gives the validated output at certain interval steps. When the intervals are varied or increased, the fluid temperature at the surface is not same as in the unit test.
+  
+  3. We are lacking for a method to calculate the fluid temperature from the top-down.
+  
+  4. The current method (bottom-up) does not have a name and requires inverting the dataframe
+  
+  5. We are not considering the geothermal temperature calculation when we start at the reference at the bottom. We are only considering the reference at the top.
+  
+  6. The current formula for the calculation of external temperature $T_e$ at any depth is not valid when we start calculating from the bottom.
+  
+## Read the geothermal data and convert to dataframe
 
 ```{r}
 library(rNodal)
+library(dplyr)
 
-geothermal_txt <- c("
+geothermal_c13_txt <- c("
       TVD    temp
-      0      120
+        0    120
       2670   150
     ")
 
-geothermal_c13 <- rNodal:::as_dataframe_geothermal_data(geothermal_txt)
-geothermal_c13$geothermal_calcs
+geothermal_c13 <- rNodal:::as_dataframe_geothermal_data(geothermal_c13_txt)
+geothermal_calcs <- geothermal_c13$geothermal_calcs
+
+geothermal_calcs
 
 ```
 
-## Top-down calculations
-If we start at the top, at the wellhead, then $L=0$. Or $L_{in}=0$. Where $L_{in}$ is the top end of the pipe and $L_{out}$ is the bottom virtually movable differential end. The size of the interval (distance) is the difference between $L_{in}$ and $L_{out}$:
-$$\Delta L = |L_{out} - L_{in}|$$.
-
-Generally, we perform calculations from the wellhead to the reservoir (top-down). For the formation temperature, at any measured depth, we calculate it as:
-
-$$T_e(L) = T_{e}(top) + g_{E}\, L\, sin(\theta)$$
-where $g_{E}$ is the geothermal gradient.
-
-For the example above, the geothermal gradient, for a vertical well, is calculated as:
+## Read the deviation survey and convert to dataframe
 
 ```{r}
-geo_grad <- with(geothermal_c13$geothermal_calcs, {
-    (tail(temp,1) - head(temp,1)) / (tail(TVD,1) - head(TVD,1)) 
-})
+# 
+deviation_survey_c13_txt <- c("
+    TVD     MD
+       0     0
+    2670  2670
+")
+
+deviation_survey_calcs <- calc_deviation_survey(deviation_survey_c13_txt, 
+                                                reference = "horizontal")
+deviation_survey_calcs
+```
+
+## Join the geothermal data with deviation survey
+We have to put together the geothermal data with the deviation survey because the geothermal data only contains TVD data, and for the calculations we require MD (measure depth) or along the hole distance (AHD).
+
+```{r}
+# join the deviation survey with the geothermal data
+deviation_survey_temp <- full_join(deviation_survey_calcs, geothermal_calcs,
+                                   by = "TVD")
+deviation_survey_temp
+```
+
+```{r}
+# extract top and bottom data
+(top_temp     <- head(deviation_survey_temp$temp,1))
+(bottom_temp  <- tail(deviation_survey_temp$temp,1))
+(top_depth_tvd    <- head(deviation_survey_temp$TVD,1))
+(bottom_depth_tvd <- tail(deviation_survey_temp$TVD,1))
+(top_depth_md    <- head(deviation_survey_temp$MD,1))
+(bottom_depth_md <- tail(deviation_survey_temp$MD,1))
+(top_angle    <- head(deviation_survey_temp$radians,1))
+(bottom_angle <- tail(deviation_survey_temp$radians,1))
+```
+
+
+# For one geothermal gradient
+
+## Top-down calculations
+If we start at the top, at the wellhead, in the top-down direction, then $L=0$. We could also say that $L_{in}=0$. Where $L_{in}$ is the top end of the pipe (__inlet__), and $L_{out}$ is the bottom end of differential pipe length (__outlet__). In this case, top-down direction, $L_{in}$ is first and $L_{out}$ comes second, which as consequence results in $L_{out}$ being longer than $L_{in}$.
+
+The inlet and the outlet will be different if we change the direction of the calculations, for instance, going from the bottom (the reservoir) up to the surface (wellhead). Then, the inlet $L_{in}$ will start first and the outlet $L_{out}$ second, which results in $L_{in}$ being greater than $L_{out}$ in length.
+
+The size of the pipe interval (distance between both ends) is the difference between $L_{in}$ and $L_{out}$:
+
+$$\Delta L = |L_{out} - L_{in}|$$.
+
+Since $L$ is being measured from the top, $L_{in} < L_{out}$, if $L > 0$
+
+
+Generally, we perform calculations from the wellhead to the reservoir (top-down). Then, for the formation temperature, at any measured depth, $T_e(L)$, we calculate it as:
+
+$$T_{e,i+1} = T_{e,0} + g_{E}\, (L_{i+1} \sin(\theta_{i+1}) - L_0 \sin(\theta_0)  )$$
+where: \
+  
+  $T_{e,i+1}$ is the formation temperature at depth $L_{i+1}$ \
+  $T_{e,0}$ is the external temperature at the top
+  $g_{E}$ is the geothermal gradient, \
+  $L$ is the length of the pipe or tubing, \
+  $\theta$ is the angle of the well against the horizontal \
+  $\theta_0$ is the angle at the top end of $L$ \
+  $\theta_{i+1}$ is the angle at the bottom end of $L$ \
+  
+In general, the equation for the formation temperature given the geothermal gradient is not that complex. What we are to do is generalizing the equation when the well has multiple temperature gradients. 
+
+For the equation above, the geothermal gradient, $g_E$, for a vertical well, is calculated as the delta $\Delta$ between the temperatures divided by the deltas of the TVDs:
+
+```{r}
+geothermal_c13$geothermal_calcs
+```
+
+$$g_E = \frac {T_{bottom} - T_{top}} {\text{TVD}_{bottom} - \text{TVD}_{top} }$$
+For the example, the gradient will be:
+```{r}
+(geo_grad <- (bottom_temp - top_temp) / (bottom_depth_tvd - top_depth_tvd))
+```
+
+or, equivalently, if working with MD or distances along the hole (AHD) in non-vertical wells:
+
+$$g_E = \frac {T_{bottom} - T_{top}} {L_{bottom} \sin(\theta_{bottom}) - L_{top} \sin(\theta_{top}) }$$
+
+```{r}
+(geo_grad <- (bottom_temp - top_temp) / 
+   (bottom_depth_md * sin(bottom_angle) - top_depth_md * sin(top_angle)))
+```
+
+This calculation looks kind of complicated but it will start making sense when start working with deviated wells with multiple geothermal gradients.
+
+### Find the formation temperature at a given depth, top-down calculations
+Example. For the same well, the temperature at depth 1000 ft. from the surface, given that the well is vertical (90 degrees or $pi/2$) will be:
+
+```{r}
+top_temp + geo_grad * (1000 * sin(bottom_angle) - top_depth_md * sin(top_angle))
+```
+
+## Bottom-up calculations
+When we start performing calculations from the bottom, the inlet and the outlet also change direction. It means, now:
+
+$$ L_{in} > L_{out}$$
+And, this makes sense because the inlet $L_{in}$ is the end of the pipe closer to the reservoir -where we are starting the calculations-, and the outlet $L_{out}$ is the other end of the pipe, at a distance $\Delta L$ downstream from the inlet.
+
+So, if we want to calculate the formation temperature at any depth, if we are performing bottom-up calculations, from the reservoir to the wellhead, then:
+
+$$T_{e,i+1} = T_{e,b} - g_{E}\, (L_{b} sin(\theta_b) - L_{i+1} sin(\theta_{i+1}) )\, $$
+
+or, equivalently:
+
+$$T_{e,i+1} = T_{e,b} - g_{E}\, (L_{b} - L_{i+1})\, sin(\Delta \theta)$$
+where: \
+
+  $T_{e,b}$ is the formation temperature at the bottom of the well \
+  $L_{b}$ is the total length of the well or AHD to the bottom \
+  $L_{i+1}$ is the length of pipe at the required depth
+  
+### Find the formation temperature at a given depth, bottom-up calculations
+Example: For the same well, find the formation temperature at 1000 ft if we perform the calculations from the bottom in direction to the wellhead.
+
+```{r}
+bottom_temp
+bottom_depth_md
 geo_grad
 ```
+
+```{r}
+bottom_temp - geo_grad * (bottom_depth_md - 1000) * sin(bottom_angle - top_angle)
+```
+
+Which is the same formation temperature we calculated in top-down direction.
+
+
+# For two geothermal gradients
+For this case we will use another well with two geothermal gradients.
+
+```{r}
+library(rNodal)
+library(dplyr)
+
+geothermal_3p_txt <- c("
+  TVD    temp
+  0      60
+  600    40
+  9000   210
+")
+
+deviation_survey_6p_txt <- "
+  MD      TVD 
+  0	     0	 
+  600	    600
+  1005	 1000
+  4075	 4000
+  7700	 7500
+  9275	 9000
+"
+```
+
+We calculate the geothermal gradients:
+
+```{r}
+geothermal_t01 <- as_dataframe_geothermal_data(geothermal_3p_txt)
+geothermal_calcs <- geothermal_t01$geothermal_calcs
+
+geothermal_calcs
+```
+
+`dTVD` and `dtemp` correspond to the deltas we will have to add when we use the geothermal gradient at a given TVD.
+
+```{r}
+(210-40) / (9000-600)
+# 0.0202381
+
+# temperature at 9000 ft
+40 + 0.0202381 * (9000-600) 
+
+# temperature at 400 ft
+60 -0.033333 * (400-0) 
+```
+
+
+Now, we calculate the angles for the deviation survey:
+
+```{r}
+deviation_survey_calcs <- calc_deviation_survey(deviation_survey_6p_txt, 
+                                              reference = "horizontal")
+deviation_survey_calcs
+```
+
+Merge both tables by `TVD`:
+
+```{r}
+# join the deviation survey with the geothermal data
+deviation_survey_temp <- full_join(deviation_survey_calcs, geothermal_calcs,
+                                   by = "TVD")
+deviation_survey_temp
+```
+
+With this new combined dataframe we proceed to complete the temperature calculations at the new depths coming from the deviation survey.
+
+First, we complete the values for the gradients in the variable `geo_grad`. The `NA` values in `geo_grad` were generated because at the time of joining these two dataframes the deviation survey had no information about the geothermal gradient at those particular depths. We will replacve the `NA`s with their corresponding gradients.
+
+```{r}
+# replaces NAs in a vector by using a value starting at the bottom
+replace_na_from_bottom<-function(x, a=!is.na(x)){
+    x <- rev(x)
+    rev(x[which(a)[c(1,1:sum(a))][cumsum(a)+1]])
+}
+
+deviation_survey_temps <- deviation_survey_temp %>% 
+  mutate(geo_grad = replace_na_from_bottom(geo_grad)) %>%
+  mutate(geo_dtemp = replace_na_from_bottom(geo_dtemp)) %>%
+  mutate(geo_dTVD = replace_na_from_bottom(geo_dTVD)) %>%
+  select(-c(md, tvd, disp, cum_disp)) %>% 
+  print()
+  
+```
+
+WIth the geothermal gradients already in place, we proceed to calculate the temperatures at the known TVD depths:
+
+```{r}
+deviation_survey_temps %>% 
+  mutate(temp = geo_dtemp + geo_grad * (TVD+geo_dTVD)) %>% 
+  print()
+```
+
+## TO-DO
+* rename `dTVD` to `geo_dTVD`, and `dtemp` to `geo_dtemp`. <- DONE. Modified ` function `as_dataframe_geothermal_data` and `build_iteration_table`.
+
+
+# For multiple geothermal gradients
+```{r}
+library(dplyr)
+
+geothermal_4pt_txt <- "
+MD      geo_grad   temp    degrees.vert
+0       0.0         54.188       0
+2800   -0.00857     NA       0
+4250    0.059       NA       0
+14600   0.006      164.0    39
+"
+
+md_temp_raw <- read.table(text = geothermal_4pt_txt, header = TRUE)
+md_temp_raw
+
+```
+
+```{r}
+md_temp <- 
+md_temp_raw %>% 
+  mutate(delta.md = MD - lag(MD, default=0)) %>% 
+  mutate(radians.vert = degrees.vert * pi /180) %>% 
+  mutate(delta.tvd = delta.md * cos(radians.vert)) %>%
+  mutate(TVD = cumsum(delta.tvd)) %>% 
+  print()
+```
+
+
+```{r}
+md_temp$temp[2] <- md_temp$temp[1] + md_temp$geo_grad[2] * md_temp$delta.tvd[2]
+md_temp$temp[3] <- md_temp$temp[2] + md_temp$geo_grad[3] * md_temp$delta.tvd[3]
+md_temp
+```
+
+```{r}
+md_temp %>% 
+  mutate(geo_dtemp = lag(temp, default=temp[1])) %>%
+  mutate(geo_dTVD = - lag(TVD, default=0)) %>%
+  mutate(test = geo_dtemp + geo_grad * (TVD + geo_dTVD)) %>% 
+  print()
+  
+```
+
+Since we don't have yet a function to take this pre-combined dataframe as an input to generate an iteration table, we will provide as a raw text tables, at the same that the verify our manual calculations.
+
+```{r}
+# building the geothermal dataframe
+geothermal_4pt_txt <- "
+TVD    temp   
+0       54.2
+2800    30.2
+4250   115.7
+12294  164.0
+"
+
+geothermal_data <- as_dataframe_geothermal_data(geothermal_4pt_txt)
+geothermal_df <- geothermal_data$geothermal_calcs
+geothermal_df
+```
+
+```{r}
+# and the deviation survey
+deviation_survey_txt <- "
+ TVD      MD
+   0       0
+2800    2800
+4250    4250
+12294  14600
+"
+
+deviation_survey_df <- calc_deviation_survey(deviation_survey_txt, 
+                                              reference = "vertical")
+deviation_survey_df
+
+```
+
+Create the iteration table with __ iteration points
+
+```{r rows.print=25}
+build_iteration_table(deviation_survey_df, geothermal_df, depth_points = 15)
+```
+
+### Number of points is not the same as specified
 
