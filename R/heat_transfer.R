@@ -109,8 +109,8 @@ as_dataframe_geothermal_data <- function(geotherm=NULL) {
         # calculate gradient at depth for 2 rows and above
         geothermal_calcs <- geotherm_df %>%
             mutate(geo_grad = (temp - lag(temp)) / (TVD - lag(TVD))) %>%
-            mutate(dTVD = - lag(TVD, default=0)) %>%
-            mutate(dtemp = lag(temp, default=temp[1])) %>%
+            mutate(geo_dTVD = - lag(TVD, default=0)) %>%
+            mutate(geo_dtemp = lag(temp, default=temp[1])) %>%
             mutate(geo_grad = ifelse(is.na(geo_grad), 0, geo_grad))
     }
 

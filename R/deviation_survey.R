@@ -99,7 +99,7 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
     # global variables check
     . <-  NULL
     TVD <- NULL; tvd <- NULL; point <- NULL; radians <- NULL; geo_grad <- NULL;
-    dTVD <- NULL; dtemp <- NULL; temp <- NULL; given <- NULL; delta.tvd <- NULL;
+    geo_dTVD <- NULL; geo_dtemp <- NULL; temp <- NULL; given <- NULL; delta.tvd <- NULL;
     delta.md <- NULL; new_point <- NULL; md <- NULL; MD <- NULL; disp <- NULL
 
     epsilon <- 1e-8
@@ -147,13 +147,15 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
         mutate(given = ifelse(is.na(TVD), FALSE, TRUE)) %>%
         mutate(point = replace_na_with_last(point)) %>%
         mutate(radians = replace_na_from_bottom(radians)) %>%
+        mutate(degrees = replace_na_from_bottom(degrees)) %>%
+        mutate(ref_vertical = replace_na_with_last(ref_vertical)) %>%
         mutate(geo_grad = replace_na_from_bottom(geo_grad)) %>%
-        mutate(dTVD = replace_na_from_bottom(dTVD)) %>%
-        mutate(dtemp = replace_na_from_bottom(dtemp)) %>%
+        mutate(geo_dTVD = replace_na_from_bottom(geo_dTVD)) %>%
+        mutate(geo_dtemp = replace_na_from_bottom(geo_dtemp)) %>%
         mutate(temp = replace_na_with_last(temp)) %>%
-        mutate(temp = dtemp + geo_grad * (tvd+dTVD) ) %>% # temp[[1]]: temperature at the top
+        mutate(temp = geo_dtemp + geo_grad * (tvd+geo_dTVD) ) %>% # temp[[1]]: temperature at the top
         # if the TVD was given, do not calculate it, keep the original
-        mutate(temp = ifelse(!given, dtemp + geo_grad * (tvd+dTVD), temp)) %>%
+        mutate(temp = ifelse(!given, geo_dtemp + geo_grad * (tvd+geo_dTVD), temp)) %>%
         mutate(delta.md = ifelse(cos(radians) <= epsilon,
                                  delta.tvd,
                                  delta.tvd / cos(radians))) %>%
