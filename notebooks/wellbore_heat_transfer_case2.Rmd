@@ -1,0 +1,68 @@
+---
+title: "wellbore_heat_transfer_case2"
+output: html_notebook
+---
+
+```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = "#>",
+                      collapse = TRUE,
+                      error = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.align = 'center'
+                      )
+```
+
+```{r}
+library(rNodal)
+library(dplyr)
+
+case2 <- new.env()
+case2.input  <- new.env(parent = case2)
+case2.output <- new.env(parent = case2.input)
+```
+
+
+# Fluid temperature parameters using `get_fluid_temp_parameters()`
+```{r}
+# Example Problem from Sharifian thesis
+
+with(case2.input, {
+
+  geothermal_txt <- "
+    TVD    temp   
+    0       54.2
+    2800    30.2
+    4250   115.7
+    12294  164.0
+    "
+  
+  deviation_survey_txt <- "
+     TVD      MD
+       0       0
+    2800    2800
+    4250    4250
+    12294  14600
+    "
+  
+  input.example.case2 <- setWellInput(
+                          field.name = "HAGBR.MOD", 
+                          well.name = "Sharifian-Case2", 
+                          diam.in = 1.995, 
+                          GLR = 1100, 
+                          liq.rt = 2137, 
+                          wcut = 0.49, 
+                          thp = 290, 
+                          API = 40, gas.sg = 0.65, wat.sg = 1.05, 
+                          if.tens = 30,
+                          U = 8,
+                          geotherm = geothermal_txt,
+                          dev_survey = deviation_survey_txt
+                          )
+  
+  fluid_temp_params <- get_fluid_temp_parameters(input.example.case2)
+  fluid_temp_params
+})
+
+```
