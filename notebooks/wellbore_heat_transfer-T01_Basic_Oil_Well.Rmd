@@ -1,9 +1,9 @@
 ---
 title: "R Notebook"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include = FALSE, error=TRUE, message=FALSE, warning=FALSE}
@@ -61,18 +61,41 @@ deviation_survey_6p
 
 ### convert text table of geothermal gradient to dataframe
 ```{r}
-# convert text table of geothermal gradient to dataframe
-geotherm <- as_dataframe_geothermal_data(geothermal_3p_txt)
+ang_deviation_survey <- deviation_survey_6p
+ang_deviation_survey
 
-geothermal_3p_df <- geotherm$geothermal_calcs
-geothermal_3p_df
 ```
 
 ### Build iteration table (two geothermal points)
-```{r table-iter_table, rows.print=50}
-geothermal_txt <- geothermal_3p_txt
-deviation_survey_txt <- deviation_survey_6p_txt
 
+```{r}
+ang_deviation_survey <- full_join(ang_deviation_survey, geothermal_3p_df)
+print(ang_deviation_survey)
+```
+
+
+```{r}
+step_size <- NULL
+depth_points <- 40
+ang_deviation_survey %>% 
+    select(TVD) %>%      # select TVD
+    pull(TVD) %>%
+  { tmp <- .                                  # assign to tmp
+        mn <- min(tmp); mx <- max(tmp)          # create two objects min, max
+        {
+            if (is.null(step_size)) seq(mn, mx, length.out = depth_points - 
+                                          nrow(ang_deviation_survey)+2)
+            else if (is.null(depth_points)) seq(mn, mx, by = step_size)
+            else stop() } %>%
+            c(., tmp) %>%
+            unique %>%
+            sort()
+        } %>%
+  print()
+```
+
+
+```{r table-iter_table, rows.print=50}
 ang_deviation_survey <- deviation_survey_6p
 geothermal_df    <- geothermal_3p_df
 
