@@ -356,11 +356,27 @@ deviation_survey_df
 
 ```
 
-Create the iteration table with __ iteration points
+### Create the iteration table with 15 iteration points
 
 ```{r rows.print=25}
-build_iteration_table(deviation_survey_df, geothermal_df, depth_points = 15)
+build_iteration_table(deviation_survey_df, geothermal_df, 
+                      depth_points = 15)
 ```
 
 ### Number of points is not the same as specified
+`Commit: 93661e5c9304d7dafe299a16745319be1df311fb`
+
+We specified 15 points and we are getting 17. __Why?__
+Because the minimum and maximum of the sequence are being included. So, we have to subtract 2 from the number of `depth_points`.
+
+From:
+    if (is.null(step_size)) seq(mn, mx, length.out = depth_points)
+    
+To:
+    if (is.null(step_size)) seq(mn, mx, length.out = depth_points-2)
+
+## TO-DO: Adding a known TVD or MD vector
+If we have an example or case that we want to compare our data against, the best is to generate an iteration table that is similar.
+
+
 
