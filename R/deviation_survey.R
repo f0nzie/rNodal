@@ -100,9 +100,10 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
                                   depth_points=NULL, step_size=NULL) {
     # global variables check
     . <-  NULL
-    TVD <- NULL; tvd <- NULL; point <- NULL; radians <- NULL; geo_grad <- NULL;
-    geo_dTVD <- NULL; geo_dtemp <- NULL; temp <- NULL; given <- NULL; delta.tvd <- NULL;
-    delta.md <- NULL; new_point <- NULL; md <- NULL; MD <- NULL; disp <- NULL
+    TVD <- NULL; tvd <- NULL; point <- NULL; radians <- NULL; degrees <- NULL;
+    geo_grad <- NULL; geo_dTVD <- NULL; geo_dtemp <- NULL; temp <- NULL;
+    given <- NULL; delta.tvd <- NULL; delta.md <- NULL; new_point <- NULL;
+    md <- NULL; MD <- NULL; disp <- NULL; ref_vertical <- NULL
 
     epsilon <- 1e-8
 
