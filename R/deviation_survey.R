@@ -119,6 +119,7 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
 
     # add extra rows for calculations
     # the original depths are included in the table as part of the total number of rows
+    grown <-
     ang_deviation_survey %>%
         select(TVD) %>%      # select TVD
         pull(TVD) %>%
@@ -135,14 +136,15 @@ build_iteration_table <- function(ang_deviation_survey, geotherm_df,
         } %>%
         data.frame(tvd = .) %>%                  # convert vector to dataframe
         mutate(new_point = 99+row_number()) %>%  # add a column
-        print() -> grown                         # create dataframe grown
+        print()                       # create dataframe grown
 
     # join the two tables (small original and grown with more rows) by TVD
     # table with lots of NAs
+    joined <-
     right_join(ang_deviation_survey, grown, by = "tvd") %>%
         # mutate(delta.tvd = TVD - lag(TVD, default = 0))  %>%
-        mutate(delta.tvd = tvd - lag(tvd, default = 0))  %>%
-        print() -> joined
+        mutate(delta.tvd = tvd - lag(tvd, default = 0))
+        # print() -> joined
 
     # get MD, delta.md given TVD and angle at new intervals
     # & nrow(geotherm_df) < nrow(ang_deviation_survey)
