@@ -70,7 +70,7 @@ calc_deviation_survey <- function(md_tvd_text,
            horizontal = {arcFun <- asin; dispFun <- cos} )
 
     ang_deviation_survey <- deviation_survey %>%
-        mutate(point = as.integer(row_number() - 1)) %>%
+        mutate(point = as.integer(row_number())) %>%
         select(point, everything()) %>%
         mutate(tvd = TVD) %>%
         mutate(md = MD) %>%
